@@ -1,0 +1,17 @@
+<!-- views/signin.handlebars -->
+<div class="jumbotron">
+    <div class="signFormContainer">
+        <h1>Sign Up</h1>
+        <form class="signForm" action="/local-reg" method="post" >
+            <div class="form-group">
+                <label for="exampleInputEmail1">New Username</label>
+                <input type="text" class="form-control" name="username" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">New Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary formSubmitButton">Register</button>
+        </form>
+    </div>
+</div>
