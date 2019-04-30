@@ -1,68 +1,74 @@
 <!-- views/layouts/main.handlebars -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="User Authentication">
-  <meta name="author" content="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="User Authentication">
+    <meta name="author" content="">
+    <title>User Authentication</title>
 
-  <title>User Authentication</title>
+    {{!-- font awesome import --}}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" 
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    {{!-- bootstrap import --}}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      
+    <style>
+      .container {
+        width: 100%;
+        padding: 0px;
+        margin: 0px;
+      }
+      .navigation-header {
+        color: white !important;
+        font-weight: bold;
+      }
+      .signFormContainer {
+        margin: auto;
+        width: 50%;
+      }
 
+      .signForm {
+        font-size: 1.2em; 
+      }
+
+      .user-name {
+        margin-right: 10px;
+      }
+
+      .signForm {
+        padding-top: 10px;
+      }
+
+      .formSubmitButton {
+        width: 100%
+      }
+
+    </style>
   </head>
-
   <body>
-
-    <div style="width:100%; margin:0; padding: 0;" class="container">
-
-      <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-      </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li>
-              {{#if user}}
-                <p class="navbar-text">
-                  <strong>Hi,</strong>
-                  <img src="{{user.avatar}}" width="20" height="20">
-                  {{user.username}}
-                </p>
-                </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                  <li>
-                    <a href="/logout">Log Out</a>
-                  </li>
-              {{else}}
-                <a href="/signin">Sign In</a>
-                </li>
-              {{/if}}
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
+    <nav class="navbar navbar-dark navbar-expand-sm bg-dark justify-content-between">
+      <a class="navbar-brand navigation-header">Vus</a>
+      <form class="form-inline">
+        {{#if user}}
+          <div class="navbar-text user-name"> Welcome Back, {{user.username}} </div>
+          <button type="button" id="signOutButton" class="btn btn-primary  my-2 my-sm-0" onclick="location.href='/logout'">
+            Log Out
+          </button> 
+        {{else}}
+          <button type="button" id="signInButton" class="btn btn-primary  my-2 my-sm-0" onclick="location.href='/signin'">
+            Sign In
+          </button>          
+        {{/if}}
+      </form>
     </nav>
 
     {{#if error}}
       <p class="alert alert-warning">{{error}}</p>
-    {{/if}}
-
-    {{#if success}}
-      <p class="alert alert-success">{{success}}</p>
     {{/if}}
 
     {{#if notice}}
@@ -72,14 +78,12 @@
     <!--where our other templates will insert-->
     {{{body}}}
 
-    </div> <!-- /container -->
-
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-
-    <!-- Latest compiled and minified JavaScript -->
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-</body>
+    {{!-- major speed up in loading js file --}}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+  </body>
 </html>

@@ -30,7 +30,7 @@ process.title = "node-easyrtc";
 var port = process.env.PORT || 8080;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
-host = '127.0.0.1'
+const host = '127.0.0.1'
 // host = '192.168.0.104'
 var app = express(host);
 
@@ -133,47 +133,81 @@ app.set('view engine', 'handlebars');
 
 //displays our homepage
 app.get('/home', function(req, res){
-  res.render('home', {user: req.user});
+  res.render('home', {user: req.session.user});
 });
 
 //
 app.get('/lobby', function(req, res){
-  let room = req.cookies['group_session_room']
-  if (room){
-      res.render('lobby', {group_session_room:room});
-  }
-  else{
-      res.render('lobby', {});
+  let room = req.cookies['group_session_room'];
+  if (req.session.user && room) {
+    res.render('lobby', {group_session_room:room, user: req.session.user});
+  } else{
+    res.render('lobby', {user: req.session.user});
   }
   
 });
 
 //displays our signup page
 app.get('/signin', function(req, res){
-  res.render('signin');
+  console.log(req.session)
+  let room = req.cookies['group_session_room'];
+  if (req.session.user && room) {
+    // if already signin, redirect to lobby page
+    res.render('lobby', {group_session_room:room, user: req.session.user});
+  } else {
+    res.render('signin');
+  }
 });
 
+app.get('/signup', function(req, res){
+  res.render('signup');
+})
+
 //sends the request through our local signup strategy, and if successful takes user to homepage, otherwise returns then to signin page
-app.post('/local-reg', passport.authenticate('local-signup', {
-  successRedirect: '/lobby',
-  failureRedirect: '/signin'
-  })
-);
+// app.post('/local-reg', passport.authenticate('local-signup', {
+//   successRedirect: '/lobby',
+//   failureRedirect: '/signin'
+//   })
+// );
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
-app.post('/login', passport.authenticate('local-signin', {
-  successRedirect: 'lobby',
-  failureRedirect: '/signin'
-  })
-);
+// app.post('/login', passport.authenticate('local-signin', {
+//   successRedirect: 'lobby',
+//   failureRedirect: '/signin'
+//   })
+// );
+
+app.post('/local-reg', (req, res, next) => {
+  passport.authenticate('local-signup', (err, user, info) => {
+    if (err) { return res.render('signup', {error: 'Sign up exception'}) }
+    if (!user) { return res.render('signup', {error: 'Username already exist'})}
+    req.session.user = user;
+    return res.redirect('lobby');
+  })(req, res, next);
+});
+
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local-signin', (err, user, info) => {
+    if (err) { return res.render('signin', {error: 'Sign up exception'}) }
+    if (!user) { return res.render('signin', {error: 'User does not exist'})}
+    req.session.user = user;
+    return res.redirect('lobby');
+  })(req, res, next);
+});
 
 //logs user out of site, deleting them from the session, and returns to homepage
 app.get('/logout', function(req, res){
-  var name = req.user.username;
-  console.log("LOGGIN OUT " + req.user.username)
-  req.logout();
-  res.redirect('/signin');
-  req.session.notice = "You have successfully been logged out " + name + "!";
+  if (!req.session.user) {
+    res.redirect('/signin'); 
+  } else {
+    const name = req.session.user.username;
+    console.log("LOGGIN OUT " + req.session.user.username)
+    delete req.session.user;
+    req.logout();
+    res.redirect('/signin');
+    req.session.notice = "You have successfully been logged out " + name + "!";
+  }
+
 });
 
 //=====================================
@@ -218,7 +252,11 @@ app.get('/createRoom', function(req, res){
     res.cookie('group_session_room', room_name.toString());
     req.session.group_session_room = room_name;
 
-    res.render('lobby', {group_session_room: room_name});
+    if (req.session.user) {
+      res.render('lobby', {group_session_room: room_name, user: req.session.user});
+    } else {
+      res.render('lobby', {group_session_room: room_name});
+    }
 });
 
 app.post('/joinRoom', function(req, res){
@@ -229,7 +267,12 @@ app.post('/joinRoom', function(req, res){
         let room_id = roomInfo.room_id;
         res.cookie('group_session_room', room_id);
         req.session.group_session_room = room_id;
-        res.render('lobby', {group_session_room: room_id});
+        
+        if (req.session.user) {
+          res.render('lobby', {group_session_room: room_id, user: req.session.user});
+        } else {
+          res.render('lobby', {group_session_room: room_id});
+        }
     }
 });
 
