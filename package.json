@@ -33,6 +33,7 @@
     "express": "^3.5.0",
     "express-handlebars": "^3.0.0",
     "fast-deep-equal": "^2.0.1",
+    "formidable": "^1.2.1",
     "mongodb": "^2.2.33",
     "mongoose": "^5.5.1",
     "nodemon": "^1.18.11",

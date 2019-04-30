@@ -17,6 +17,8 @@ var exphbs = require('express-handlebars'),
     GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
 
+const formidable = require('formidable')
+
 // connect to the database
 mongoose.connect('mongodb://localhost/my_db');
 
@@ -207,8 +209,38 @@ app.get('/logout', function(req, res){
     res.redirect('/signin');
     req.session.notice = "You have successfully been logged out " + name + "!";
   }
-
 });
+
+app.get('/vrmanager', (req, res) => {
+  if(!req.session.user) {
+    res.redirect('signin');
+  } else {
+    res.render('vrspacemanager', {user: req.session.user})
+  }
+});
+
+app.post('/uploadModel', (req, res) => {
+
+  new formidable.IncomingForm().parse(req)
+    .on('field', (name, field) => {
+      console.log('Field', name, field)
+    })
+    .on('file', (name, file) => {
+      console.log('Uploaded file', name, file)
+    })
+    .on('aborted', () => {
+      console.error('Request aborted by the user')
+    })
+    .on('error', (err) => {
+      console.error('Error', err)
+      throw err
+    })
+    .on('end', () => {
+      res.end()
+    })
+
+  res.redirect('vrmanager');
+})
 
 //=====================================
 

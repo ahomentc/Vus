@@ -1,0 +1,29 @@
+<div class="jumbotron">
+    <div>
+        <h3>
+            <label>Upload Your Custom VR Environment</label>
+        </h3>
+        <form action="/uploadModel" enctype="multipart/form-data" method="POST">
+            <div class="form-group custom-file file-upload">
+                <input name="new_model" type="file" class="custom-file-input" id="customFile" />  
+                <label class="custom-file-label" for="customFile">Choose a File</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+
+    </div>
+</div>
+<script>
+    // update input placeholder value
+    $('#customFile').on('change', () => {
+        //get the file name
+        const fileName = $('#customFile').val().replace('C:\\fakepath\\', "");
+        //replace the "Choose a file" label
+        $('.custom-file-label').html(fileName);
+    });
+</script>
+<style>
+    .file-upload{
+        margin-bottom: 15px;
+    }
+</style>
