@@ -76,6 +76,7 @@ passport.use('local-signin', new LocalStrategy(
 passport.use('local-signup', new LocalStrategy(
   {passReqToCallback : true}, //allows us to pass back the request to the callback
   function(req, username, password, done) {
+    // save stuff to db
     funct.localReg(username, password)
     .then(function (user) {
       if (user) {
