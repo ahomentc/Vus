@@ -16,8 +16,10 @@ var exphbs = require('express-handlebars'),
     TwitterStrategy = require('passport-twitter'),
     GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
-
+    
+var util = require('util');
 const formidable = require('formidable')
+var fs = require('fs');
 
 // connect to the database
 mongoose.connect('mongodb://localhost/my_db');
@@ -221,26 +223,33 @@ app.get('/vrmanager', (req, res) => {
 });
 
 app.post('/uploadModel', (req, res) => {
+  var form = new formidable.IncomingForm();
+  
+  form.parse(req, function(err, fields, files) {
+    res.writeHead(200, {'content-type': 'text/plain'});
+    res.write('received upload:\n\n');
+    res.end(util.inspect({fields: fields, files: files}));
+  });
 
-  new formidable.IncomingForm().parse(req)
-    .on('field', (name, field) => {
-      console.log('Field', name, field)
-    })
-    .on('file', (name, file) => {
-      console.log('Uploaded file', name, file)
-    })
-    .on('aborted', () => {
-      console.error('Request aborted by the user')
-    })
-    .on('error', (err) => {
-      console.error('Error', err)
-      throw err
-    })
-    .on('end', () => {
-      res.end()
-    })
+  form.on('end', function(fields, files) {
+    /* Temporary location of our uploaded file */
+    var temp_path = this.openedFiles[0].path;
+    /* The file name of the uploaded file */
+    var file_name = this.openedFiles[0].name;
+    /* Location where we want to copy the uploaded file */
+    var new_location = __dirname + '\\..\\uploadedFiles\\';
+    
+    fs.copyFile(temp_path, new_location + file_name, function(err) {  
+        if (err) {
+            console.error(err);
+        } else {
+            console.log("success!")
+        }
+    });
+  });
 
-  res.redirect('vrmanager');
+  return;
+  // res.redirect('vrmanager');
 })
 
 //=====================================
