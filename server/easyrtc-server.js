@@ -243,6 +243,57 @@ app.post('/uploadModel', (req, res) => {
   res.redirect('vrmanager');
 })
 
+// ---- Set User Room ----
+// Instead of storing room code in cookies, we'll now set them in the database.
+// This will increase security. We'll save a session ID in the cookie.
+
+app.post('/createUserRoom', (req, res) => {
+    // generate a random hex roomname
+    let randomInt = Math.floor((Math.random() * 10000000) + 1);
+    let room_name = randomInt.toString(16);
+
+    // TODO: Save room_name in database under logged in user's account
+
+    // create a session id to be stored in cookie for user authentication
+    var sha = crypto.createHash('sha256');
+    sha.update(Math.random().toString());
+    sessionID =  sha.digest('hex');
+
+    // store in cookie
+    res.cookie('group_session_auth', sessionID.toString());
+
+    if (req.session.user) {
+      res.render('lobby', {group_session_room: room_name, user: req.session.user});
+    } else {
+      res.render('lobby', {group_session_room: room_name});
+    }
+
+
+});
+
+app.post('/uploadModel', (req, res) => {
+
+  new formidable.IncomingForm().parse(req)
+    .on('field', (name, field) => {
+      console.log('Field', name, field)
+    })
+    .on('file', (name, file) => {
+      console.log('Uploaded file', name, file)
+    })
+    .on('aborted', () => {
+      console.error('Request aborted by the user')
+    })
+    .on('error', (err) => {
+      console.error('Error', err)
+      throw err
+    })
+    .on('end', () => {
+      res.end()
+    })
+
+  res.redirect('vrmanager');
+})
+
 //=====================================
 
 // - Simple route middleware to ensure user is authenticated.
