@@ -38,13 +38,17 @@ else{
     setCookie('vr_rooms_visited',JSON.stringify(vr_rooms_visited),null);   
 }
 
+// try to connect every 4 seconds
+var findRoom = setInterval(setRoom, 4000);
 
 function setRoom(){
+    if(NAF.connection.isConnected()){
+        clearInterval(findRoom);
+        return;
+    }
     // replace room in "<a-scene networked-scene" with room from cookie
     let room_name = getCookie("group_session_room");
     document.getElementsByTagName("a-scene")[0].setAttribute("networked-scene")
     document.getElementsByTagName("a-scene")[0].getAttribute("networked-scene").room = room_name;
     AFRAME.scenes[0].emit('connect');
 }
-
-setTimeout(function(){ setRoom(); }, 4000);

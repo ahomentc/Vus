@@ -1,56 +1,41 @@
 {{#if group_session_room}}
-    <div id="groupCode">
-	   <label>Share this code with your friends: {{group_session_room}}</label>
+    <div class="jumbotron">
+        <div>
+            <h2>
+                <div style="margin-bottom: 10px">
+                    Room Code: 
+                    <strong>{{group_session_room}}</strong>
+                </div>
+                <div>
+                    <a href="/room" class="btn btn-success btn-lg" role="button">
+                        Enter VR Experience
+                    </a>
+                </div>
+            </h2>
+        </div>
     </div>
 {{/if}}
-
-<a id="createRoom" href="/createRoom" class="btn btn-primary btn-lg" role="button">
-    Create New Room
-</a>
-
-<div id="joinRoom">
-  <form action="/joinRoom" method="post">
-    <div>
-        <input type="text" placeholder="Friend's code" name="room_id"/>
-        <input type="submit" class="btn btn-primary btn-sm" value="Join Room"/>
-    </div>
-  </form>
+<div id="roomOptionContainer">
+    <form action="/joinRoom" method="post">
+        <div class="form-group">
+            <label>Enter New Room Code to Join:</label>
+            <input name="room_id" class="form-control" placeholder="Room Code" required>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Join New Room</button>
+            <a id="createRoom" href="/createRoom" class="btn btn-secondary" role="button">
+                Create New Room
+            </a>
+        </div>
+    </form>
 </div>
-
-{{#if group_session_room}}
-  <div id="goToRoom">
-    <a href="/room" class="btn btn-primary btn-lg" role="button">
-      Go
-    </a>
-{{/if}}
-
-
 <style>
-#goToRoom{
-    margin:10px; 
+
+#roomOptionContainer{
+    margin: auto;
+    width: 60%;
+    padding: 20px;
+    font-size: 1.5em;
 }
 
-#groupCode{
-    margin:10px;
-    text-align:center;
-    display:block;
-    font-size:25px;
-}
-
-#createRoom{
-    text-align:center;
-    margin:10px;
-    float: left;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-#joinRoom{
-    text-align:center;
-    margin:10px;
-    float: left;
-    border-radius: 5px;
-    padding:10px;
-}
 </style>

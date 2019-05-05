@@ -1,7 +1,7 @@
 <img src="http://i.imgur.com/7ddbE0q.gif" width="300">
 
 
-Networked-Aframe
+VUS
 =======
 
 <a href="https://travis-ci.org/networked-aframe/networked-aframe"><img src="https://img.shields.io/travis/networked-aframe/networked-aframe.svg" alt="Build Status"></a>
@@ -50,12 +50,12 @@ Follow [the NAF Getting Started tutorial](https://github.com/networked-aframe/ne
 To run the examples on your own PC:
 
  ```sh
-git clone https://github.com/networked-aframe/networked-aframe.git  # Clone the repository.
+git clone # Clone the repository.
 cd networked-aframe
 npm install && npm run easyrtc-install  # Install dependencies.
-npm run dev  # Start the local development server.
+npm start  # Start the local development server.
 ```
-With the server running, browse the examples at `http://localhost:8080`. Open another browser tab and point it to the same URL to see the other client.
+With the server running, browse the examples at `http://localhost:8080/room` or `http://localhost:8080/lobby`. Open another browser tab and point it to the same URL to see the other client.
 
 For info on how to host your experience on the internet, see the [NAF Hosting Guide](https://github.com/networked-aframe/networked-aframe/blob/master/docs/hosting-networked-aframe-on-a-server.md).
 
