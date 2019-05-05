@@ -1,10 +1,21 @@
-<html style="background-color: black">
+<!-- views/layouts/main.handlebars -->
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>GroupUp Lobby</title>
-    <meta name="description" content="Dev Example — Networked-Aframe">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="User Authentication">
+    <meta name="author" content="">
+    <title>User Authentication</title>
 
-    <script src="./aframe.min.js"></script> 
+    {{!-- font awesome import --}}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" 
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+ <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
     <script src="/js/spawn-in-circle.component.js"></script>
@@ -12,59 +23,115 @@
   </head>
 
   <body>
-    <a-scene >
+    <a-scene light="defaultLightsEnabled: false">
       <a-assets>
-        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
-        <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
-
+        <img id="carpet" src="https://carpetspluscolortile.com/wp-content/uploads/PATT_Momentum_00758-375x400.jpg" crossorigin="anonymous">
+        <img id="wall-left-right" src="/room/img/wall.jpeg" crossorigin="anonymous" />
+        <img id="wall-up" src="/room/img/wall.jpg" crossorigin="anonymous" />
+        <a-asset-item id="door" src="/room/models/door/scene.gltf"></a-asset-item>
+        <a-asset-item id="light" src="/room/models/light/scene.gltf"></a-asset-item>
+        <a-asset-item id="corkboard" src="/room/models/corkboard/scene.gltf"></a-asset-item>
+        <a-asset-item id="picture_frame" src="/room/models/picture_frame/scene.gltf"></a-asset-item>
+        <a-asset-item id="picture_frame2" src="/room/models/picture_frame_2/scene.gltf"></a-asset-item>
+        <a-asset-item id="the_water_mil" src="/room/models/the_water_mil/scene.gltf"></a-asset-item>
       </a-assets>
 
-      <a-entity id="player" camera="userHeight: 1.6" spawn-in-circle="radius:3" wasd-controls look-controls>
+      <a-entity id="player" camera="userHeight: 3" spawn-in-circle="radius:3" wasd-controls look-controls>
         <a-sphere class="head"
           visible="false"
           random-color
         ></a-sphere>
+        <a-entity cursor="fuse: false; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: black; shader: flat">
+        </a-entity>
       </a-entity>
 
-      <a-entity position="0 0 0"
-        geometry="primitive: plane; width: 10000; height: 10000;" rotation="-90 0 0"
-        material="src: #grid; repeat: 10000 10000; transparent: true; metalness:0.6; roughness: 0.4; sphericalEnvMap: #sky;"></a-entity>
+      <a-entity light="color: #FFF;type: ambient; intensity: 0.5" position="0 9 0"></a-entity>
+      <a-gltf-model src="#light" scale="0.05 0.05 0.05" position="0 9.9 0"></a-gltf-model>
+      <a-entity light="color: #FFF;type: point; intensity: 0.3" position="0 9.5 0"></a-entity>
+       <a-gltf-model src="#light" scale="0.05 0.05 0.05" position="0 9.9 25"></a-gltf-model>
+      <a-entity light="color: #FFF;type: point; intensity: 0.3" position="0 9.5 25"></a-entity>
+       <a-gltf-model src="#light" scale="0.05 0.05 0.05" position="0 9.9 -25"></a-gltf-model>
+      <a-entity light="color: #FFF;type: point; intensity: 0.3" position="0 9.5 -25"></a-entity>
 
-      <!-- <a-entity light="color: #ccccff; intensity: 1; type: ambient;" visible=""></a-entity> -->
-      <!-- <a-entity light="color: #ffaaff; intensity: 1.5" position="5 5 5"></a-entity> -->
-      <a-entity light="color: #ccccff; intensity: 4; type: ambient;" visible=""></a-entity>
-      <a-entity light="color: #ffaaff; intensity: 4" position="5 5 5"></a-entity>
+      <a-plane position="0 5 -50" src="#wall-left-right" material="roughness: 1; metalness:0.8" repeat="3 3" height="10" width="10" rotation="0 0 0"></a-plane>
+      <a-plane position="0 5 50" src="#wall-left-right" material="roughness: 1; metalness:0.8" repeat="3 3" height="10" width="10" rotation="0 180 0"></a-plane>
+      <a-plane position="0 10 0" src="#wall-up" material="roughness: 1; metalness:0.5" repeat="3 30" height="100" width="10" rotation="90 0 0"></a-plane>
+      <a-plane position="-5 5 0" src="#wall-left-right" material="roughness: 1; metalness:0.5" repeat="3 30" height="100" width="10" rotation="0 90 90"></a-plane>
+      <a-plane position="5 5 0" src="#wall-left-right" material="roughness: 1; metalness:0.5" repeat="3 30" height="100" width="10" rotation="0 -90 90"></a-plane>
+      <a-plane src="#carpet" material="roughness: 1; metalness:0.5" repeat="5 50" height="100" width="10" rotation="-90 0 0"></a-plane>
 
-      <a-sky src="#sky" rotation="0 -90 0"></a-sky>
-      <!-- <a-entity id="particles" particle-system="preset: snow"></a-entity> -->
-      
+      <a-gltf-model src="#picture_frame" scale="0.7 0.7 0.7" material="roughness: 1; metalness:1" position="0 5 49.9" rotation="45 180 0"></a-gltf-model>
+      <a-gltf-model src="#picture_frame2" scale="1.5 3 1.5" material="roughness: 1; metalness:1" position="0 2.5 -46.9" rotation="0 0 0"></a-gltf-model>    
+      <a-gltf-model src="#corkboard" scale="3 3 3" material="roughness: 1; metalness:1" position="0 1 25" rotation="0 90 0"></a-gltf-model> 
 
-      <a-camera position="0 1.6 0"> 
-        <a-entity cursor="fuse: false"  position="0 0 -1"   geometry="primitive:ring; radiusInner: 0.02; radiusOuter: 0.03"  material="color: white; shader: flat"></a-ring>
-      </a-camera>
+      <a-text value="Google Blocks" align="center" position="4.9999 4.5 0" rotation="0 -90 0"></a-text>
+      <a-entity cursor-listener>
+      <a-gltf-model material="roughness: 1; metalness:0.5" id="google-blocks" src="#door" scale="0.02 0.02 0.02" position="5 2.1 0"></a-gltf-model>
+      </a-entity>
+      <a-text value="Basic" align="center" position="4.9999 4.5 5" rotation="0 -90 0"></a-text>
+      <a-entity cursor-listener>
+      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic" src="#door" scale="0.02 0.02 0.02" position="5 2.1 5"></a-gltf-model>
+      </a-entity>
+      <a-text value="Basic-2" align="center" position="4.9999 4.5 10" rotation="0 -90 0"></a-text>
+      <a-entity cursor-listener>
+      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic-2" src="#door" scale="0.02 0.02 0.02" position="5 2.1 10"></a-gltf-model>
+      </a-entity>
+      <a-text value="Basic-4" align="center" position="4.9999 4.5 15" rotation="0 -90 0"></a-text>
+      <a-entity cursor-listener>
+      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic-4" src="#door" scale="0.02 0.02 0.02" position="5 2.1 15"></a-gltf-model>
+      </a-entity>
+      <a-text value="Basic-AR" align="center" position="4.9999 4.5 20" rotation="0 -90 0"></a-text>
+      <a-entity cursor-listener>
+      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic-ar" src="#door" scale="0.02 0.02 0.02" position="5 2.1 20"></a-gltf-model>
+      </a-entity>
+      <a-text value="Shooter" align="center" position="-4.9999 4.5 0" rotation="0 90 0"></a-text>
+      <a-entity cursor-listener>
+      <a-gltf-model material="roughness: 1; metalness:0.5" id="shooter" src="#door" scale="0.02 0.02 0.02" position="-5 2.1 0" rotation="0 180 0"></a-gltf-model>
+      </a-entity>
       <!-- "button" -->
-      <!-- <a-entity id="link_button" geometry="primitive: box" material="color: white" position="0 0 2">1</a-entity> -->
-      <a-box color="black" depth=".1" height="4" width="4" position="0 2 -3.1"></a-box>
-      <a-text id="textbox1" position="0 2 -3" value="Hello world"></a-text>
-      <a-text id="button_0" geometry="primitive: plane; width:.3; height:.3; depth:.1" position="-.25 1.7 -3" material="opacity: 0.0; transparent: true" value="0"></a-text>
-      <a-text id="button_1" position="0 1.7 -3" value="1"></a-text>
-      <!-- <a-gltf-model id="link_button" src="models/portal/Portal_01.gltf" position="0 0 -2"></a-gltf-model> -->
-        <script>
-          document.querySelector('#button_0').addEventListener('click', function() {
-                document.getElementById('#textbox1').setComponent("value","hi");
-            });
-        </script>
     </a-scene>
 
     <script>
+      window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')
         host = "http://127.0.0.1"
-        document.querySelector('#link_button').addEventListener('click', function() {
-            window.location.href =  host + ':8080/room/google-blocks.html';
-            // window.location.href =  host + ':8080/google-blocks.html';
-        });
-    </script>
 
-    <script>
+        AFRAME.registerComponent('cursor-listener', {
+  init: function () {
+    this.el.addEventListener('click', function (evt) {
+      let playerPos = document.querySelector("#player").object3D.position
+      let targetPos = evt.target.object3D.position
+      let distance = playerPos.distanceTo(targetPos)
+      if (distance < 3) {
+      window.location.href =  host + ':8080/room/'+evt.target.id+'.html';
+      }
+    });
+  }
+});
+        
+      // Define custom schema for syncing avatar color, set by random-color
+      NAF.schemas.add({
+        template: '#avatar-template',
+        components: [
+          'position',
+          'rotation',
+          {
+            selector: '.head',
+            component: 'material',
+            property: 'color'
+          }
+        ]
+      });
+
+
+
+      // Called by Networked-Aframe when connected to server
+      function onConnect () {
+        console.log("onConnect", new Date());
+      }
+
       // On mobile remove elements that are resource heavy
       var isMobile = AFRAME.utils.device.isMobile();
 
@@ -72,6 +139,14 @@
         var particles = document.getElementById('particles');
         particles.parentNode.removeChild(particles);
       }
+    
     </script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    {{!-- major speed up in loading js file --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
   </body>
 </html>

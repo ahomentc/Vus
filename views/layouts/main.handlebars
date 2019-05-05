@@ -13,134 +13,93 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" 
       integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
- <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
-    <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
-    <script src="/js/spawn-in-circle.component.js"></script>
-    <script src="https://unpkg.com/aframe-text-component@^0.4.1/dist/aframe-text-component.min.js"></script> 
-  </head>
-
-  <body>
-    <a-scene light="defaultLightsEnabled: false">
-      <a-assets>
-        <img id="carpet" src="https://carpetspluscolortile.com/wp-content/uploads/PATT_Momentum_00758-375x400.jpg" crossorigin="anonymous">
-        <img id="wall-left-right" src="/room/img/wall.jpeg" crossorigin="anonymous" />
-        <img id="wall-up" src="/room/img/wall.jpg" crossorigin="anonymous" />
-        <a-asset-item id="door" src="/room/models/door/scene.gltf"></a-asset-item>
-        <a-asset-item id="light" src="/room/models/light/scene.gltf"></a-asset-item>
-        <a-asset-item id="corkboard" src="/room/models/corkboard/scene.gltf"></a-asset-item>
-        <a-asset-item id="picture_frame" src="/room/models/picture_frame/scene.gltf"></a-asset-item>
-        <a-asset-item id="picture_frame2" src="/room/models/picture_frame_2/scene.gltf"></a-asset-item>
-        <a-asset-item id="the_water_mil" src="/room/models/the_water_mil/scene.gltf"></a-asset-item>
-      </a-assets>
-
-      <a-entity id="player" camera="userHeight: 3" spawn-in-circle="radius:3" wasd-controls look-controls>
-        <a-sphere class="head"
-          visible="false"
-          random-color
-        ></a-sphere>
-        <a-entity cursor="fuse: false; fuseTimeout: 500"
-            position="0 0 -1"
-            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-            material="color: black; shader: flat">
-        </a-entity>
-      </a-entity>
-
-      <a-entity light="color: #FFF;type: ambient; intensity: 0.5" position="0 9 0"></a-entity>
-      <a-gltf-model src="#light" scale="0.05 0.05 0.05" position="0 9.9 0"></a-gltf-model>
-      <a-entity light="color: #FFF;type: point; intensity: 0.3" position="0 9.5 0"></a-entity>
-       <a-gltf-model src="#light" scale="0.05 0.05 0.05" position="0 9.9 25"></a-gltf-model>
-      <a-entity light="color: #FFF;type: point; intensity: 0.3" position="0 9.5 25"></a-entity>
-       <a-gltf-model src="#light" scale="0.05 0.05 0.05" position="0 9.9 -25"></a-gltf-model>
-      <a-entity light="color: #FFF;type: point; intensity: 0.3" position="0 9.5 -25"></a-entity>
-
-      <a-plane position="0 5 -50" src="#wall-left-right" material="roughness: 1; metalness:0.8" repeat="3 3" height="10" width="10" rotation="0 0 0"></a-plane>
-      <a-plane position="0 5 50" src="#wall-left-right" material="roughness: 1; metalness:0.8" repeat="3 3" height="10" width="10" rotation="0 180 0"></a-plane>
-      <a-plane position="0 10 0" src="#wall-up" material="roughness: 1; metalness:0.5" repeat="3 30" height="100" width="10" rotation="90 0 0"></a-plane>
-      <a-plane position="-5 5 0" src="#wall-left-right" material="roughness: 1; metalness:0.5" repeat="3 30" height="100" width="10" rotation="0 90 90"></a-plane>
-      <a-plane position="5 5 0" src="#wall-left-right" material="roughness: 1; metalness:0.5" repeat="3 30" height="100" width="10" rotation="0 -90 90"></a-plane>
-      <a-plane src="#carpet" material="roughness: 1; metalness:0.5" repeat="5 50" height="100" width="10" rotation="-90 0 0"></a-plane>
-
-      <a-gltf-model src="#picture_frame" scale="0.7 0.7 0.7" material="roughness: 1; metalness:1" position="0 5 49.9" rotation="45 180 0"></a-gltf-model>
-      <a-gltf-model src="#picture_frame2" scale="1.5 3 1.5" material="roughness: 1; metalness:1" position="0 2.5 -46.9" rotation="0 0 0"></a-gltf-model>    
-      <a-gltf-model src="#corkboard" scale="3 3 3" material="roughness: 1; metalness:1" position="0 1 25" rotation="0 90 0"></a-gltf-model> 
-
-      <a-text value="Google Blocks" align="center" position="4.9999 4.5 0" rotation="0 -90 0"></a-text>
-      <a-entity cursor-listener>
-      <a-gltf-model material="roughness: 1; metalness:0.5" id="google-blocks" src="#door" scale="0.02 0.02 0.02" position="5 2.1 0"></a-gltf-model>
-      </a-entity>
-      <a-text value="Basic" align="center" position="4.9999 4.5 5" rotation="0 -90 0"></a-text>
-      <a-entity cursor-listener>
-      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic" src="#door" scale="0.02 0.02 0.02" position="5 2.1 5"></a-gltf-model>
-      </a-entity>
-      <a-text value="Basic-2" align="center" position="4.9999 4.5 10" rotation="0 -90 0"></a-text>
-      <a-entity cursor-listener>
-      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic-2" src="#door" scale="0.02 0.02 0.02" position="5 2.1 10"></a-gltf-model>
-      </a-entity>
-      <a-text value="Basic-4" align="center" position="4.9999 4.5 15" rotation="0 -90 0"></a-text>
-      <a-entity cursor-listener>
-      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic-4" src="#door" scale="0.02 0.02 0.02" position="5 2.1 15"></a-gltf-model>
-      </a-entity>
-      <a-text value="Basic-AR" align="center" position="4.9999 4.5 20" rotation="0 -90 0"></a-text>
-      <a-entity cursor-listener>
-      <a-gltf-model material="roughness: 1; metalness:0.5" id="basic-ar" src="#door" scale="0.02 0.02 0.02" position="5 2.1 20"></a-gltf-model>
-      </a-entity>
-      <a-text value="Shooter" align="center" position="-4.9999 4.5 0" rotation="0 90 0"></a-text>
-      <a-entity cursor-listener>
-      <a-gltf-model material="roughness: 1; metalness:0.5" id="shooter" src="#door" scale="0.02 0.02 0.02" position="-5 2.1 0" rotation="0 180 0"></a-gltf-model>
-      </a-entity>
-      <!-- "button" -->
-    </a-scene>
-
-    <script>
-      window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')
-        host = "http://127.0.0.1"
-
-        AFRAME.registerComponent('cursor-listener', {
-  init: function () {
-    this.el.addEventListener('click', function (evt) {
-      let playerPos = document.querySelector("#player").object3D.position
-      let targetPos = evt.target.object3D.position
-      let distance = playerPos.distanceTo(targetPos)
-      if (distance < 3) {
-      window.location.href =  host + ':8080/room/'+evt.target.id+'.html';
-      }
-    });
-  }
-});
-        
-      // Define custom schema for syncing avatar color, set by random-color
-      NAF.schemas.add({
-        template: '#avatar-template',
-        components: [
-          'position',
-          'rotation',
-          {
-            selector: '.head',
-            component: 'material',
-            property: 'color'
-          }
-        ]
-      });
-
-
-
-      // Called by Networked-Aframe when connected to server
-      function onConnect () {
-        console.log("onConnect", new Date());
-      }
-
-      // On mobile remove elements that are resource heavy
-      var isMobile = AFRAME.utils.device.isMobile();
-
-      if (isMobile) {
-        var particles = document.getElementById('particles');
-        particles.parentNode.removeChild(particles);
-      }
+    {{!-- bootstrap import --}}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     
-    </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    <style>
+      .container {
+        width: 100%;
+        padding: 0px;
+        margin: 0px;
+      }
+      .navigation-header {
+        color: white !important;
+        font-weight: bold;
+      }
+      .signFormContainer {
+        margin: auto;
+        width: 50%;
+      }
+
+      .signForm {
+        font-size: 1.2em; 
+      }
+
+      .welcome-user {
+        margin-right: 10px;
+      }
+
+      .user-name {
+        font-weight: bold;
+        color: white
+      }
+
+      .signForm {
+        padding-top: 10px;
+      }
+
+      .formSubmitButton {
+        width: 100%
+      }
+
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark navbar-expand-sm bg-dark justify-content-between">
+      <a href="/lobby" class="navbar-brand navigation-header" title="main lobby">Vus</a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/vrmanager" title="Manage your personal VR space">Manage VR Space</a>
+          </li>
+        </ul>
+      </div>
+
+
+
+      <form class="form-inline">
+        {{#if user}}
+          <div class="navbar-text welcome-user"> Welcome Back, <span class="user-name">{{user.username}}</span> </div>
+          <button type="button" id="signOutButton" class="btn btn-info  my-2 my-sm-0" onclick="location.href='/logout'">
+            Log Out
+          </button> 
+        {{else}}
+          <button type="button" id="signInButton" class="btn btn-info  my-2 my-sm-0" onclick="location.href='/signin'">
+            Sign In
+          </button>          
+        {{/if}}
+      </form>
+    </nav>
+
+    {{#if error}}
+      <p class="alert alert-warning">{{error}}</p>
+    {{/if}}
+
+    {{#if notice}}
+      <p class="alert alert-info">{{notice}}</p>
+    {{/if}}
+
+    <!--where our other templates will insert-->
+    {{{body}}}
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
