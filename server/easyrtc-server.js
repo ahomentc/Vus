@@ -136,12 +136,12 @@ app.set('view engine', 'handlebars');
 
 //===============ROUTES===============
 
-//displays our homepage
+// displays our homepage
 app.get('/home', function(req, res){
   res.render('home', {user: req.session.user});
 });
 
-//
+// display lobby
 app.get('/lobby', function(req, res){
   let room = req.cookies['group_session_room'];
   if (req.session.user && room) {
@@ -149,12 +149,12 @@ app.get('/lobby', function(req, res){
   } else{
     res.render('lobby', {user: req.session.user});
   }
-  
+
+  delete  req.session.success;
 });
 
 //displays our signup page
 app.get('/signin', function(req, res){
-  console.log(req.session)
   let room = req.cookies['group_session_room'];
   if (req.session.user && room) {
     // if already signin, redirect to lobby page
@@ -167,20 +167,6 @@ app.get('/signin', function(req, res){
 app.get('/signup', function(req, res){
   res.render('signup');
 })
-
-//sends the request through our local signup strategy, and if successful takes user to homepage, otherwise returns then to signin page
-// app.post('/local-reg', passport.authenticate('local-signup', {
-//   successRedirect: '/lobby',
-//   failureRedirect: '/signin'
-//   })
-// );
-
-//sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
-// app.post('/login', passport.authenticate('local-signin', {
-//   successRedirect: 'lobby',
-//   failureRedirect: '/signin'
-//   })
-// );
 
 app.post('/local-reg', (req, res, next) => {
   passport.authenticate('local-signup', (err, user, info) => {
@@ -218,39 +204,53 @@ app.get('/vrmanager', (req, res) => {
   if(!req.session.user) {
     res.redirect('signin');
   } else {
-    res.render('vrspacemanager', {user: req.session.user})
+    res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: true})
   }
 });
 
 app.post('/uploadModel', (req, res) => {
+  if (req.session.user == null) {
+    res.redirect('signin');
+  }
   var form = new formidable.IncomingForm();
-  
+
+  // begin file parse
   form.parse(req, function(err, fields, files) {
-    res.writeHead(200, {'content-type': 'text/plain'});
-    res.write('received upload:\n\n');
-    res.end(util.inspect({fields: fields, files: files}));
+
   });
 
+  // when parsing ends:
   form.on('end', function(fields, files) {
     /* Temporary location of our uploaded file */
-    var temp_path = this.openedFiles[0].path;
+    var local_path = this.openedFiles[0].path;
     /* The file name of the uploaded file */
     var file_name = this.openedFiles[0].name;
-    /* Location where we want to copy the uploaded file */
-    var new_location = __dirname + '\\..\\uploadedFiles\\';
-    
-    fs.copyFile(temp_path, new_location + file_name, function(err) {  
-        if (err) {
-            console.error(err);
-        } else {
-            console.log("success!")
-        }
-    });
+
+    req.session.local_path = local_path;
+    req.session.file_name = file_name;
+
   });
 
+  res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: false});
   return;
-  // res.redirect('vrmanager');
-})
+});
+
+app.post('/addModelMetadata', (req, res) => {
+  if (req.session.user == null) {
+    res.redirect('signin');
+  }
+
+  funct.localUploadModel(req.session.user.username, req.session.file_name, req.body.description, 
+    req.body.tag, req.session.local_path);
+
+  // remove the cache from previous form
+  delete req.session.file_name;
+  delete req.session.local_path;
+
+  res.redirect('lobby');  
+  return;
+});
+
 
 //=====================================
 
