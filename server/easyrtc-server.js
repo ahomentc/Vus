@@ -208,6 +208,37 @@ app.get('/vrmanager', (req, res) => {
   }
 });
 
+
+app.get('/userconsole', (req, res) => {
+  if (!req.session.user){
+    res.redirect('signin');
+  } else {    
+    funct.localGetModels(req.session.user.username).then(
+      models => {
+        return res.render('userconsole', {user: req.session.user, env: models});
+      }
+    );
+
+
+  }
+});
+
+app.post('/removeFile', (req, res) => {
+  if (!req.session.user) {
+    res.redirect('signin');
+  } else {
+    funct.localRemoveModel(req.session.user.username, req.body.file).then(
+      result => {
+        if (result) {
+          res.redirect('userconsole');
+        } else {
+          console.log("Error in deleting");
+        }
+      }
+    );
+  }
+});
+
 app.post('/uploadModel', (req, res) => {
   if (req.session.user == null) {
     res.redirect('signin');
@@ -227,12 +258,9 @@ app.post('/uploadModel', (req, res) => {
     var file_name = this.openedFiles[0].name;
 
     req.session.local_path = local_path;
-    req.session.file_name = file_name;
-
+    
+    res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: false, fileName: file_name.split('.')[0]});
   });
-
-  res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: false});
-  return;
 });
 
 app.post('/addModelMetadata', (req, res) => {
@@ -240,15 +268,15 @@ app.post('/addModelMetadata', (req, res) => {
     res.redirect('signin');
   }
 
-  funct.localUploadModel(req.session.user.username, req.session.file_name, req.body.description, 
-    req.body.tag, req.session.local_path);
+  funct.localUploadModel(req.session.user.username, req.body.fileName + ".gltf", req.body.description, 
+    req.body.tag, req.session.local_path).then(
+      result => {
+        // remove the cache from previous form
+        delete req.session.local_path;
 
-  // remove the cache from previous form
-  delete req.session.file_name;
-  delete req.session.local_path;
-
-  res.redirect('lobby');  
-  return;
+        return res.redirect('lobby');  
+      }
+    );
 });
 
 

@@ -4,7 +4,7 @@
         <h3><label>Step 1: Upload Your 3D Model File </label></h3>
         <form id="uploadModelForm" action="/uploadModel" enctype="multipart/form-data" method="POST">
             <div class="form-group custom-file file-upload">
-                <input name="new_model" type="file" class="custom-file-input" id="customFile" />  
+                <input name="new_model" type="file" accept=".gltf" class="custom-file-input" id="customFile" />  
                 <label class="custom-file-label" for="customFile">Choose a File</label>
             </div>
             <button type="submit" class="btn btn-primary">Upload</button>
@@ -12,6 +12,10 @@
         {{else}}
         <h3><label>Step 2: Add File Basic Information </label></h3>
         <form action="/addModelMetadata" method="POST">
+            <div class="form-group">
+                <label>File Name (*.gltf):</label>
+                <input type="text" class="form-control" name="fileName" value="{{fileName}}" />
+            </div>
             <div class="form-group">
                 <label>Environment Description:</label>
                 <input id="envDescription" type="text" class="form-control" name="description" 

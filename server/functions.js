@@ -4,6 +4,7 @@ var bcrypt = require('bcryptjs'),
 
 var fs = require('fs');
 var AWS = require('aws-sdk');
+var path = require('path');
 
 const AWSAccessKeyId = 'AKIAIDFOHMBZUAZSXELQ';
 const AWSSecretKey = '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';
@@ -15,6 +16,7 @@ AWS.config.update({
 
 var s3 = new AWS.S3();
 const bucketName = "vusbutterworth";
+const VREnvironmentsDir = "tempEnvs";
 var isBucketValid = false; 
 
 /**
@@ -150,6 +152,8 @@ exports.localAuth = function (username, password) {
 
 exports.localUploadModel = function(username, fileName, envDescription, envTag, localFilePath) {
 
+  var deferred = Q.defer();
+
   var params = {
     Bucket: bucketName,
     Body: fs.ReadStream(localFilePath),
@@ -160,10 +164,8 @@ exports.localUploadModel = function(username, fileName, envDescription, envTag, 
     // handle error
     if (err) {
       console.log("Error", err);
-    }
-  
-    // successful upload to s3
-    if (data) {
+      deferred.resolve(false);
+    } else if (data) {
       console.log("Uploaded in:", data.Location);
       // store file metadata info into local storage
       MongoClient.connect(mongodbUrl, function(err, db) {
@@ -193,11 +195,115 @@ exports.localUploadModel = function(username, fileName, envDescription, envTag, 
                   db.close();
               });
             }
+            deferred.resolve(true);
           })
 
       });
     }
   });
+  return deferred.promise;
+}
+
+exports.localRemoveModel = function(username, fileName) {
+
+  var deferred = Q.defer();
+
+  var params = {
+    Bucket: bucketName,
+    Key: username + "/" + fileName
+  }
+
+  s3.deleteObject(params, function(err, data) {
+    if (err) {
+      console.log(err);
+      deferred.resolve(false);
+    } else if (data) {
+      console.log(data);
+      MongoClient.connect(mongodbUrl, function(err, db) {
+        var environmentCollection = db.collection("localEnvironments");
+        environmentCollection.deleteOne({'username': username, "fileName":fileName})
+          .then(function(res) {
+            if (err) throw err;
+            console.log(`${fileName} for user ${username} is deleted`);
+            deferred.resolve(true);
+            db.close();
+          });
+      });
+    }
+  })
+
+  return deferred.promise;
+}
+
+/**
+ * This method will load VR environment gltf files from S3 buckets
+ *  and load them into a temporary folder. These environments will
+ *  be dynamically generated in the VR lobby when the user enters
+ *  the 3D environments.
+ * 
+ * username => string
+ * fileNames => [file1, file2, file3] (.gltf files to display in the VR space)
+ */
+exports.localGetVRFilesFromS3 = function(username, fileNames) {
+  var deferred = Q.defer();
+
+  fileNames.forEach(
+    fileName => {
+      var params = {
+        Bucket: bucketName,
+        Key: username + "/" + fileName
+      }
+    
+      const file = fs.createWriteStream(`./${VREnvironmentsDir}/${fileName}`);
+    
+      s3.getObject(params, function(err, data) {
+        if (err) {
+          console.log(err);
+        } else if (data) {
+          console.log(data);
+          file.write(data.Body, () => {
+            file.end();
+          });
+        }
+      });
+    }
+  )
+
+  deferred.resolve(true);
+  return deferred.promise;
+}
+
+/**
+ * This method will remove all the existing VR environments in our temporary VR
+ *  environment folders. This method will tend to be called if the users specify
+ *  the new environments that they want to visit other than the default ones.
+ */
+exports.localRemoveVRFilesInTemp = function() {
+  const directory = `./${VREnvironmentsDir}`;
+  fs.readdir(directory, (err, files) => {
+    if (err) throw err;
+    for (const file of files) {
+      fs.unlink(path.join(directory, file), err => {
+        if (err) throw err;
+      })
+    }
+  })
+}
+
+/**
+ * Find all the VR environments uploaded by the user
+ */
+exports.localGetModels = function(username) {
+  var deferred = Q.defer();
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    var environmentCollection = db.collection("localEnvironments");
+    environmentCollection.find({'username': username}).toArray(function(err, res) {
+      deferred.resolve(res);
+      db.close();
+    })
+  });
+
+  return deferred.promise;
 }
 
 
