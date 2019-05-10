@@ -18,6 +18,7 @@ var exphbs = require('express-handlebars'),
     FacebookStrategy = require('passport-facebook');
 
 const formidable = require('formidable')
+const crypto = require('crypto')
 
 // connect to the database
 mongoose.connect('mongodb://localhost/my_db');
@@ -98,14 +99,13 @@ passport.use('local-signup', new LocalStrategy(
 
 //===============EXPRESS================
 // Configure Express
-app.use(logger('combined'));
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(methodOverride('X-HTTP-Method-Override'));
-app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
+
+app.use(express.cookieParser());
+app.use(express.bodyParser());
+app.use(express.session({ secret: 'anything' }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(app.router);
 
 // Session-persisted message middleware
 app.use(function(req, res, next){
@@ -247,12 +247,17 @@ app.post('/uploadModel', (req, res) => {
 // Instead of storing room code in cookies, we'll now set them in the database.
 // This will increase security. We'll save a session ID in the cookie.
 
-app.post('/createUserRoom', (req, res) => {
+app.get('/createUserRoom', (req, res) => {
     // generate a random hex roomname
     let randomInt = Math.floor((Math.random() * 10000000) + 1);
-    let room_name = randomInt.toString(16);
+    let room_id = randomInt.toString(16);
 
-    // TODO: Save room_name in database under logged in user's account
+    // TODO: Save room_id in database under logged in user's account
+    // req.session.user.room = room_id;
+    // console.log(req.session.user.room)
+    // req.session.user.room = room_id
+    const vus_username = req.cookies['vus_username'];
+    funct.setUserRoom(vus_username,room_id);
 
     // create a session id to be stored in cookie for user authentication
     var sha = crypto.createHash('sha256');
@@ -260,15 +265,33 @@ app.post('/createUserRoom', (req, res) => {
     sessionID =  sha.digest('hex');
 
     // store in cookie
-    res.cookie('group_session_auth', sessionID.toString());
+    res.cookie('vus_group_session_auth', sessionID.toString());
+    res.cookie('vus_username',req.session.user.username)
 
     if (req.session.user) {
-      res.render('lobby', {group_session_room: room_name, user: req.session.user});
+      res.render('lobby', {group_session_room: room_id, user: req.session.user});
     } else {
-      res.render('lobby', {group_session_room: room_name});
+      res.render('lobby', {group_session_room: room_id});
     }
+});
 
-
+app.get('/getUserRoom',(req,res) => {
+    // we'll only get the cookies that vus sets, which is good. no problem here.
+    const vus_group_session_auth = req.cookies['vus_group_session_auth'];
+    const vus_username = req.cookies['vus_username'];
+    funct.getUserRoom(vus_username, vus_group_session_auth)
+    .then(function (room) {
+      if (room) {
+        console.log("ROOM IS: " + room);
+        res.send(room);
+      }
+      if (!user) {
+        console.log("NO ROOM SET");
+      }
+    })
+    .fail(function (err){
+      console.log(err.body);
+    });
 });
 
 app.post('/uploadModel', (req, res) => {

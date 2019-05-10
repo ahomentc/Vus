@@ -1,0 +1,178 @@
+<html style="background-color: black">
+  <head>
+    <meta charset="utf-8">
+    <title>Dev Example — Networked-Aframe</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+
+    <script src="../vr_group_session.js"></script>   
+    <script src="../aframe.min.js"></script> 
+    <script src="../build.js"></script>
+    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+    <!-- <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script> -->
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script>
+    <script src='../kinematic-body.js'></script>
+<!--     <script src="js/spawn-in-circle.component.js"></script>
+ -->
+  </head>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <a-scene physics="gravity:0;"  networked-scene="
+      room: dev;
+      debug: true;
+      adapter: wseasyrtc;
+      connectOnLoad: false;
+      audio: true;
+    ">
+      <a-assets>
+        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
+        <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+
+        <!-- Templates -->
+
+        <!-- Avatar -->
+        <template id="avatar-template">
+          <a-entity class="avatar">
+            <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
+
+            <a-asset-item id="raccoon-obj" src="../assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="../assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+
+            <a-asset-item id="scene-obj" src="../assets/Campfire_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="scene-mtl" src="../assets/Campfire_Blocks/materials.mtl"></a-asset-item>
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+
+            <!-- <a-sphere class="head"
+              color="#ffffff"
+              scale="0.45 0.5 0.4"
+            ></a-sphere>
+            <a-entity class="face"
+              position="0 0.05 0"
+            >
+              <a-sphere class="eye"
+                color="#efefef"
+                position="0.16 0.1 -0.35"
+                scale="0.12 0.12 0.12"
+              >
+                <a-sphere class="pupil"
+                  color="#000"
+                  position="0 0 -1"
+                  scale="0.2 0.2 0.2"
+                ></a-sphere>
+              </a-sphere>
+              <a-sphere class="eye"
+                color="#efefef"
+                position="-0.16 0.1 -0.35"
+                scale="0.12 0.12 0.12"
+              >
+                <a-sphere class="pupil"
+                  color="#000"
+                  position="0 0 -1"
+                  scale="0.2 0.2 0.2"
+                ></a-sphere>
+              </a-sphere> -->
+            </a-entity>
+          </a-entity>
+        </template>
+
+
+        <!-- /Templates -->
+      </a-assets>
+
+      <a-entity position="24.975 1.6 1.800" rotation="-6.073 38.388 0" id="player" networked="template:#avatar-template;attachTemplateToLocal:false;" camera="userHeight: 1.6" spawn-in-circle="radius:3" wasd-controls look-controls>
+        <a-sphere class="head"
+          visible="false"
+          random-color
+        ></a-sphere>
+      </a-entity>
+
+      <a-gltf-model id="room" position="0 0 0" scale=".0022 .0022 .0022" src="../assets/gallary/scene.gltf"></a-gltf-model>
+
+      <a-gltf-model id="door" position="-0.935 -0.132 -1.725" scale="0.02 0.02 0.02" src="../assets/door/scene.gltf" gltf-model="../assets/door/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="door-2" position="6.334 -0.132 -1.725" scale="0.02 0.02 0.02" src="../assets/door/scene.gltf" gltf-model="../assets/door/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="door-3" position="2.751 -0.132 1.358" scale="0.02 0.02 0.02" src="../assets/door/scene.gltf" gltf-model="../assets/door/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="door-4" position="11.991 -0.132 1.358" scale="0.02 0.02 0.02" src="../assets/door/scene.gltf" gltf-model="../assets/door/scene.gltf"></a-gltf-model>
+      <!-- <a-gltf-model id="door-5" position="28.406 -0.084 3.144" scale="0.019 0.02 0.02" src="../assets/door/scene.gltf" gltf-model="../assets/door/scene.gltf" rotation="0 61.77 0"></a-gltf-model> -->
+      <!-- <a-gltf-model id="door-6" position="27.066 -0.084 -5.635" scale="0.019 0.02 0.02" src="../assets/door/scene.gltf" gltf-model="../assets/door/scene.gltf" rotation="0 -45.050000000000004 0"></a-gltf-model> -->
+
+      <a-entity light="color: #222; intensity: 5; type: ambient;" visible=""></a-entity>
+      <a-entity light="color: #222; intensity: 1.5" position="5 5 5"></a-entity>
+
+      <!-- Ground -->
+      <!-- we've made the ground at height 2. Aweful but works for now -->
+      <!-- <a-grid static-body material="visible:false;"></a-grid> -->
+
+      <!-- Top floor ground -->
+      <!-- <a-entity static-body="sphereRadius:NaN" position="14.604 10.397 -1.711" geometry="depth:0.07;height:15.74;width:18.44" material="visible:false" velocity="" rotation="90 0 0" scale="1.148 -1.493 1.16"></a-entity> -->
+
+      <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
+
+      <a-camera kinematic-body-hover rotation="-6.073 38.388 0" position="24.974 1.6 1.819"> 
+        <a-entity cursor="fuse: false"  position="0 0 -1"   geometry="primitive:ring; radiusInner: 0.02; radiusOuter: 0.03"  material="color: black; shader: flat"></a-ring>
+      </a-camera>
+      
+      <!-- Wall -->
+      <a-entity static-body="sphereRadius:NaN" position="-5.582 2.297 -2.049" scale="6.334 5.881 -0.017" geometry="" velocity="" material="visible:false"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="2.739 2.297 -1.926" scale="4.589 5.881 -0.017" geometry="" velocity="" material="visible:false"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="11.591 2.217 -1.925" scale="7.48 5.881 -0.017" geometry="" velocity="" material="visible:false"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="7.404 2.217 2.16" scale="6.296 5.881 -0.017" geometry="" velocity="" material="visible:false"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="-3.576 2.217 2.081" scale="9.84 5.881 -0.017" geometry="" velocity="" material="visible:false"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="14.225 2.217 1.872" scale="1.896 5.881 -0.017" geometry="" velocity="" material="visible:false"></a-entity>
+
+      <!-- Cover -->
+      <a-entity position="3.606 3.108 2.887" scale="22.4 5.881 2.679" geometry="" material="color:#131313;side:double" id="cover"></a-entity>
+      <a-entity position="3.606 3.108 -3.17" scale="22.4 5.881 2.679" geometry="" material="side:double;color:#131313" id="cover-2"></a-entity>
+
+      <!-- Portals -->
+      <a-entity static-body="sphereRadius:NaN" position="12.241 1.561 2.8" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_6"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="6.342 1.561 -3.061" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_2"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="2.864 1.561 2.8" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_5"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="-0.95 1.561 -3.061" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_4"></a-entity>
+
+    </a-scene>
+
+    <script>
+        host = "http://127.0.0.1"
+        // host = "http://192.168.0.128"
+        document.querySelector('#room_6').addEventListener("collide", (e)=>{
+            window.location.href =  host + ':8080/room/house/room_6.html';
+        });
+        document.querySelector('#room_2').addEventListener("collide", (e)=>{
+            window.location.href =  host + ':8080/room/house/room_2.html';
+        });
+        document.querySelector('#room_5').addEventListener("collide", (e)=>{
+            window.location.href =  host + ':8080/room/house/room_5.html';
+        });
+        document.querySelector('#room_4').addEventListener("collide", (e)=>{
+            window.location.href =  host + ':8080/room/house/room_4.html';
+        });
+        // document.querySelector('#room_1').addEventListener("click", (e)=>{
+            // alert("Teleporting!");
+        // });
+    </script>
+
+    <script>
+      // Define custom schema for syncing avatar color, set by random-color
+      NAF.schemas.add({
+        template: '#avatar-template',
+        components: [
+          'position',
+          'rotation',
+          {
+            selector: '.head',
+            component: 'material',
+            property: 'color'
+          }
+        ]
+      });
+
+      // Called by Networked-Aframe when connected to server
+      function onConnect () {
+        console.log("onConnect", new Date());
+      }
+
+    </script>
+  </body>
+</html>
