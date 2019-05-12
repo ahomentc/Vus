@@ -13,11 +13,12 @@ var exphbs = require('express-handlebars'),
     session = require('express-session'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
-    TwitterStrategy = require('passport-twitter'),
-    GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
-    
-const formidable = require('formidable')
+
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
+const keys = require('./keys');
+const formidable = require('formidable');
 
 // connect to the database
 mongoose.connect('mongodb://localhost/my_db');
@@ -72,6 +73,7 @@ passport.use('local-signin', new LocalStrategy(
     });
   }
 ));
+
 // Use the LocalStrategy within Passport to register/"signup" users.
 passport.use('local-signup', new LocalStrategy(
   {passReqToCallback : true}, //allows us to pass back the request to the callback
@@ -291,6 +293,89 @@ app.post('/addModelMetadata', (req, res) => {
       }
     );
 });
+
+//===============External Strategies====================
+
+// Use the GoogleStrategy within Passport.
+//   Strategies in passport require a `verify` function, which accept
+//   credentials (in this case, a token, tokenSecret, and Google profile), and
+//   invoke a callback with a user object.
+passport.use(new GoogleStrategy({
+  clientID: keys.google.clientID,
+  clientSecret: keys.google.clientSecret,
+  callbackURL: "http://localhost:8080/auth/google/callback"
+}, (accessToken, refreshToken, profile, done) => {
+  funct.localAuth(profile.displayName, profile.id)
+  .then(function (user) {
+    if (user) {
+      done(null, user);
+    }
+    if (!user) {
+      funct.localReg(profile.displayName, profile.id).then(function(user) {
+        if (user) {
+          done(null, user);
+        } else {
+          done(null, user);
+        }
+      });
+    }
+  })
+  .fail(function (err){
+    console.log(err.body);
+  });
+}));
+
+
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile']
+}));
+
+app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
+  if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
+  else {
+    req.session.user = req.user;
+    res.redirect('lobby');
+  }
+})
+
+
+// facebook
+passport.use(new FacebookStrategy({
+  clientID: keys.facebook.clientID,
+  clientSecret: keys.facebook.clientSecret,
+  callbackURL: "http://localhost:8080/auth/facebook/callback"
+}, (accessToken, refreshToken, profile, cb) => {
+  funct.localAuth(profile.displayName, profile.id)
+  .then(function (user) {
+    if (user) {
+      cb(null, user);
+    }
+    if (!user) {
+      funct.localReg(profile.displayName, profile.id).then(function(user) {
+        if (user) {
+          cb(null, user);
+        } else {
+          cb(null, user);
+        }
+      });
+    }
+  })
+  .fail(function (err){
+    console.log(err.body);
+  });
+}));
+
+app.get('/auth/facebook', passport.authenticate('facebook', {
+  scope: ['email']
+}));
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook'), (req, res) => {
+  if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
+  else {
+    req.session.user = req.user;
+    res.redirect('lobby');
+  }
+})
 
 
 //=====================================

@@ -6,8 +6,10 @@ var fs = require('fs');
 var AWS = require('aws-sdk');
 var path = require('path');
 
-const AWSAccessKeyId = 'AKIAIDFOHMBZUAZSXELQ';
-const AWSSecretKey = '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';
+const keys = require('./keys');
+
+const AWSAccessKeyId = keys.aws.AWSAccessKeyId;
+const AWSSecretKey = keys.aws.AWSSecretKey;
 
 AWS.config.update({
   accessKeyId: AWSAccessKeyId,
