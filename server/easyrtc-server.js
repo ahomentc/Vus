@@ -17,9 +17,7 @@ var exphbs = require('express-handlebars'),
     GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
     
-var util = require('util');
 const formidable = require('formidable')
-var fs = require('fs');
 
 // connect to the database
 mongoose.connect('mongodb://localhost/my_db');
@@ -144,10 +142,15 @@ app.get('/home', function(req, res){
 // display lobby
 app.get('/lobby', function(req, res){
   let room = req.cookies['group_session_room'];
+  console.log("Room = " + room);
   if (req.session.user && room) {
     res.render('lobby', {group_session_room:room, user: req.session.user});
-  } else{
+  } else if (req.session.user){
     res.render('lobby', {user: req.session.user});
+  } else if (room) {
+    res.render('lobby', {group_session_room: room});
+  } else {
+    res.render('lobby');
   }
 
   delete  req.session.success;
@@ -156,10 +159,13 @@ app.get('/lobby', function(req, res){
 //displays our signup page
 app.get('/signin', function(req, res){
   let room = req.cookies['group_session_room'];
+  console.log("Room = " + room);
   if (req.session.user && room) {
     // if already signin, redirect to lobby page
     res.render('lobby', {group_session_room:room, user: req.session.user});
   } else {
+    // reset previous group session cookie if not entering as the same user
+    res.clearCookie('group_session_room');
     res.render('signin');
   }
 });
@@ -182,6 +188,13 @@ app.post('/login', (req, res, next) => {
     if (err) { return res.render('signin', {error: 'Sign up exception'}) }
     if (!user) { return res.render('signin', {error: 'User does not exist'})}
     req.session.user = user;
+
+    // create a new room ID when the user logins
+    let randomInt = Math.floor((Math.random() * 10000000) + 1);
+    let room_name = randomInt.toString(16);
+    // send a cookie
+    res.cookie('group_session_room', room_name.toString());
+    
     return res.redirect('lobby');
   })(req, res, next);
 });

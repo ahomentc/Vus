@@ -17,7 +17,6 @@ AWS.config.update({
 var s3 = new AWS.S3();
 const bucketName = "vusbutterworth";
 const VREnvironmentsDir = "tempEnvs";
-var isBucketValid = false; 
 
 /**
  * This method will check if the vus bucket already exist
@@ -40,7 +39,6 @@ var checkIfVusBucketExist = () => {
       throw new Error(`S3 error: ` + err.stack);
     } else {
       // already has the bucket
-      isBucketValid = true;
       return;
     }
   });
@@ -61,9 +59,6 @@ var createVusBucket = () => {
 
   s3.createBucket(params, function(err, data) {
     if (err) console.log(err, err.stack);
-    else {
-      isBucketValid = true;
-    }
   });
 };
 
@@ -308,7 +303,7 @@ exports.localGetModels = function(username) {
 
 
 /**
- * Storage Design:
+ * Interface Design:
  * 
  * user =>
  *  username: string
@@ -322,6 +317,14 @@ exports.localGetModels = function(username) {
  *  description: string
  *  uploaderName: string
  *  tag: string
+ * 
+ * group =>
+ *  directories: string[], // list of tags which will be used to find all environments in that tag
+ *  id: string
+ * 
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * Storage Design:
  * 
  * currently make environment name unique for each user (cannot have 2 iphone.txt under a single
  *  user's name, but can have iphone.txt for 2 different users)
