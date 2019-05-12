@@ -12,7 +12,25 @@
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script>
     <script src='../kinematic-body.js'></script>
-
+    <script>
+      portal_data={"zillow1":':8080/room/house/zillowLobby.html',
+                   "theater":':8080/room/house/theater.html',
+                   "zillow2":':8080/room/house/zillowLobby.html',
+                   "zillow3":':8080/room/house/zillowLobby.html',
+                   "zillow4":':8080/room/house/zillowLobby.html',
+                   "zillow5":':8080/room/house/zillowLobby.html',
+                   "zillow6":':8080/room/house/zillowLobby.html',
+                   "zillow7":':8080/room/house/zillowLobby.html',
+                   "zillow8":':8080/room/house/zillowLobby.html',
+                   "zillow9":':8080/room/house/zillowLobby.html',
+                   "zillow10":':8080/room/house/zillowLobby.html',
+                   "zillow11":':8080/room/house/zillowLobby.html',
+                   "zillow12":':8080/room/house/zillowLobby.html',
+                   "zillow13":':8080/room/house/zillowLobby.html',
+                   "zillow14":':8080/room/house/zillowLobby.html',
+                   "zillow15":':8080/room/house/zillowLobby.html'
+                  }; 
+    </script>
   </head>
 
   <body>
@@ -93,7 +111,8 @@
       <a-entity light="color:#0a1b22;intensity:2.4100000000000006" position="5 13.902 5"></a-entity>
       <a-entity light="intensity:2.3400000000000007;color:#0a1b22" position="4.857 4.219 5"></a-entity>
 
-      <!-- Portals -->
+      <!--
+
       <a-entity position="1.832 3.302 -8.765" rotation="0 -12.76 0" scale="2.194 3.606 0.086" geometry="" material="opacity:.6; emissive:#040404;side:double;color:#fff9ed"></a-entity>
       <a-entity static-body="sphereRadius:NaN" position="1.832 3.302 -9.761" rotation="0 -12.76 0" scale="2.194 3.606 0.086" geometry="" material="opacity:0.6;emissive:#040404;side:double;color:#fff9ed;visible:false" id="zillow" velocity=""></a-entity>
       <a-entity position="1.852 4.25 -8.578" rotation="0 -8.136 0" scale="10 10 10" text__text_portal_1="color:#1f2b5d;align:center;value:Zillow"></a-entity>
@@ -101,7 +120,7 @@
 
       <a-entity position="-1.934 3.302 -8.968" rotation="0 14.896902673401405 0" scale="2.194 3.606 0.086" geometry="" material="opacity:0.7;side:double;color:#fff9ed;emissive:#040404"></a-entity>
       <a-entity position="-1.912 4.25 -8.846" rotation="0 18.96490301883025 0" scale="10 10 10" text__text_portal_1="value:Theatre;color:#1f2b5d;align:center"></a-entity>
-
+ Portals -->
 
       <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
 
@@ -114,15 +133,34 @@
     <script>
         host = "http://127.0.0.1"
         // host = "http://192.168.0.128"
-        document.querySelector('#zillow').addEventListener("collide", (e)=>{
-            window.location.href =  host + ':8080/room/house/zillowLobby.html';
-        });
-        document.querySelector('#theater').addEventListener("collide", (e)=>{
-            window.location.href =  host + ':8080/room/house/theater.html';
-        });
-        // document.querySelector('#house1').addEventListener("click", (e)=>{
-            // alert("Teleporting!");
-        // });
+        let scene=document.getElementsByTagName("a-scene")[0];
+        let counter=0;
+        for(i in portal_data)
+        {
+          let angle=11+counter*22.5;
+          let x=-9.0946*Math.sin(2*angle*Math.PI/360);
+          let z=-9.0946*Math.cos(2*angle*Math.PI/360);
+          var portal=document.createElement("a-box");
+          portal.setAttribute("position",x+" 3.3 "+z);
+          portal.setAttribute("rotation","0 "+angle+" 0");
+          portal.setAttribute("scale","2.194 3.606 0.086");
+          portal.setAttribute("static-body","sphereRadius:NaN");
+          portal.setAttribute("id",i);
+          portal.setAttribute("material","opacity:.6; emissive:#040404;side:double;color:#fff9ed");
+          portal.addEventListener("collide", (e)=>{
+            window.location.href =  host + portal_data[i];
+          });
+          scene.appendChild(portal);
+          x=-9*Math.sin(2*angle*Math.PI/360);
+          z=-9*Math.cos(2*angle*Math.PI/360)
+          var title=document.createElement("a-entity");
+          title.setAttribute("position",x+" 4.364 "+z);
+          title.setAttribute("rotation","0 "+angle+" 0");
+          title.setAttribute("scale","10 10 10");
+          title.setAttribute("text__text_portal_1","color:#1f2b5d;align:center;value:"+i);
+          scene.appendChild(title);
+          counter++;
+        }
     </script>
 
     <script>
