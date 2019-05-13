@@ -232,6 +232,30 @@ exports.localRemoveModel = function(username, fileName) {
   return deferred.promise;
 }
 
+exports.findEnvs = function(directoryNames) {
+  var deferred = Q.defer();
+
+  console.log("In find Envs for directoryNames: " + directoryNames);
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    var environmentCollection = db.collection("localEnvironments");
+    const ORQuery = [];
+    directoryNames.forEach(
+      directory => {
+        ORQuery.push({'tag':directory});
+      }
+    )
+
+    environmentCollection.find({
+      "$or": ORQuery
+    }).toArray(function(err, res){
+      db.close();
+      deferred.resolve(res);
+    });
+  })
+
+  return deferred.promise;
+}
+
 /**
  * This method will load VR environment gltf files from S3 buckets
  *  and load them into a temporary folder. These environments will
@@ -241,18 +265,16 @@ exports.localRemoveModel = function(username, fileName) {
  * username => string
  * fileNames => [file1, file2, file3] (.gltf files to display in the VR space)
  */
-exports.localGetVRFilesFromS3 = function(username, fileNames) {
+exports.localGetVRFilesFromS3 = function(environmentList) {
   var deferred = Q.defer();
 
-  fileNames.forEach(
-    fileName => {
+  environmentList.forEach(
+    env => {
       var params = {
         Bucket: bucketName,
-        Key: username + "/" + fileName
+        Key: env.username + "/" + env.fileName
       }
-    
-      const file = fs.createWriteStream(`./${VREnvironmentsDir}/${fileName}`);
-    
+      const file = fs.createWriteStream(`./${VREnvironmentsDir}/${env.fileName}`);
       s3.getObject(params, function(err, data) {
         if (err) {
           console.log(err);
@@ -264,7 +286,7 @@ exports.localGetVRFilesFromS3 = function(username, fileNames) {
         }
       });
     }
-  )
+  );
 
   deferred.resolve(true);
   return deferred.promise;
@@ -303,6 +325,170 @@ exports.localGetModels = function(username) {
   return deferred.promise;
 }
 
+// ========================================================================
+// Methods for storing the information about each group:
+
+exports.localCheckGroupExist = function(groupID) {
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    const groupCollection = db.collection("localGroups");
+    groupCollection.findOne({'id' : groupID}).then(
+      res => {
+        if (err) throw err;
+        if (!res) {
+          deferred.resolve(false);
+        } else {
+          deferred.resolve(true);
+        }
+        db.close();
+      }
+    );
+  });
+
+  return deferred.promise;
+}
+
+exports.localCreateGroup = function(groupID, defaultDirectories) {
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    const groupCollection = db.collection("localGroups");
+    groupCollection.findOne({'id' : groupID}).then(
+      res => {
+        if (err) throw err;
+        if (!res) {
+
+          const group = {
+            directories: defaultDirectories,
+            id: groupID,
+            userCount: 1
+          }
+
+          console.log("CREATING GROUP:", group);
+
+          groupCollection.insert(group)
+            .then(function() {
+              db.close();
+              console.log("Resolved in insert")
+              deferred.resolve(group);
+            })
+        } else {
+          console.log("Resolved here")
+          deferred.resolve(false);
+          db.close();
+        }
+      }
+    );
+  });
+
+  return deferred.promise;
+}
+
+exports.localJoinGroup = function(groupID) {
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    const groupCollection = db.collection("localGroups");
+    groupCollection.findOne({'id' : groupID}).then(
+      res => {
+        if (err) throw err;
+        if (!res) {
+          deferred.resolve(false);
+          db.close();
+        } else {
+          groupCollection.findOneAndUpdate({'id': groupID}, {
+            $set: {
+              "directories": res.directories,
+              "id": groupID,
+              "userCount": res.userCount + 1
+            }
+          }, function(err, result) {
+            console.log("Update result");
+            console.log(result); 
+            deferred.resolve(result.value);
+            db.close();
+          });
+        }
+      }
+    )
+  });
+
+  return deferred.promise;
+}
+
+exports.localLeaveGroup = function(groupID) {
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    const groupCollection = db.collection("localGroups");
+    groupCollection.findOne({'id' : groupID}).then(
+      res => {
+        if (err) throw err;
+        if (!res) {
+          deferred.resolve(true);
+          db.close();
+        } else {
+          if (res.userCount > 1) {
+            groupCollection.updateOne({'id': groupID}, {
+              $set: {
+                "directories": res.directories,
+                "id": groupID,
+                "userCount": res.userCount - 1
+              }
+            }, function(err, result) {
+  
+              deferred.resolve(true);
+              db.close();
+            });
+          } else {
+            groupCollection.deleteOne({'id' : groupID}).then(res => {
+              if (err) throw err;
+              console.log(`groupID ${groupID} is deleted`);
+              deferred.resolve(true);
+              db.close();
+            })
+          }
+
+        }
+      }
+    )
+  });
+
+  return deferred.promise;
+}
+
+exports.localUpdateGroupEnvs = function(groupID, newEnvironments) {
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    const groupCollection = db.collection("localGroups");
+    groupCollection.findOne({'id' : groupID}).then(
+      res => {
+        if (err) throw err;
+        if (!res) {
+          deferred.resolve(false);
+          db.close();
+        } else {
+          groupCollection.updateOne({'id': groupID}, {
+            $set: {
+              "directories": newEnvironments,
+              "id": groupID,
+              "userCount": res.userCount
+            }
+          }, function(err, result) {
+
+            deferred.resolve(true);
+            db.close();
+          })
+        }
+      }
+    )
+  });
+
+  return deferred.promise;
+}
+
 
 /**
  * Interface Design:
@@ -322,7 +508,8 @@ exports.localGetModels = function(username) {
  * 
  * group =>
  *  directories: string[], // list of tags which will be used to find all environments in that tag
- *  id: string
+ *  id: string,
+ *  userCount: number // number of user in this group (if reaches 0, delete this group in the DB)
  * 
  * ------------------------------------------------------------------------------------------------
  * 

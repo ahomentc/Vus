@@ -11,6 +11,18 @@
                         Enter VR Experience
                     </a>
                 </div>
+                <div>
+                    {{#each group_map}}
+                    <div>
+                        <b>{{@key}}</b>
+                        {{#each this}}
+                            <div>
+                                - {{this.fileName}}
+                            </div>
+                        {{/each}}
+                    </div>
+                    {{/each}}
+                </div>
             </h2>
         </div>
     </div>

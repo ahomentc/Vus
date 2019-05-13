@@ -143,19 +143,56 @@ app.get('/home', function(req, res){
 
 // display lobby
 app.get('/lobby', function(req, res){
-  let room = req.cookies['group_session_room'];
+  const room = req.cookies['group_session_room'];
   console.log("Room = " + room);
-  if (req.session.user && room) {
-    res.render('lobby', {group_session_room:room, user: req.session.user});
-  } else if (req.session.user){
-    res.render('lobby', {user: req.session.user});
-  } else if (room) {
-    res.render('lobby', {group_session_room: room});
-  } else {
-    res.render('lobby');
-  }
+  const room_types = req.cookies['group_room_types'];
+  console.log(room_types);
 
-  delete  req.session.success;
+  funct.localCheckGroupExist(room).then(
+    value => {
+      console.log('group exist = ' + value);
+      if (value && room_types) {
+        const resultMap = {};
+        funct.findEnvs(room_types).then(resultList => {
+            console.log('find envs');
+            console.log(resultList);
+            funct.localGetVRFilesFromS3(resultList).then(
+              () => console.log("Load from S3 success")
+            );
+            
+            resultList.forEach(environment => {
+              if(resultMap[environment.tag]) {
+                resultMap[environment.tag].push(environment);
+              } else {
+                resultMap[environment.tag] = [environment];
+              }
+            });
+
+            req.session.group_map = resultMap;
+            console.log("Result map");
+            console.log(resultMap);
+            // console.log(resultMap.toJSON());
+            
+            // resultMap will be passed to lobby to give each environment better explainations
+            if (req.session.user) {
+              res.render('lobby', {group_session_room:room, user: req.session.user, group_map: resultMap});
+            } else {
+              res.render('lobby', {group_session_room:room, group_map: resultMap});
+            }
+          }
+        )
+
+      } else {
+        if (req.session.user) {
+          res.render('lobby', {user: req.session.user});
+        } else {
+          res.render('lobby');
+        }
+      }
+    }
+  )
+
+  delete req.session.success;
 });
 
 //displays our signup page
@@ -330,6 +367,7 @@ app.get('/auth/google', passport.authenticate('google', {
   scope: ['profile']
 }));
 
+// when going to this url, another callback will be sent to 'google'
 app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
   if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
   else {
@@ -413,18 +451,31 @@ app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
 // [Go to room]
 
 app.get('/createRoom', function(req, res){
-    // if (req.room_name){} // user creates group name
-    let randomInt = Math.floor((Math.random() * 10000000) + 1);
-    let room_name = randomInt.toString(16);
-    // send a cookie
-    res.cookie('group_session_room', room_name.toString());
-    req.session.group_session_room = room_name;
 
-    if (req.session.user) {
-      res.render('lobby', {group_session_room: room_name, user: req.session.user});
-    } else {
-      res.render('lobby', {group_session_room: room_name});
+  const previousID =  req.cookies['group_session_room'];
+  funct.localLeaveGroup(previousID).then(
+    value => {
+      // if (req.room_name){} // user creates group name
+      let randomInt = Math.floor((Math.random() * 10000000) + 1);
+      let room_name = randomInt.toString(16);
+      // send a cookie
+      res.cookie('group_session_room', room_name.toString());
+      req.session.group_session_room = room_name;
+
+      const defaultRooms = ['zillow', 'ikea'];
+      res.cookie('group_room_types', defaultRooms);
+      req.session.group_room_types = defaultRooms;
+
+      funct.localCreateGroup(room_name.toString(), defaultRooms).then(
+        result => {
+          res.redirect('lobby');
+        }
+      ).catch(err => {
+        console.log("There is error");
+        console.log(err);
+      })
     }
+  )
 });
 
 app.post('/joinRoom', function(req, res){
@@ -432,15 +483,37 @@ app.post('/joinRoom', function(req, res){
     if(!roomInfo.room_id){
         res.render('lobby', {});
     } else {
-        let room_id = roomInfo.room_id;
-        res.cookie('group_session_room', room_id);
-        req.session.group_session_room = room_id;
-        
-        if (req.session.user) {
-          res.render('lobby', {group_session_room: room_id, user: req.session.user});
-        } else {
-          res.render('lobby', {group_session_room: room_id});
+      let newRoomID = roomInfo.room_id;
+      const previousID =  req.cookies['group_session_room'];
+      const previousMap = req.cookies['group_map'];
+      funct.localJoinGroup(newRoomID).then(
+        result => {
+          if (!result) {
+            const error = "group ID does not exist";
+            if (req.session.user) {
+              res.render('lobby', {group_session_room: previousID, user: req.session.user, error: error, group_map: previousMap});
+            } else {
+              res.render('lobby', {group_session_room: previousID, error: error, group_map: previousMap});
+            }
+          } else {
+            funct.localLeaveGroup(previousID).then(
+              value => {
+                res.cookie('group_session_room', newRoomID);
+                req.session.group_session_room = newRoomID;
+
+                res.cookie('group_room_types', result.directories);
+                req.session.group_room_types = result.directories;
+
+                console.log("Join new room = " + newRoomID);
+                res.redirect('lobby');
+              }
+            )
+          }
         }
+      ).catch(err => {
+        console.log(err);
+      })
+
     }
 });
 
