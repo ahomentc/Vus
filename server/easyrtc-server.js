@@ -451,6 +451,7 @@ app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
 // [Go to room]
 
 app.get('/createRoom', function(req, res){
+  funct.localRemoveVRFilesInTemp();
 
   const previousID =  req.cookies['group_session_room'];
   funct.localLeaveGroup(previousID).then(
@@ -496,6 +497,7 @@ app.post('/joinRoom', function(req, res){
               res.render('lobby', {group_session_room: previousID, error: error, group_map: previousMap});
             }
           } else {
+            funct.localRemoveVRFilesInTemp();
             funct.localLeaveGroup(previousID).then(
               value => {
                 res.cookie('group_session_room', newRoomID);
