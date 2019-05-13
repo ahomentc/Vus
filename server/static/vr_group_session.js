@@ -47,7 +47,10 @@ function setRoom(){
         return;
     }
     // replace room in "<a-scene networked-scene" with room from cookie
-    let room_name = getCookie("group_session_room");
+    var room_name = getCookie("group_session_room");
+    // add the actual room to the room_name. Otherwise visible if in different rooms
+    var room_url = window.location.pathname.split('/').pop(); // return segment1/segment2/segment3/segment4
+    room_name = room_name + "_" + room_url;
     document.getElementsByTagName("a-scene")[0].setAttribute("networked-scene")
     document.getElementsByTagName("a-scene")[0].getAttribute("networked-scene").room = room_name;
     AFRAME.scenes[0].emit('connect');
