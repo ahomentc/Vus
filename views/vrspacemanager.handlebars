@@ -14,7 +14,7 @@
         <form action="/addModelMetadata" method="POST">
             <div class="form-group">
                 <label>File Name (*.gltf):</label>
-                <input type="text" class="form-control" name="fileName" value="{{fileName}}" />
+                <input type="text" class="form-control" name="fileName" value="{{fileName}}" required/>
             </div>
             <div class="form-group">
                 <label>Environment Description:</label>
@@ -22,11 +22,11 @@
                     placeholder="Enter Environment Description" required/>
             </div>
             <div class="form-group">
-                <label>Environment Tag</label>
-                <input id="envTag" type="text" class="form-control" name="tag" 
+                <label>Environment Tag (must start with alphabet and not contain any space)</label>
+                <input id="envTag" type="text" class="form-control" name="tag" pattern="[A-Za-z][-A-Za-z0-9_:.]*"
                     placeholder="Enter Environment Tag" required/>
             </div>
-            <button type="submit" class="btn btn-primary">Confirm File Metadata</button>
+            <button type="submit" class="btn btn-primary metadata-button">Confirm File Metadata</button>
         </form>
         {{/if}}
     </div>
@@ -39,7 +39,6 @@
         //replace the "Choose a file" label
         $('.custom-file-label').html(fileName);
     });
-
 
 </script>
 <style>

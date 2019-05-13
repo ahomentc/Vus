@@ -20,12 +20,13 @@
                         <h3><b>{{@key}}: </b></h3>
                         <ul>
                         {{#each this}}
-                            <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#env{{@index}}" 
+                            <button class="btn btn-secondary" type="button" data-toggle="collapse" 
+                                    data-target="#{{this.tag}}{{this._id}}" 
                                 aria-expanded="false">
                                 {{this.fileName}}
                             </button>
                             <p>
-                                <div class="collapse envDetail" id="env{{@index}}">
+                                <div class="collapse envDetail" id="{{this.tag}}{{this._id}}">
                                     <div class="card-header"><b>{{this.fileName}}</b> by {{this.username}}</div>
                                     <div class="card card-body">
                                         {{this.description}}    
