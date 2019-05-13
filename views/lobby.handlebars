@@ -1,29 +1,44 @@
 {{#if group_session_room}}
     <div class="jumbotron">
-        <div>
-            <h2>
-                <div style="margin-bottom: 10px">
+        <div class="roomOptionWrapper">
+            <div class="roomSeparateDivs">
+                <h2 style="margin-bottom: 10px">
                     Room Code: 
                     <strong>{{group_session_room}}</strong>
-                </div>
+                </h2>
                 <div>
                     <a href="/room" class="btn btn-success btn-lg" role="button">
                         Enter VR Experience
                     </a>
                 </div>
+            </div>
+            <div class="roomSeparateDivs">
+                <h2>Room Information: </h2>
                 <div>
                     {{#each group_map}}
                     <div>
-                        <b>{{@key}}</b>
+                        <h3><b>{{@key}}: </b></h3>
+                        <ul>
                         {{#each this}}
-                            <div>
-                                - {{this.fileName}}
-                            </div>
+                            <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#env{{@index}}" 
+                                aria-expanded="false">
+                                {{this.fileName}}
+                            </button>
+                            <p>
+                                <div class="collapse envDetail" id="env{{@index}}">
+                                    <div class="card-header"><b>{{this.fileName}}</b> by {{this.username}}</div>
+                                    <div class="card card-body">
+                                        {{this.description}}    
+                                    </div>
+                                </div>
+                            </p>
                         {{/each}}
+                        </ul>
+
                     </div>
                     {{/each}}
                 </div>
-            </h2>
+            </div>
         </div>
     </div>
 {{/if}}
@@ -49,5 +64,27 @@
     padding: 20px;
     font-size: 1.5em;
 }
+
+.roomOptionWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.roomSeparateDivs {
+    width: 50%;
+    border: 1px solid black;
+    padding: 20px;
+}
+
+.userName {
+    color: grey;
+}
+
+.envDetail {
+    border: 1px solid rgb(49, 49, 49);
+    border-radius: 5px;
+}
+ 
 
 </style>

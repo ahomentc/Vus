@@ -154,12 +154,6 @@ app.get('/lobby', function(req, res){
       if (value && room_types) {
         const resultMap = {};
         funct.findEnvs(room_types).then(resultList => {
-            console.log('find envs');
-            console.log(resultList);
-            funct.localGetVRFilesFromS3(resultList).then(
-              () => console.log("Load from S3 success")
-            );
-            
             resultList.forEach(environment => {
               if(resultMap[environment.tag]) {
                 resultMap[environment.tag].push(environment);
@@ -168,10 +162,8 @@ app.get('/lobby', function(req, res){
               }
             });
 
+            req.session.env_list = resultList;
             req.session.group_map = resultMap;
-            console.log("Result map");
-            console.log(resultMap);
-            // console.log(resultMap.toJSON());
             
             // resultMap will be passed to lobby to give each environment better explainations
             if (req.session.user) {
@@ -430,7 +422,20 @@ function ensureAuthenticated(req, res, next) {
 
 // app.use(serveStatic('server/static', {'index': ['index.html']}));
 // app.use('/room', ensureAuthenticated);
-app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
+app.get('/room', (req, res) => {
+  funct.localRemoveVRFilesInTemp().then(
+    () => {
+      funct.localGetVRFilesFromS3(req.session.env_list).then(
+        () => {
+          res.redirect('loadRoom');
+        }
+      )
+    }
+  );
+});
+
+
+app.use('/loadRoom', serveStatic('server/static', {'index': ['home.html']}));
 
 //======== CREATING GROUP SESSION ========
 
@@ -451,8 +456,6 @@ app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
 // [Go to room]
 
 app.get('/createRoom', function(req, res){
-  funct.localRemoveVRFilesInTemp();
-
   const previousID =  req.cookies['group_session_room'];
   funct.localLeaveGroup(previousID).then(
     value => {
@@ -476,7 +479,8 @@ app.get('/createRoom', function(req, res){
         console.log(err);
       })
     }
-  )
+  );
+
 });
 
 app.post('/joinRoom', function(req, res){
@@ -497,7 +501,6 @@ app.post('/joinRoom', function(req, res){
               res.render('lobby', {group_session_room: previousID, error: error, group_map: previousMap});
             }
           } else {
-            funct.localRemoveVRFilesInTemp();
             funct.localLeaveGroup(previousID).then(
               value => {
                 res.cookie('group_session_room', newRoomID);

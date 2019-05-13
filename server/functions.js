@@ -298,6 +298,7 @@ exports.localGetVRFilesFromS3 = function(environmentList) {
  *  the new environments that they want to visit other than the default ones.
  */
 exports.localRemoveVRFilesInTemp = function() {
+  var deferred = Q.defer();
   const directory = `./${VREnvironmentsDir}`;
   fs.readdir(directory, (err, files) => {
     if (err) throw err;
@@ -306,7 +307,10 @@ exports.localRemoveVRFilesInTemp = function() {
         if (err) throw err;
       })
     }
-  })
+    deferred.resolve(true);
+  });
+
+  return deferred.promise;
 }
 
 /**
