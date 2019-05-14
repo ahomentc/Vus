@@ -93,7 +93,8 @@ exports.localReg = function (username, password) {
             "username": username,
             "password": hash,
             "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG",
-            "environments": []
+            "environments": [],
+            "room": ""
           }
 
           console.log("CREATING USER:", username);
@@ -527,3 +528,40 @@ exports.localUpdateGroupEnvs = function(groupID, newEnvironments) {
  *  each item in the s3 bucket will be the actual file with name
  *    consistent with the environment name stored in the database
  */
+
+// set the room for the user on the database
+exports.setUserRoom = function(username,room_id){
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function (err, db) {
+      var collection = db.collection('localUsers');
+
+      // find user
+      collection.findOne({'username': username}).then(function(result) {
+          if (null != result) {
+            // update the room entree in the user model
+            collection.updateOne({"_id":result._id}, {$set: {"room":room_id}})
+          }
+          else{
+            deferred.resolve(false);
+          }
+      });
+      
+  });
+}
+
+// get the room that the user has
+exports.getUserRoom = function(username,vus_group_session_auth){
+  var deferred = Q.defer();
+
+  MongoClient.connect(mongodbUrl, function (err, db) {
+      var collection = db.collection('localUsers');
+
+      // find user
+      collection.findOne({'username': username}).then(function(result) {
+          deferred.resolve(result.room);
+      }); 
+  });
+  return deferred.promise;
+};
+

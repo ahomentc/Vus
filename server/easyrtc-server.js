@@ -19,6 +19,7 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 const keys = require('./keys');
 const formidable = require('formidable');
+var SHA256 = require("crypto-js/sha256");
 
 // connect to the database
 mongoose.connect('mongodb://localhost/my_db');
@@ -100,14 +101,14 @@ passport.use('local-signup', new LocalStrategy(
 
 //===============EXPRESS================
 // Configure Express
-app.use(logger('combined'));
-app.use(cookieParser());
+
+app.use(express.cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(methodOverride('X-HTTP-Method-Override'));
-app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
+app.use(express.session({ secret: 'anything' }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(app.router);
 
 // Session-persisted message middleware
 app.use(function(req, res, next){
@@ -289,9 +290,10 @@ app.post('/uploadModel', (req, res) => {
   }
   var form = new formidable.IncomingForm();
 
+  console.log("Gor form");
   // begin file parse
   form.parse(req, function(err, fields, files) {
-
+    console.log("FOrm upload start");
   });
 
   // when parsing ends:
@@ -303,6 +305,7 @@ app.post('/uploadModel', (req, res) => {
 
     req.session.local_path = local_path;
     
+    console.log("FOrm upload end");
     res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: false, fileName: file_name.split('.')[0]});
   });
 });
@@ -422,12 +425,12 @@ function ensureAuthenticated(req, res, next) {
 
 // app.use(serveStatic('server/static', {'index': ['index.html']}));
 // app.use('/room', ensureAuthenticated);
-app.get('/room', (req, res) => {
+app.get('/loadRoom', (req, res) => {
   funct.localRemoveVRFilesInTemp().then(
     () => {
       funct.localGetVRFilesFromS3(req.session.env_list).then(
         () => {
-          res.redirect('loadRoom');
+          res.redirect('room');
         }
       )
     }
@@ -435,7 +438,7 @@ app.get('/room', (req, res) => {
 });
 
 
-app.use('/loadRoom', serveStatic('server/static', {'index': ['home.html']}));
+app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
 
 //======== CREATING GROUP SESSION ========
 
@@ -459,28 +462,65 @@ app.get('/createRoom', function(req, res){
   const previousID =  req.cookies['group_session_room'];
   funct.localLeaveGroup(previousID).then(
     value => {
-      // if (req.room_name){} // user creates group name
-      let randomInt = Math.floor((Math.random() * 10000000) + 1);
-      let room_name = randomInt.toString(16);
-      // send a cookie
-      res.cookie('group_session_room', room_name.toString());
-      req.session.group_session_room = room_name;
 
-      const defaultRooms = ['zillow', 'ikea'];
+      // generate a random hex roomname
+      let randomInt = Math.floor((Math.random() * 10000000) + 1);
+      let room_id = randomInt.toString(16);
+
+      // TODO: Save room_id in database under logged in user's account
+      // req.session.user.room = room_id;
+      // console.log(req.session.user.room)
+      // req.session.user.room = room_id
+      const vus_username = req.cookies['vus_username'];
+      funct.setUserRoom(vus_username,room_id);
+
+      // 
+      res.cookie('group_session_room', room_id.toString());
+      req.session.group_session_room = room_id;
+
+      // directory stuff
+      const defaultRooms = ['zillow', 'theater'];
       res.cookie('group_room_types', defaultRooms);
       req.session.group_room_types = defaultRooms;
 
-      funct.localCreateGroup(room_name.toString(), defaultRooms).then(
+      // create a session id to be stored in cookie for user authentication
+      var sessionID = SHA256(Math.random().toString())
+
+      // store username and auth code in cookie
+      res.cookie('vus_group_session_auth', sessionID.toString());
+      res.cookie('vus_username',req.session.user.username)
+
+      // store the room in cookie... remove this later
+      res.cookie('group_session_room', room_id.toString());
+      req.session.group_session_room = room_id;
+
+
+      funct.localCreateGroup(room_id.toString(), defaultRooms).then(
         result => {
           res.redirect('lobby');
         }
       ).catch(err => {
         console.log("There is error");
         console.log(err);
-      })
-    }
-  );
+      });
 
+    });
+  });
+
+app.get('/getUserRoom',(req,res) => {
+    // we'll only get the cookies that vus sets, which is good. no problem here.
+    const vus_group_session_auth = req.cookies['vus_group_session_auth'];
+    const vus_username = req.cookies['vus_username'];
+    funct.getUserRoom(vus_username, vus_group_session_auth)
+    .then(function (room) {
+      if (room) {
+        console.log("ROOM IS: " + room);
+        res.send(room);
+      }
+    })
+    .fail(function (err){
+      console.log(err.body);
+    });
 });
 
 app.post('/joinRoom', function(req, res){
