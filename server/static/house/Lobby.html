@@ -28,7 +28,11 @@
                    "zillow12":':8080/room/house/zillowLobby.html',
                    "zillow13":':8080/room/house/zillowLobby.html',
                    "zillow14":':8080/room/house/zillowLobby.html',
-                   "zillow15":':8080/room/house/zillowLobby.html'
+                   "zillow15":':8080/room/house/zillowLobby.html',
+                   "zillow16":':8080/room/house/zillowLobby.html',
+                   "zillow17":':8080/room/house/zillowLobby.html',
+                   "zillow18":':8080/room/house/zillowLobby.html',
+                   "zillow19":':8080/room/house/zillowLobby.html'
                   }; 
     </script>
   </head>
@@ -137,6 +141,7 @@
         let counter=0;
         for(i in portal_data)
         {
+          if(counter>=16)break;
           let angle=11+counter*22.5;
           let x=-9.0946*Math.sin(2*angle*Math.PI/360);
           let z=-9.0946*Math.cos(2*angle*Math.PI/360);
@@ -147,8 +152,9 @@
           portal.setAttribute("static-body","sphereRadius:NaN");
           portal.setAttribute("id",i);
           portal.setAttribute("material","opacity:.6; emissive:#040404;side:double;color:#fff9ed");
+          let link=portal_data[i];
           portal.addEventListener("collide", (e)=>{
-            window.location.href =  host + portal_data[i];
+            window.location.href =  host + link;
           });
           scene.appendChild(portal);
           x=-9*Math.sin(2*angle*Math.PI/360);
