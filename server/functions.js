@@ -6,7 +6,7 @@ var fs = require('fs');
 var AWS = require('aws-sdk');
 var path = require('path');
 
-const keys = require('./keys');
+const keys = require('../privateKeys/keys');
 
 const AWSAccessKeyId = keys.aws.AWSAccessKeyId;
 const AWSSecretKey = keys.aws.AWSSecretKey;

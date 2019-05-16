@@ -17,7 +17,7 @@ var exphbs = require('express-handlebars'),
 
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-const keys = require('./keys');
+const keys = require('../privateKeys/keys');
 const formidable = require('formidable');
 var SHA256 = require("crypto-js/sha256");
 

@@ -13,6 +13,7 @@ pids
 lib-cov
 
 env/
+privateKeys/
 
 # Coverage directory used by tools like istanbul
 coverage
