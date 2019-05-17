@@ -16,9 +16,10 @@
     {{!-- bootstrap import --}}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
     <style>
       .container {
         width: 100%;
@@ -66,13 +67,18 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
+      {{#if user}}
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/vrmanager" title="Manage your personal VR space">Manage VR Space</a>
+            <a class="nav-link" href="/userconsole" title="Manage your VR spaces">User Console</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/vrmanager" title="Upload your personal VR space">Upload VR Space</a>
           </li>
         </ul>
       </div>
+      {{/if}}
 
 
 
