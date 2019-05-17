@@ -1,0 +1,43 @@
+<div class="jumbotron">
+    <table class="table table-striped ">
+        <thead class="thead-dark">
+            <tr>
+            <th scope="col">File Name</th>
+            <th scope="col">Upload Time</th>
+            <th scope="col">File Description</th>
+            <th scope="col">Owner</th>
+            <th scope="col">Tag</th>
+            <th scope="col">Remove Environment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each env}}
+            <tr>
+                <td class="fileName">{{this.fileName}}</td>
+                <td>{{this.uploadTime}}</td>
+                <td>{{this.description}}</td>
+                <td>{{this.username}}</td>
+                <td>{{this.tag}}</td>
+                <td>
+                    <button class="btn btn-danger removeButton">Remove</button>
+                </td>
+            </tr>
+
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<script>
+    $('.removeButton').click(function() {
+        var fileToRemove = $(this).closest("tr").find('.fileName').text();
+        console.log(fileToRemove);
+
+        $.post('/removeFile', {file: fileToRemove}).then(() => location.reload());
+    })
+</script>
+<style>
+.removeButton{
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+</style>

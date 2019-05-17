@@ -26,6 +26,7 @@
   },
   "repository": "networked-aframe/networked-aframe",
   "dependencies": {
+    "aws-sdk": "^2.450.0",
     "bcryptjs": "^0.7.12",
     "bootstrap": "^4.3.1",
     "buffered-interpolation": "^0.2.4",
@@ -42,6 +43,7 @@
     "passport": "^0.2.0",
     "passport-facebook": "^1.0.3",
     "passport-google": "^0.3.0",
+    "passport-google-oauth": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.2",
     "q": "^1.0.1"

@@ -13,11 +13,12 @@ var exphbs = require('express-handlebars'),
     session = require('express-session'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
-    TwitterStrategy = require('passport-twitter'),
-    GoogleStrategy = require('passport-google'),
     FacebookStrategy = require('passport-facebook');
 
-const formidable = require('formidable')
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
+const keys = require('../privateKeys/keys');
+const formidable = require('formidable');
 var SHA256 = require("crypto-js/sha256");
 
 // connect to the database
@@ -102,7 +103,8 @@ passport.use('local-signup', new LocalStrategy(
 // Configure Express
 
 app.use(express.cookieParser());
-app.use(express.bodyParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(express.session({ secret: 'anything' }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -135,30 +137,67 @@ app.set('view engine', 'handlebars');
 
 //===============ROUTES===============
 
-//displays our homepage
+// displays our homepage
 app.get('/home', function(req, res){
   res.render('home', {user: req.session.user});
 });
 
-//
+// display lobby
 app.get('/lobby', function(req, res){
-  let room = req.cookies['group_session_room'];
-  if (req.session.user && room) {
-    res.render('lobby', {group_session_room:room, user: req.session.user});
-  } else{
-    res.render('lobby', {user: req.session.user});
-  }
-  
+  const room = req.cookies['group_session_room'];
+  console.log("Room = " + room);
+  const room_types = req.cookies['group_room_types'];
+  console.log(room_types);
+
+  funct.localCheckGroupExist(room).then(
+    value => {
+      console.log('group exist = ' + value);
+      if (value && room_types) {
+        const resultMap = {};
+        funct.findEnvs(room_types).then(resultList => {
+            resultList.forEach(environment => {
+              if(resultMap[environment.tag]) {
+                resultMap[environment.tag].push(environment);
+              } else {
+                resultMap[environment.tag] = [environment];
+              }
+            });
+
+            req.session.env_list = resultList;
+            req.session.group_map = resultMap;
+            
+            // resultMap will be passed to lobby to give each environment better explainations
+            if (req.session.user) {
+              res.render('lobby', {group_session_room:room, user: req.session.user, group_map: resultMap});
+            } else {
+              res.render('lobby', {group_session_room:room, group_map: resultMap});
+            }
+          }
+        )
+
+      } else {
+        if (req.session.user) {
+          res.render('lobby', {user: req.session.user});
+        } else {
+          res.render('lobby');
+        }
+      }
+    }
+  )
+
+  delete req.session.success;
 });
 
 //displays our signup page
 app.get('/signin', function(req, res){
-  console.log(req.session)
   let room = req.cookies['group_session_room'];
+  console.log("Room = " + room);
   if (req.session.user && room) {
     // if already signin, redirect to lobby page
     res.render('lobby', {group_session_room:room, user: req.session.user});
   } else {
+    // reset previous group session cookie if not entering as the same user
+    res.clearCookie('group_session_room');
     res.render('signin');
   }
 });
@@ -166,20 +205,6 @@ app.get('/signin', function(req, res){
 app.get('/signup', function(req, res){
   res.render('signup');
 })
-
-//sends the request through our local signup strategy, and if successful takes user to homepage, otherwise returns then to signin page
-// app.post('/local-reg', passport.authenticate('local-signup', {
-//   successRedirect: '/lobby',
-//   failureRedirect: '/signin'
-//   })
-// );
-
-//sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
-// app.post('/login', passport.authenticate('local-signin', {
-//   successRedirect: 'lobby',
-//   failureRedirect: '/signin'
-//   })
-// );
 
 app.post('/local-reg', (req, res, next) => {
   passport.authenticate('local-signup', (err, user, info) => {
@@ -195,6 +220,13 @@ app.post('/login', (req, res, next) => {
     if (err) { return res.render('signin', {error: 'Sign up exception'}) }
     if (!user) { return res.render('signin', {error: 'User does not exist'})}
     req.session.user = user;
+
+    // create a new room ID when the user logins
+    let randomInt = Math.floor((Math.random() * 10000000) + 1);
+    let room_name = randomInt.toString(16);
+    // send a cookie
+    res.cookie('group_session_room', room_name.toString());
+    
     return res.redirect('lobby');
   })(req, res, next);
 });
@@ -217,55 +249,167 @@ app.get('/vrmanager', (req, res) => {
   if(!req.session.user) {
     res.redirect('signin');
   } else {
-    res.render('vrspacemanager', {user: req.session.user})
+    res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: true})
+  }
+});
+
+
+app.get('/userconsole', (req, res) => {
+  if (!req.session.user){
+    res.redirect('signin');
+  } else {    
+    funct.localGetModels(req.session.user.username).then(
+      models => {
+        return res.render('userconsole', {user: req.session.user, env: models});
+      }
+    );
+
+
+  }
+});
+
+app.post('/removeFile', (req, res) => {
+  if (!req.session.user) {
+    res.redirect('signin');
+  } else {
+    funct.localRemoveModel(req.session.user.username, req.body.file).then(
+      result => {
+        if (result) {
+          res.redirect('userconsole');
+        } else {
+          console.log("Error in deleting");
+        }
+      }
+    );
   }
 });
 
 app.post('/uploadModel', (req, res) => {
+  if (req.session.user == null) {
+    res.redirect('signin');
+  }
+  var form = new formidable.IncomingForm();
 
-  new formidable.IncomingForm().parse(req)
-    .on('field', (name, field) => {
-      console.log('Field', name, field)
-    })
-    .on('file', (name, file) => {
-      console.log('Uploaded file', name, file)
-    })
-    .on('aborted', () => {
-      console.error('Request aborted by the user')
-    })
-    .on('error', (err) => {
-      console.error('Error', err)
-      throw err
-    })
-    .on('end', () => {
-      res.end()
-    })
+  console.log("Gor form");
+  // begin file parse
+  form.parse(req, function(err, fields, files) {
+    console.log("FOrm upload start");
+  });
 
-  res.redirect('vrmanager');
+  // when parsing ends:
+  form.on('end', function(fields, files) {
+    /* Temporary location of our uploaded file */
+    var local_path = this.openedFiles[0].path;
+    /* The file name of the uploaded file */
+    var file_name = this.openedFiles[0].name;
+
+    req.session.local_path = local_path;
+    
+    console.log("FOrm upload end");
+    res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: false, fileName: file_name.split('.')[0]});
+  });
+});
+
+app.post('/addModelMetadata', (req, res) => {
+  if (req.session.user == null) {
+    res.redirect('signin');
+  }
+
+  funct.localUploadModel(req.session.user.username, req.body.fileName + ".gltf", req.body.description, 
+    req.body.tag, req.session.local_path).then(
+      result => {
+        // remove the cache from previous form
+        delete req.session.local_path;
+
+        return res.redirect('lobby');  
+      }
+    );
+});
+
+//===============External Strategies====================
+
+// Use the GoogleStrategy within Passport.
+//   Strategies in passport require a `verify` function, which accept
+//   credentials (in this case, a token, tokenSecret, and Google profile), and
+//   invoke a callback with a user object.
+passport.use(new GoogleStrategy({
+  clientID: keys.google.clientID,
+  clientSecret: keys.google.clientSecret,
+  callbackURL: "http://localhost:8080/auth/google/callback"
+}, (accessToken, refreshToken, profile, done) => {
+  funct.localAuth(profile.displayName, profile.id)
+  .then(function (user) {
+    if (user) {
+      done(null, user);
+    }
+    if (!user) {
+      funct.localReg(profile.displayName, profile.id).then(function(user) {
+        if (user) {
+          done(null, user);
+        } else {
+          done(null, user);
+        }
+      });
+    }
+  })
+  .fail(function (err){
+    console.log(err.body);
+  });
+}));
+
+
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile']
+}));
+
+// when going to this url, another callback will be sent to 'google'
+app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
+  if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
+  else {
+    req.session.user = req.user;
+    res.redirect('lobby');
+  }
 })
 
-app.post('/uploadModel', (req, res) => {
 
-  new formidable.IncomingForm().parse(req)
-    .on('field', (name, field) => {
-      console.log('Field', name, field)
-    })
-    .on('file', (name, file) => {
-      console.log('Uploaded file', name, file)
-    })
-    .on('aborted', () => {
-      console.error('Request aborted by the user')
-    })
-    .on('error', (err) => {
-      console.error('Error', err)
-      throw err
-    })
-    .on('end', () => {
-      res.end()
-    })
+// facebook
+passport.use(new FacebookStrategy({
+  clientID: keys.facebook.clientID,
+  clientSecret: keys.facebook.clientSecret,
+  callbackURL: "http://localhost:8080/auth/facebook/callback"
+}, (accessToken, refreshToken, profile, cb) => {
+  funct.localAuth(profile.displayName, profile.id)
+  .then(function (user) {
+    if (user) {
+      cb(null, user);
+    }
+    if (!user) {
+      funct.localReg(profile.displayName, profile.id).then(function(user) {
+        if (user) {
+          cb(null, user);
+        } else {
+          cb(null, user);
+        }
+      });
+    }
+  })
+  .fail(function (err){
+    console.log(err.body);
+  });
+}));
 
-  res.redirect('vrmanager');
+app.get('/auth/facebook', passport.authenticate('facebook', {
+  scope: ['email']
+}));
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook'), (req, res) => {
+  if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
+  else {
+    req.session.user = req.user;
+    res.redirect('lobby');
+  }
 })
+
 
 //=====================================
 
@@ -281,6 +425,19 @@ function ensureAuthenticated(req, res, next) {
 
 // app.use(serveStatic('server/static', {'index': ['index.html']}));
 // app.use('/room', ensureAuthenticated);
+app.get('/loadRoom', (req, res) => {
+  funct.localRemoveVRFilesInTemp().then(
+    () => {
+      funct.localGetVRFilesFromS3(req.session.env_list).then(
+        () => {
+          res.redirect('room');
+        }
+      )
+    }
+  );
+});
+
+
 app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
 
 //======== CREATING GROUP SESSION ========
@@ -302,34 +459,53 @@ app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
 // [Go to room]
 
 app.get('/createRoom', function(req, res){
-    // generate a random hex roomname
-    let randomInt = Math.floor((Math.random() * 10000000) + 1);
-    let room_id = randomInt.toString(16);
+  const previousID =  req.cookies['group_session_room'];
+  funct.localLeaveGroup(previousID).then(
+    value => {
 
-    // TODO: Save room_id in database under logged in user's account
-    // req.session.user.room = room_id;
-    // console.log(req.session.user.room)
-    // req.session.user.room = room_id
-    const vus_username = req.cookies['vus_username'];
-    funct.setUserRoom(vus_username,room_id);
+      // generate a random hex roomname
+      let randomInt = Math.floor((Math.random() * 10000000) + 1);
+      let room_id = randomInt.toString(16);
 
-    // create a session id to be stored in cookie for user authentication
-    var sessionID = SHA256(Math.random().toString())
+      // TODO: Save room_id in database under logged in user's account
+      // req.session.user.room = room_id;
+      // console.log(req.session.user.room)
+      // req.session.user.room = room_id
+      const vus_username = req.cookies['vus_username'];
+      funct.setUserRoom(vus_username,room_id);
 
-    // store username and auth code in cookie
-    res.cookie('vus_group_session_auth', sessionID.toString());
-    res.cookie('vus_username',req.session.user.username)
+      // 
+      res.cookie('group_session_room', room_id.toString());
+      req.session.group_session_room = room_id;
 
-    // store the room in cookie... remove this later
-    res.cookie('group_session_room', room_id.toString());
-    req.session.group_session_room = room_id;
+      // directory stuff
+      const defaultRooms = ['zillow', 'theater'];
+      res.cookie('group_room_types', defaultRooms);
+      req.session.group_room_types = defaultRooms;
 
-    if (req.session.user) {
-      res.render('lobby', {group_session_room: room_id, user: req.session.user});
-    } else {
-      res.render('lobby', {group_session_room: room_id});
-    }
-});
+      // create a session id to be stored in cookie for user authentication
+      var sessionID = SHA256(Math.random().toString())
+
+      // store username and auth code in cookie
+      res.cookie('vus_group_session_auth', sessionID.toString());
+      res.cookie('vus_username',req.session.user.username)
+
+      // store the room in cookie... remove this later
+      res.cookie('group_session_room', room_id.toString());
+      req.session.group_session_room = room_id;
+
+
+      funct.localCreateGroup(room_id.toString(), defaultRooms).then(
+        result => {
+          res.redirect('lobby');
+        }
+      ).catch(err => {
+        console.log("There is error");
+        console.log(err);
+      });
+
+    });
+  });
 
 app.get('/getUserRoom',(req,res) => {
     // we'll only get the cookies that vus sets, which is good. no problem here.
@@ -340,9 +516,6 @@ app.get('/getUserRoom',(req,res) => {
       if (room) {
         console.log("ROOM IS: " + room);
         res.send(room);
-      }
-      if (!user) {
-        console.log("NO ROOM SET");
       }
     })
     .fail(function (err){
@@ -355,15 +528,37 @@ app.post('/joinRoom', function(req, res){
     if(!roomInfo.room_id){
         res.render('lobby', {});
     } else {
-        let room_id = roomInfo.room_id;
-        res.cookie('group_session_room', room_id);
-        req.session.group_session_room = room_id;
-        
-        if (req.session.user) {
-          res.render('lobby', {group_session_room: room_id, user: req.session.user});
-        } else {
-          res.render('lobby', {group_session_room: room_id});
+      let newRoomID = roomInfo.room_id;
+      const previousID =  req.cookies['group_session_room'];
+      const previousMap = req.cookies['group_map'];
+      funct.localJoinGroup(newRoomID).then(
+        result => {
+          if (!result) {
+            const error = "group ID does not exist";
+            if (req.session.user) {
+              res.render('lobby', {group_session_room: previousID, user: req.session.user, error: error, group_map: previousMap});
+            } else {
+              res.render('lobby', {group_session_room: previousID, error: error, group_map: previousMap});
+            }
+          } else {
+            funct.localLeaveGroup(previousID).then(
+              value => {
+                res.cookie('group_session_room', newRoomID);
+                req.session.group_session_room = newRoomID;
+
+                res.cookie('group_room_types', result.directories);
+                req.session.group_room_types = result.directories;
+
+                console.log("Join new room = " + newRoomID);
+                res.redirect('lobby');
+              }
+            )
+          }
         }
+      ).catch(err => {
+        console.log(err);
+      })
+
     }
 });
 
