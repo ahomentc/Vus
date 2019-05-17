@@ -2,7 +2,8 @@
     <table class="table table-striped ">
         <thead class="thead-dark">
             <tr>
-            <th scope="col">File Name</th>
+            <th scope="col">Environment</th>
+            <th scope="col">HTML Name</th>
             <th scope="col">Upload Time</th>
             <th scope="col">File Description</th>
             <th scope="col">Owner</th>
@@ -13,14 +14,13 @@
         <tbody>
             {{#each env}}
             <tr>
-                <td class="fileName">{{this.fileName}}</td>
+                <td class="folderName">{{this.envName}}</td>
+                <td>{{this.htmlName}}</td>
                 <td>{{this.uploadTime}}</td>
                 <td>{{this.description}}</td>
                 <td>{{this.username}}</td>
                 <td>{{this.tag}}</td>
-                <td>
-                    <button class="btn btn-danger removeButton">Remove</button>
-                </td>
+                <td><button class="btn btn-danger removeButton">Remove</button></td>
             </tr>
 
             {{/each}}
@@ -29,10 +29,10 @@
 </div>
 <script>
     $('.removeButton').click(function() {
-        var fileToRemove = $(this).closest("tr").find('.fileName').text();
-        console.log(fileToRemove);
+        var folderToRemove = $(this).closest("tr").find('.folderName').text();
+        console.log(folderToRemove);
 
-        $.post('/removeFile', {file: fileToRemove}).then(() => location.reload());
+        $.post('/removeFile', {folder: folderToRemove}).then(() => location.reload());
     })
 </script>
 <style>

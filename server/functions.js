@@ -7,6 +7,7 @@ var AWS = require('aws-sdk');
 var path = require('path');
 
 const keys = require('../privateKeys/keys');
+const rimraf = require("rimraf");
 
 const AWSAccessKeyId = keys.aws.AWSAccessKeyId;
 const AWSSecretKey = keys.aws.AWSSecretKey;
@@ -148,103 +149,135 @@ exports.localAuth = function (username, password) {
   return deferred.promise;
 }
 
-exports.localUploadModel = function(username, fileName, envDescription, envTag, localFilePath) {
+exports.localUploadModel = function(username, uploaded_files, envHtmlName, folderName, envDescription, envTag) {
 
   var deferred = Q.defer();
 
-  var params = {
-    Bucket: bucketName,
-    Body: fs.ReadStream(localFilePath),
-    Key: username + "/" + fileName
-  }
+  uploaded_files.forEach(file => {
 
-  s3.upload(params, function (err, data) {
-    // handle error
-    if (err) {
-      console.log("Error", err);
-      deferred.resolve(false);
-    } else if (data) {
-      console.log("Uploaded in:", data.Location);
-      // store file metadata info into local storage
-      MongoClient.connect(mongodbUrl, function(err, db) {
-        var environmentCollection = db.collection("localEnvironments");
-        environmentCollection.findOne({'username' : username, "fileName": fileName})
-          .then(function(result) {
-            var newEnvironment = {
-              "fileName": fileName,
-              "uploadTime": new Date().toDateString(),
-              "description": envDescription,
-              "username": username,
-              "tag": envTag
-            };
-            if (result == null) {
-              environmentCollection.insert(
-                newEnvironment
-              ).then(function() {
-                db.close();
-              });
-            } else {
-              environmentCollection.updateOne({'username' : username, "fileName": fileName}
-                , { $set: {
-                  "uploadTime": new Date().toDateString(),
-                  "description": envDescription,
-                  "tag": envTag
-                } }, function(err, result) {
-                  db.close();
-              });
-            }
-            deferred.resolve(true);
-          })
-
-      });
+    var params = {
+      Bucket: bucketName,
+      Body: file.buffer,
+      Key: username + "/" + file.originalname
     }
+
+    s3.upload(params, function (err, data) {
+      // handle error
+      if (err) {
+        console.log("Error", err);
+        deferred.resolve(false);
+        return deferred.promise;
+      } else {
+        console.log("Uploaded in:", data.Location);
+      }
+    });
   });
-  return deferred.promise;
-}
 
-exports.localRemoveModel = function(username, fileName) {
-
-  var deferred = Q.defer();
-
-  var params = {
-    Bucket: bucketName,
-    Key: username + "/" + fileName
-  }
-
-  s3.deleteObject(params, function(err, data) {
-    if (err) {
-      console.log(err);
-      deferred.resolve(false);
-    } else if (data) {
-      console.log(data);
-      MongoClient.connect(mongodbUrl, function(err, db) {
-        var environmentCollection = db.collection("localEnvironments");
-        environmentCollection.deleteOne({'username': username, "fileName":fileName})
-          .then(function(res) {
-            if (err) throw err;
-            console.log(`${fileName} for user ${username} is deleted`);
-            deferred.resolve(true);
+  // store file metadata info into local storage
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    var environmentCollection = db.collection("localEnvironments");
+    environmentCollection.findOne({'username' : username, "envName": folderName})
+      .then(function(result) {
+        var newEnvironment = {
+          "envName": folderName,
+          "htmlName": envHtmlName,
+          "uploadTime": new Date().toDateString(),
+          "description": envDescription,
+          "username": username,
+          "tag": envTag
+        };
+        if (result == null) {
+          environmentCollection.insert(newEnvironment).then(function() {
             db.close();
           });
+        } else {
+          environmentCollection.updateOne({'username' : username, "envName": folderName}
+            , { $set: {
+              "htmlName": envHtmlName,
+              "uploadTime": new Date().toDateString(),
+              "description": envDescription,
+              "tag": envTag
+            } }, function(err, result) {
+              db.close();
+          });
+        }
       });
-    }
-  })
+
+    });
+
+  deferred.resolve(true);
+  return deferred.promise;
+}
+
+exports.localRemoveModel = function(username, folderName) {
+
+  var deferred = Q.defer();
+
+  const folderPath = username + "/" + folderName + "/";
+  recursiveDeleteVREnvsInS3(folderPath);
+
+  MongoClient.connect(mongodbUrl, function(err, db) {
+    var environmentCollection = db.collection("localEnvironments");
+    environmentCollection.deleteOne({'username': username, "envName":folderName})
+      .then(function(res) {
+        if (err) throw err;
+        console.log(`${folderName} for user ${username} is deleted`);
+        deferred.resolve(true);
+        db.close();
+      });
+  });
+
+  deferred.resolve(true);
+
 
   return deferred.promise;
 }
 
-exports.findEnvs = function(directoryNames) {
+const recursiveDeleteVREnvsInS3 = function(folderPrefix) {
+  const params = {
+    Bucket: bucketName,
+    Delimiter: '/',
+    Prefix: folderPrefix
+  }
+
+  s3.listObjectsV2(params, function(err, data) {
+    if(err) throw err;
+
+    console.log(data);
+
+    // delete all directories first
+    data.CommonPrefixes.forEach(prefix => {
+      recursiveDeleteVREnvsInS3(prefix.Prefix);
+    });
+
+    const deleteParam = {
+      Bucket: bucketName,
+      Delete: {Objects: []}
+    }
+    data.Contents.forEach(s3Object => {
+      deleteParam.Delete.Objects.push({Key: s3Object.Key});
+    });
+
+    deleteParam.Delete.Objects.push({Key: folderPrefix});
+
+    s3.deleteObjects(deleteParam, function(err, data) {
+      if(err) throw err;
+    });
+  });
+}
+
+exports.findEnvs = function(userNames) {
   var deferred = Q.defer();
 
-  console.log("In find Envs for directoryNames: " + directoryNames);
+  console.log("In find Envs for userNames: " + userNames);
   MongoClient.connect(mongodbUrl, function(err, db) {
     var environmentCollection = db.collection("localEnvironments");
     const ORQuery = [];
-    directoryNames.forEach(
-      directory => {
-        ORQuery.push({'tag':directory});
+    userNames.forEach(
+      name => {
+        ORQuery.push({'username': name});
       }
-    )
+    );
 
     environmentCollection.find({
       "$or": ORQuery
@@ -258,34 +291,20 @@ exports.findEnvs = function(directoryNames) {
 }
 
 /**
- * This method will load VR environment gltf files from S3 buckets
+ * This method will load VR environment folders from S3 buckets
  *  and load them into a temporary folder. These environments will
  *  be dynamically generated in the VR lobby when the user enters
  *  the 3D environments.
  * 
  * username => string
- * fileNames => [file1, file2, file3] (.gltf files to display in the VR space)
+ * envName => [env folder 1, env folder 1, env folder 1]
  */
 exports.localGetVRFilesFromS3 = function(environmentList) {
   var deferred = Q.defer();
 
-  environmentList.forEach(
-    env => {
-      var params = {
-        Bucket: bucketName,
-        Key: env.username + "/" + env.fileName
-      }
-      const file = fs.createWriteStream(`./${VREnvironmentsDir}/${env.fileName}`);
-      s3.getObject(params, function(err, data) {
-        if (err) {
-          console.log(err);
-        } else if (data) {
-          console.log(data);
-          file.write(data.Body, () => {
-            file.end();
-          });
-        }
-      });
+  environmentList.forEach(env => {
+      const prefix = env.username + "/" + env.envName + "/";
+      recursiveGetVREnvsFromS3(prefix);
     }
   );
 
@@ -294,22 +313,70 @@ exports.localGetVRFilesFromS3 = function(environmentList) {
 }
 
 /**
+ * This method will recursively load folders from S3
+ * 
+ * @param folderPrefix directory path in S3 bucket
+ */
+const recursiveGetVREnvsFromS3 = (folderPrefix) => {
+  // console.log(`Folder prefix = '${folderPrefix}'`);
+  const params = {
+    Bucket: bucketName,
+    Delimiter: '/',
+    Prefix: folderPrefix
+  }
+
+  // make temporary directory
+  fs.mkdir(`./${VREnvironmentsDir}/${folderPrefix}`, {recursive: true}, (err) => {
+    if (err) throw err;
+  });
+
+  s3.listObjectsV2(params, function(err, data) {
+    if(err)throw err;
+    // console.log(data);
+
+    // for files in the directory
+    data.Contents.forEach(files => {
+      var getFileParam = {
+        Bucket: bucketName,
+        Key: files.Key
+      }
+
+      const file = fs.createWriteStream(`./${VREnvironmentsDir}/${files.Key}`);
+
+      // get the file content and write to temporary folder in the disk
+      s3.getObject(getFileParam, function(err, data) {
+        if (err) {
+          console.log(err);
+        } else if (data) {
+          file.write(data.Body, () => {
+            file.end();
+          });
+        }
+      });
+    });
+
+    // for folders in the directory
+    data.CommonPrefixes.forEach(prefix => {
+      recursiveGetVREnvsFromS3(prefix.Prefix);
+    });
+  })
+
+  return;
+}
+
+/**
  * This method will remove all the existing VR environments in our temporary VR
- *  environment folders. This method will tend to be called if the users specify
- *  the new environments that they want to visit other than the default ones.
+ *  environment folders. This method will be called if the users enters the VR
+ *  environments (before loading new environment files from AWS s3).
  */
 exports.localRemoveVRFilesInTemp = function() {
   var deferred = Q.defer();
   const directory = `./${VREnvironmentsDir}`;
-  fs.readdir(directory, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlink(path.join(directory, file), err => {
-        if (err) throw err;
-      })
-    }
+  rimraf(directory, function () { 
+    console.log("Finish resetting tempEnvironments");
     deferred.resolve(true);
   });
+
 
   return deferred.promise;
 }
@@ -505,10 +572,11 @@ exports.localUpdateGroupEnvs = function(groupID, newEnvironments) {
  *  enviornments: string[] (name of the environment that the user owns)
  * 
  * environment =>
- *  name: string
+ *  envName: string
+ *  htmlName: string
  *  uploadTime: Date
  *  description: string
- *  uploaderName: string
+ *  username: string
  *  tag: string
  * 
  * group =>

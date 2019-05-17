@@ -14,9 +14,10 @@ var exphbs = require('express-handlebars'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
     FacebookStrategy = require('passport-facebook');
-
+    
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-
+const multer  = require('multer');
+const upload = multer({ preservePath: true });
 const keys = require('../privateKeys/keys');
 const formidable = require('formidable');
 var SHA256 = require("crypto-js/sha256");
@@ -103,7 +104,7 @@ passport.use('local-signup', new LocalStrategy(
 // Configure Express
 
 app.use(express.cookieParser());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.session({ secret: 'anything' }));
 app.use(passport.initialize());
@@ -146,6 +147,7 @@ app.get('/home', function(req, res){
 app.get('/lobby', function(req, res){
   const room = req.cookies['group_session_room'];
   console.log("Room = " + room);
+  // room types are username (default: 'zillow', 'theater')
   const room_types = req.cookies['group_room_types'];
   console.log(room_types);
 
@@ -155,31 +157,33 @@ app.get('/lobby', function(req, res){
       if (value && room_types) {
         const resultMap = {};
         funct.findEnvs(room_types).then(resultList => {
+          console.log(resultList);
             resultList.forEach(environment => {
-              if(resultMap[environment.tag]) {
-                resultMap[environment.tag].push(environment);
+              if(resultMap[environment.username]) {
+                resultMap[environment.username].push(environment);
               } else {
-                resultMap[environment.tag] = [environment];
+                resultMap[environment.username] = [environment];
               }
             });
 
             req.session.env_list = resultList;
+            console.log(req.session.env_list);
             req.session.group_map = resultMap;
             
             // resultMap will be passed to lobby to give each environment better explainations
             if (req.session.user) {
-              res.render('lobby', {group_session_room:room, user: req.session.user, group_map: resultMap});
+              res.render('lobby', {error: req.session.error, group_session_room:room, user: req.session.user, group_map: resultMap});
             } else {
-              res.render('lobby', {group_session_room:room, group_map: resultMap});
+              res.render('lobby', {error: req.session.error, group_session_room:room, group_map: resultMap});
             }
           }
         )
 
       } else {
         if (req.session.user) {
-          res.render('lobby', {user: req.session.user});
+          res.render('lobby', {error: req.session.error, user: req.session.user});
         } else {
-          res.render('lobby');
+          res.render('lobby', {error: req.session.error});
         }
       }
     }
@@ -188,7 +192,7 @@ app.get('/lobby', function(req, res){
   delete req.session.success;
 });
 
-//displays our signup page
+//displays our signin page
 app.get('/signin', function(req, res){
   let room = req.cookies['group_session_room'];
   console.log("Room = " + room);
@@ -237,7 +241,8 @@ app.get('/logout', function(req, res){
     res.redirect('/signin'); 
   } else {
     const name = req.session.user.username;
-    console.log("LOGGIN OUT " + req.session.user.username)
+    console.log("LOGGIN OUT " + req.session.user.username);
+    delete req.session.error;
     delete req.session.user;
     req.logout();
     res.redirect('/signin');
@@ -249,7 +254,7 @@ app.get('/vrmanager', (req, res) => {
   if(!req.session.user) {
     res.redirect('signin');
   } else {
-    res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: true})
+    res.render('vrspacemanager', {user: req.session.user})
   }
 });
 
@@ -263,8 +268,6 @@ app.get('/userconsole', (req, res) => {
         return res.render('userconsole', {user: req.session.user, env: models});
       }
     );
-
-
   }
 });
 
@@ -272,55 +275,47 @@ app.post('/removeFile', (req, res) => {
   if (!req.session.user) {
     res.redirect('signin');
   } else {
-    funct.localRemoveModel(req.session.user.username, req.body.file).then(
+    funct.localRemoveModel(req.session.user.username, req.body.folder).then(
       result => {
-        if (result) {
-          res.redirect('userconsole');
-        } else {
-          console.log("Error in deleting");
-        }
+        res.redirect('userconsole');
       }
     );
   }
 });
 
-app.post('/uploadModel', (req, res) => {
-  if (req.session.user == null) {
-    res.redirect('signin');
-  }
-  var form = new formidable.IncomingForm();
-
-  console.log("Gor form");
-  // begin file parse
-  form.parse(req, function(err, fields, files) {
-    console.log("FOrm upload start");
-  });
-
-  // when parsing ends:
-  form.on('end', function(fields, files) {
-    /* Temporary location of our uploaded file */
-    var local_path = this.openedFiles[0].path;
-    /* The file name of the uploaded file */
-    var file_name = this.openedFiles[0].name;
-
-    req.session.local_path = local_path;
-    
-    console.log("FOrm upload end");
-    res.render('vrspacemanager', {user: req.session.user, fileNotUploaded: false, fileName: file_name.split('.')[0]});
-  });
-});
-
-app.post('/addModelMetadata', (req, res) => {
+app.post('/uploadModel', upload.array('new_models'), (req, res) => {
   if (req.session.user == null) {
     res.redirect('signin');
   }
 
-  funct.localUploadModel(req.session.user.username, req.body.fileName + ".gltf", req.body.description, 
-    req.body.tag, req.session.local_path).then(
+  const directoryName = req.body.folderName;
+
+  const uploadedFiles = req.files.map(file => {
+    let newPath = file.originalname.split('/');
+    newPath = newPath.reverse();
+    // pop the old folder name
+    newPath.pop();
+    newPath.push(directoryName);
+    newPath = newPath.reverse().join('/');
+    return {'originalname': newPath, 'buffer': file.buffer};
+  });
+
+  const htmlFileName = req.body.htmlName + ".html";
+  const htmlFileFound = uploadedFiles.find(file => file.originalname === directoryName + "/" + htmlFileName);
+
+  if (!htmlFileFound) {
+    req.session.error = "HTML file specified is not in the directory uploaded";
+    return res.redirect('lobby');
+  }
+
+  funct.localUploadModel(req.session.user.username, uploadedFiles, htmlFileName, directoryName,
+    req.body.description.trim(), req.body.tag).then(
       result => {
-        // remove the cache from previous form
-        delete req.session.local_path;
-
+        if (!result) {
+          req.session.error = "File upload Unsuccessful";
+        } else {
+          delete req.session.error;
+        }
         return res.redirect('lobby');  
       }
     );
@@ -367,6 +362,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
   if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
   else {
     req.session.user = req.user;
+    delete req.session.error;
     res.redirect('lobby');
   }
 })
@@ -406,6 +402,7 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook'), (req, res)
   if (!req.user) { return res.render('signup', {error: 'Username already exist'})}
   else {
     req.session.user = req.user;
+    delete req.session.error;
     res.redirect('lobby');
   }
 })
@@ -462,7 +459,7 @@ app.get('/createRoom', function(req, res){
   const previousID =  req.cookies['group_session_room'];
   funct.localLeaveGroup(previousID).then(
     value => {
-
+      console.log("Leave group then => ");
       // generate a random hex roomname
       let randomInt = Math.floor((Math.random() * 10000000) + 1);
       let room_id = randomInt.toString(16);
@@ -474,7 +471,6 @@ app.get('/createRoom', function(req, res){
       const vus_username = req.cookies['vus_username'];
       funct.setUserRoom(vus_username,room_id);
 
-      // 
       res.cookie('group_session_room', room_id.toString());
       req.session.group_session_room = room_id;
 
@@ -488,19 +484,21 @@ app.get('/createRoom', function(req, res){
 
       // store username and auth code in cookie
       res.cookie('vus_group_session_auth', sessionID.toString());
-      res.cookie('vus_username',req.session.user.username)
+
+      if (req.session.user) {
+        res.cookie('vus_username', req.session.user.username);
+      }
 
       // store the room in cookie... remove this later
       res.cookie('group_session_room', room_id.toString());
       req.session.group_session_room = room_id;
 
-
       funct.localCreateGroup(room_id.toString(), defaultRooms).then(
         result => {
+          delete req.session.error;
           res.redirect('lobby');
         }
       ).catch(err => {
-        console.log("There is error");
         console.log(err);
       });
 
@@ -530,26 +528,43 @@ app.post('/joinRoom', function(req, res){
     } else {
       let newRoomID = roomInfo.room_id;
       const previousID =  req.cookies['group_session_room'];
-      const previousMap = req.cookies['group_map'];
       funct.localJoinGroup(newRoomID).then(
         result => {
           if (!result) {
             const error = "group ID does not exist";
-            if (req.session.user) {
-              res.render('lobby', {group_session_room: previousID, user: req.session.user, error: error, group_map: previousMap});
-            } else {
-              res.render('lobby', {group_session_room: previousID, error: error, group_map: previousMap});
-            }
+            req.session.error = error;
+            res.redirect('lobby');
           } else {
             funct.localLeaveGroup(previousID).then(
               value => {
-                res.cookie('group_session_room', newRoomID);
+                // TODO: Save room_id in database under logged in user's account
+                // req.session.user.room = room_id;
+                // console.log(req.session.user.room)
+                // req.session.user.room = room_id
+                const vus_username = req.cookies['vus_username'];
+                funct.setUserRoom(vus_username,newRoomID);
+
+                res.cookie('group_session_room', newRoomID.toString());
                 req.session.group_session_room = newRoomID;
 
                 res.cookie('group_room_types', result.directories);
                 req.session.group_room_types = result.directories;
 
-                console.log("Join new room = " + newRoomID);
+                // create a session id to be stored in cookie for user authentication
+                var sessionID = SHA256(Math.random().toString())
+
+                // store username and auth code in cookie
+                res.cookie('vus_group_session_auth', sessionID.toString());
+
+                if (req.session.user) {
+                  res.cookie('vus_username', req.session.user.username);
+                }
+
+                // store the room in cookie... remove this later
+                res.cookie('group_session_room', newRoomID.toString());
+                req.session.group_session_room = newRoomID;
+
+                delete req.session.error;
                 res.redirect('lobby');
               }
             )
