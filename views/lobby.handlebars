@@ -23,11 +23,11 @@
                             <button class="btn btn-secondary" type="button" data-toggle="collapse" 
                                     data-target="#{{this.tag}}{{this._id}}" 
                                 aria-expanded="false">
-                                {{this.fileName}}
+                                {{this.envName}}
                             </button>
                             <p>
                                 <div class="collapse envDetail" id="{{this.tag}}{{this._id}}">
-                                    <div class="card-header"><b>{{this.fileName}}</b> by {{this.username}}</div>
+                                    <div class="card-header"><b>{{this.envName}}</b> by {{this.username}}</div>
                                     <div class="card card-body">
                                         {{this.description}}    
                                     </div>
@@ -58,7 +58,7 @@
     </form>
 </div>
 
-<a href="/createUserRoom" class="btn btn-secondary" role="button">Test Room Session</a>
+{{!-- <a href="/createUserRoom" class="btn btn-secondary" role="button">Test Room Session</a> --}}
 
 <style>
 

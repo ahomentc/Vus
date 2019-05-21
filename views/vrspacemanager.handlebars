@@ -1,20 +1,18 @@
 <div class="jumbotron">
     <div>
-        {{#if fileNotUploaded}}
-        <h3><label>Step 1: Upload Your 3D Model File </label></h3>
+        <h3><label>Upload Your Environments </label></h3>
         <form id="uploadModelForm" action="/uploadModel" enctype="multipart/form-data" method="POST">
             <div class="form-group custom-file file-upload">
-                <input name="new_model" type="file" accept=".gltf" class="custom-file-input" id="customFile" />  
-                <label class="custom-file-label" for="customFile">Choose a File</label>
+                <input name="new_models" type="file" webkitdirectory multiple class="custom-file-input" id="customFile" required />  
+                <label class="custom-file-label" for="customFile">Choose a Folder</label>
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-        {{else}}
-        <h3><label>Step 2: Add File Basic Information </label></h3>
-        <form action="/addModelMetadata" method="POST">
             <div class="form-group">
-                <label>File Name (*.gltf):</label>
-                <input type="text" class="form-control" name="fileName" value="{{fileName}}" required/>
+                <label>New Environment Name (start with alphabet):</label>
+                <input id="folderNameInput" type="text" class="form-control" name="folderName" pattern="[A-Za-z][-A-Za-z0-9_:.]*" required/>
+            </div>
+            <div class="form-group">
+                <label>Main HTML Name (Eg: index):</label>
+                <input type="text" class="form-control" name="htmlName" pattern="[-A-Za-z0-9_]+" required/>
             </div>
             <div class="form-group">
                 <label>Environment Description:</label>
@@ -26,19 +24,23 @@
                 <input id="envTag" type="text" class="form-control" name="tag" pattern="[A-Za-z][-A-Za-z0-9_:.]*"
                     placeholder="Enter Environment Tag" required/>
             </div>
-            <button type="submit" class="btn btn-primary metadata-button">Confirm File Metadata</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
-        {{/if}}
     </div>
 </div>
 <script>
     // update input placeholder value
-    $('#customFile').on('change', () => {
-        //get the file name
-        const fileName = $('#customFile').val().replace('C:\\fakepath\\', "");
-        //replace the "Choose a file" label
-        $('.custom-file-label').html(fileName);
+    $('#customFile').on('change', (event) => {
+        const folderName = event.target.files[0].webkitRelativePath.split("/")[0];
+        // replace the "Choose a file" label
+        $('.custom-file-label').html(folderName);
+
+        // update folder name field
+        document.getElementById("folderNameInput").value = folderName;
+
     });
+
+    
 
 </script>
 <style>
