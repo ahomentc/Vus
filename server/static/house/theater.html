@@ -4,14 +4,14 @@
     <title>Dev Example — Networked-Aframe</title>
     <meta name="description" content="Dev Example — Networked-Aframe">
 
-    <script src="../vr_group_session.js"></script>   
-    <script src="../aframe.min.js"></script> 
-    <script src="../build.js"></script>
+    <script src="http://localhost:8080/room/vr_group_session.js"></script>   
+    <script src="http://localhost:8080/room/aframe.min.js"></script> 
+    <script src="http://localhost:8080/room/build.js"></script>
     <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
     <!-- <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script> -->
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script>
-    <script src='../kinematic-body.js'></script>
+    <script src='http://localhost:8080/room/kinematic-body.js'></script>
 
     <script src="video-transport.js"></script>
     <script>
@@ -83,11 +83,11 @@
         <template id="avatar-template">
           <a-entity class="avatar">
 
-            <a-asset-item id="raccoon-obj" src="../assets/Raccoon_Blocks/model.obj"></a-asset-item>
-            <a-asset-item id="raccoon-mtl" src="../assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+            <a-asset-item id="raccoon-obj" src="http://localhost:8080/room/assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="http://localhost:8080/room/assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
 
-            <a-asset-item id="scene-obj" src="../assets/Campfire_Blocks/model.obj"></a-asset-item>
-            <a-asset-item id="scene-mtl" src="../assets/Campfire_Blocks/materials.mtl"></a-asset-item>
+            <a-asset-item id="scene-obj" src="http://localhost:8080/room/assets/Campfire_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="scene-mtl" src="http://localhost:8080/room/assets/Campfire_Blocks/materials.mtl"></a-asset-item>
             <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
 
             </a-entity>
@@ -108,7 +108,7 @@
                 networked="template:#singleton-template;networkId:singleton;owner:nobody">
       </a-entity>   
 
-      <a-gltf-model id="apt-mtl" scale="5 5 5" src="../assets/theater_2/model.gltf" position="0 -5.598 0" gltf-model="../assets/theater_2/model.gltf"></a-gltf-model>
+      <a-gltf-model id="apt-mtl" scale="5 5 5" src="http://localhost:8080/room/assets/theater_2/model.gltf" position="0 -5.598 0" gltf-model="http://localhost:8080/room/assets/theater_2/model.gltf"></a-gltf-model>
 
       <a-entity light="color:#222;intensity:1.12;type:ambient"></a-entity>
       <a-entity light="intensity:5.34;type:point;groundColor:#ffdbc0;decay:0.9;color:#222" position="4.964 3.837 0.824" rotation="0.40107045659157625 129.83223637664454 3.036676314193363"></a-entity>
@@ -122,7 +122,6 @@
 
     <script>
         host = "http://127.0.0.1"
-        // host = "http://192.168.0.128"
 
     </script>
 
