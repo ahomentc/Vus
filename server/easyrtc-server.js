@@ -435,7 +435,7 @@ app.get('/loadRoom', (req, res) => {
 });
 
 
-app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
+app.use('/room', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
 
 app.use('/envs',serveStatic('tempEnvs'));
 //======== CREATING GROUP SESSION ========
