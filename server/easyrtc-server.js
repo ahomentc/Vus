@@ -30,7 +30,7 @@ process.title = "node-easyrtc";
 
 // Get port or default to 8080
 // var port = process.env.PORT || 8090;
-var port = process.env.PORT || 443;
+var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
 const host = '127.0.0.1'
