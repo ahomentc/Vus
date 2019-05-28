@@ -78,11 +78,9 @@ passport.use('local-signup', new LocalStrategy(
     funct.localReg(username, password)
     .then(function (user) {
       if (user) {
-        console.log("REGISTERED: " + user.username);
         done(null, user);
       }
       if (!user) {
-        console.log("COULD NOT REGISTER");
         done(null, user);
       }
     })
@@ -130,6 +128,10 @@ app.set('view engine', 'handlebars');
 
 //===============ROUTES===============
 
+app.get('/', function(req, res) {
+  res.redirect('lobby');
+});
+
 // displays our homepage
 app.get('/home', function(req, res){
   res.render('home', {user: req.session.user});
@@ -145,11 +147,9 @@ app.get('/lobby', function(req, res){
 
   funct.localCheckGroupExist(room).then(
     value => {
-      console.log('group exist = ' + value);
       if (value && room_types && room_types !== []) {
         const resultMap = {};
         funct.findEnvs(room_types).then(resultList => {
-          console.log(resultList);
             resultList.forEach(environment => {
               if(resultMap[environment.username]) {
                 resultMap[environment.username].push(environment);
@@ -159,7 +159,6 @@ app.get('/lobby', function(req, res){
             });
 
             req.session.env_list = resultList;
-            console.log('env_list = '+ req.session.env_list);
             req.session.group_map = resultMap;
             res.cookie("env_list",JSON.stringify(resultList));
             // resultMap will be passed to lobby to give each environment better explainations
@@ -233,7 +232,6 @@ app.get('/logout', function(req, res){
     res.redirect('/signin'); 
   } else {
     const name = req.session.user.username;
-    console.log("LOGGIN OUT " + req.session.user.username);
     delete req.session.error;
     delete req.session.user;
     req.logout();
@@ -257,7 +255,6 @@ app.get('/userconsole', (req, res) => {
   } else {    
     funct.localGetModels(req.session.user.username).then(
       models => {
-        console.log(models);
         return res.render('userconsole', {user: req.session.user, env: models});
       }
     );
@@ -453,7 +450,6 @@ app.get('/createRoom', function(req, res){
   const previousID =  req.cookies['group_session_room'];
   funct.localLeaveGroup(previousID).then(
     value => {
-      console.log("Leave group then => ");
       // generate a random hex roomname
       let randomInt = Math.floor((Math.random() * 10000000) + 1);
       let room_id = randomInt.toString(16);
@@ -487,7 +483,6 @@ app.get('/createRoom', function(req, res){
       res.cookie('group_session_room', room_id.toString());
       req.session.group_session_room = room_id;
 
-      console.log("Before create group");
       funct.localCreateGroup(room_id.toString(), defaultRooms).then(
         result => {
           delete req.session.error;

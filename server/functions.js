@@ -1,6 +1,5 @@
 var bcrypt = require('bcryptjs'),
-    Q = require('q'),
-    config = require('./config.js'); //config file contains all tokens and other private info
+    Q = require('q')
 
 var fs = require('fs');
 var AWS = require('aws-sdk');
@@ -30,7 +29,7 @@ var checkIfVusBucketExist = () => {
   var params = {
     Bucket: bucketName
   };
-  console.log("checking if bucket exists");
+
   s3.headBucket(params, function(err, data) {
     if (err) {
       if (err.statusCode >= 400 && err.statusCode < 500) {
@@ -57,10 +56,9 @@ var createVusBucket = () => {
     }
   };
 
-  console.log("Create Vus bucket");
 
   s3.createBucket(params, function(err, data) {
-    if (err) console.log(err, err.stack);
+    if (err) throw err;
   });
 };
 
@@ -90,7 +88,6 @@ exports.localReg = function (username, password) {
   pool.query(findUserQuery, (err, result) => {
     if (err) throw err;
     if (result.rows.length > 0) {
-      console.log("USERNAME ALREADY EXISTS:", result.username);
       deferred.resolve(false); // username exists
     } else {
       const hash = bcrypt.hashSync(password, 8);
@@ -124,7 +121,6 @@ exports.localAuth = function (username, password) {
   pool.query(findUserQuery, (err, result) => {
     if (err) throw err;
     if (!result || result.rows.length == 0) {
-      console.log("USERNAME NOT FOUND:", username);
       deferred.resolve(false);
     } else {
       const foundUser = result.rows[0];
@@ -132,7 +128,6 @@ exports.localAuth = function (username, password) {
       if (bcrypt.compareSync(password, hash)) {
         deferred.resolve(foundUser);
       } else {
-        console.log("AUTHENTICATION FAILED");
         deferred.resolve(false);
       }
     }
@@ -155,11 +150,8 @@ exports.localUploadModel = function(username, uploaded_files, envHtmlName, folde
     s3.upload(params, function (err, data) {
       // handle error
       if (err) {
-        console.log("Error", err);
         deferred.resolve(false);
         return deferred.promise;
-      } else {
-        console.log("Uploaded in:", data.Location);
       }
     });
   });
@@ -197,11 +189,9 @@ exports.localRemoveModel = function(username, folderName) {
   deleteEnvQuery['values'] = [username, folderName];
   pool.query(deleteEnvQuery, (err, result) => {
     if (err) throw err;
-    console.log(`${folderName} for user ${username} is deleted`);
     deferred.resolve(true);
   })
 
-  deferred.resolve(true);
   return deferred.promise;
 }
 
@@ -214,8 +204,6 @@ const recursiveDeleteVREnvsInS3 = function(folderPrefix) {
 
   s3.listObjectsV2(params, function(err, data) {
     if(err) throw err;
-
-    console.log(data);
 
     // delete all directories first
     data.CommonPrefixes.forEach(prefix => {
@@ -281,7 +269,6 @@ exports.localGetVRFilesFromS3 = function(environmentList) {
  * @param folderPrefix directory path in S3 bucket
  */
 const recursiveGetVREnvsFromS3 = (folderPrefix) => {
-  console.log(`Folder prefix = '${folderPrefix}'`);
   const params = {
     Bucket: bucketName,
     Delimiter: '/',
@@ -308,7 +295,7 @@ const recursiveGetVREnvsFromS3 = (folderPrefix) => {
       // get the file content and write to temporary folder in the disk
       s3.getObject(getFileParam, function(err, data) {
         if (err) {
-          console.log(err);
+          throw err;
         } else if (data) {
           file.write(data.Body, () => {
             file.end();
@@ -335,7 +322,6 @@ exports.localRemoveVRFilesInTemp = function() {
   var deferred = Q.defer();
   const directory = `./${VREnvironmentsDir}`;
   rimraf(directory, function () { 
-    console.log("Finish resetting tempEnvironments");
     deferred.resolve(true);
   });
 
