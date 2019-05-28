@@ -1,5 +1,6 @@
 // Load required modules
 var http    = require("http");              // http server core module
+var https   = require("https");
 var express = require("express");           // web framework external module
 var serveStatic = require('serve-static');  // serve static files
 var socketIo = require("socket.io");        // web socket external module
@@ -18,7 +19,7 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const multer  = require('multer');
 const upload = multer({ preservePath: true });
 const keys = require('../privateKeys/keys');
-const formidable = require('formidable');
+const fs = require('fs');
 var SHA256 = require("crypto-js/sha256");
 
 var config = require('./config.js'); //config file contains all tokens and other private info
@@ -28,7 +29,8 @@ var funct = require('./functions.js'); //funct file contains our helper function
 process.title = "node-easyrtc";
 
 // Get port or default to 8080
-var port = process.env.PORT || 8090;
+// var port = process.env.PORT || 8090;
+var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
 const host = '127.0.0.1'
@@ -575,7 +577,12 @@ app.post('/joinRoom', function(req, res){
 //=====================================
 
 // Start Express http server
-var webServer = http.createServer(app);
+
+// var webServer = http.createServer(app);
+var webServer = https.createServer({
+  key: fs.readFileSync(__dirname + '/server.key'),
+  cert: fs.readFileSync(__dirname + '/server.cert')
+}, app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = socketIo.listen(webServer, {"log level":1});
