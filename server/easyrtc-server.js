@@ -4,7 +4,6 @@ var express = require("express");           // web framework external module
 var serveStatic = require('serve-static');  // serve static files
 var socketIo = require("socket.io");        // web socket external module
 var easyrtc = require("easyrtc");               // EasyRTC external module
-var mongoose = require('mongoose');
 var exphbs = require('express-handlebars'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
@@ -21,9 +20,6 @@ const upload = multer({ preservePath: true });
 const keys = require('../privateKeys/keys');
 const formidable = require('formidable');
 var SHA256 = require("crypto-js/sha256");
-
-// connect to the database
-mongoose.connect('mongodb://localhost/my_db');
 
 var config = require('./config.js'); //config file contains all tokens and other private info
 var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
@@ -61,12 +57,10 @@ passport.use('local-signin', new LocalStrategy(
     .then(function (user) {
       if (user) {
         console.log("LOGGED IN AS: " + user.username);
-        req.session.success = 'You are successfully logged in ' + user.username + '!';
         done(null, user);
       }
       if (!user) {
         console.log("COULD NOT LOG IN");
-        req.session.error = 'Could not log user in. Please try again.'; //inform user could not log them in
         done(null, user);
       }
     })
@@ -85,12 +79,10 @@ passport.use('local-signup', new LocalStrategy(
     .then(function (user) {
       if (user) {
         console.log("REGISTERED: " + user.username);
-        req.session.success = 'You are successfully registered and logged in ' + user.username + '!';
         done(null, user);
       }
       if (!user) {
         console.log("COULD NOT REGISTER");
-        req.session.error = 'That username is already in use, please try a different one.'; //inform user could not log them in
         done(null, user);
       }
     })
@@ -154,7 +146,7 @@ app.get('/lobby', function(req, res){
   funct.localCheckGroupExist(room).then(
     value => {
       console.log('group exist = ' + value);
-      if (value && room_types) {
+      if (value && room_types && room_types !== []) {
         const resultMap = {};
         funct.findEnvs(room_types).then(resultList => {
           console.log(resultList);
@@ -265,6 +257,7 @@ app.get('/userconsole', (req, res) => {
   } else {    
     funct.localGetModels(req.session.user.username).then(
       models => {
+        console.log(models);
         return res.render('userconsole', {user: req.session.user, env: models});
       }
     );
@@ -330,7 +323,7 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
 passport.use(new GoogleStrategy({
   clientID: keys.google.clientID,
   clientSecret: keys.google.clientSecret,
-  callbackURL: "http://localhost:8080/auth/google/callback"
+  callbackURL: "http://localhost:8090/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
@@ -372,7 +365,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
 passport.use(new FacebookStrategy({
   clientID: keys.facebook.clientID,
   clientSecret: keys.facebook.clientSecret,
-  callbackURL: "http://localhost:8080/auth/facebook/callback"
+  callbackURL: "http://localhost:8090/auth/facebook/callback"
 }, (accessToken, refreshToken, profile, cb) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
@@ -493,6 +486,7 @@ app.get('/createRoom', function(req, res){
       res.cookie('group_session_room', room_id.toString());
       req.session.group_session_room = room_id;
 
+      console.log("Before create group");
       funct.localCreateGroup(room_id.toString(), defaultRooms).then(
         result => {
           delete req.session.error;
@@ -547,8 +541,13 @@ app.post('/joinRoom', function(req, res){
                 res.cookie('group_session_room', newRoomID.toString());
                 req.session.group_session_room = newRoomID;
 
-                res.cookie('group_room_types', result.directories);
-                req.session.group_room_types = result.directories;
+                var directories = [];
+                result.forEach(groupUser => {
+                  directories.push(groupUser.username);
+                });
+
+                res.cookie('group_room_types', directories);
+                req.session.group_room_types = directories;
 
                 // create a session id to be stored in cookie for user authentication
                 var sessionID = SHA256(Math.random().toString())

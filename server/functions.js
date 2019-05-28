@@ -4,7 +4,6 @@ var bcrypt = require('bcryptjs'),
 
 var fs = require('fs');
 var AWS = require('aws-sdk');
-var path = require('path');
 
 const keys = require('../privateKeys/keys');
 const rimraf = require("rimraf");
@@ -69,44 +68,45 @@ var createVusBucket = () => {
 checkIfVusBucketExist();
 
 
-// MongoDB connection information
-var mongodbUrl = 'mongodb://' + config.mongodbHost + ':27017/users';
-var MongoClient = require('mongodb').MongoClient
+// PostgresSQL connection
+
+const { Pool } = require('pg');
+const prepareStatements = require('../server/databaseQueries');
+
+// connection pooling for PostgreSQL
+const pool = new Pool({
+  user: keys.psql.databaseID,
+  password:  keys.psql.databasePassword,
+  database: 'vusdb'
+});
 
 //used in local-signup strategy
 exports.localReg = function (username, password) {
 
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function (err, db) {
-    var collection = db.collection('localUsers');
-
-    //check if username is already assigned in our database
-    collection.findOne({'username' : username})
-      .then(function (result) {
-        if (null != result) {
-          console.log("USERNAME ALREADY EXISTS:", result.username);
-          deferred.resolve(false); // username exists
+  var findUserQuery = {...prepareStatements.findUserQuery};
+  findUserQuery['values'] = [username]; 
+  pool.query(findUserQuery, (err, result) => {
+    if (err) throw err;
+    if (result.rows.length > 0) {
+      console.log("USERNAME ALREADY EXISTS:", result.username);
+      deferred.resolve(false); // username exists
+    } else {
+      const hash = bcrypt.hashSync(password, 8);
+      var registerUserQuery = {...prepareStatements.registerUserQuery};
+      
+      registerUserQuery['values'] = [username, hash, "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG", ""]
+      pool.query(registerUserQuery, (err, res) => {
+        const createdUser = {
+          "username": username,
+          "password": hash,
+          "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG",
+          "room": ""
         }
-        else  {
-          var hash = bcrypt.hashSync(password, 8);
-          var user = {
-            "username": username,
-            "password": hash,
-            "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG",
-            "environments": [],
-            "room": ""
-          }
-
-          console.log("CREATING USER:", username);
-
-          collection.insert(user)
-            .then(function () {
-              db.close();
-              deferred.resolve(user);
-            });
-        }
+        deferred.resolve(createdUser);
       });
+    }
   });
 
   return deferred.promise;
@@ -119,31 +119,23 @@ exports.localReg = function (username, password) {
 exports.localAuth = function (username, password) {
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function (err, db) {
-    var collection = db.collection('localUsers');
-
-    collection.findOne({'username' : username})
-      .then(function (result) {
-        if (null == result) {
-          console.log("USERNAME NOT FOUND:", username);
-
-          deferred.resolve(false);
-        }
-        else {
-          var hash = result.password;
-
-          console.log("FOUND USER: " + result.username);
-
-          if (bcrypt.compareSync(password, hash)) {
-            deferred.resolve(result);
-          } else {
-            console.log("AUTHENTICATION FAILED");
-            deferred.resolve(false);
-          }
-        }
-
-        db.close();
-      });
+  var findUserQuery = {...prepareStatements.findUserQuery};
+  findUserQuery['values'] = [username];
+  pool.query(findUserQuery, (err, result) => {
+    if (err) throw err;
+    if (!result || result.rows.length == 0) {
+      console.log("USERNAME NOT FOUND:", username);
+      deferred.resolve(false);
+    } else {
+      const foundUser = result.rows[0];
+      const hash = foundUser.password;
+      if (bcrypt.compareSync(password, hash)) {
+        deferred.resolve(foundUser);
+      } else {
+        console.log("AUTHENTICATION FAILED");
+        deferred.resolve(false);
+      }
+    }
   });
 
   return deferred.promise;
@@ -154,7 +146,6 @@ exports.localUploadModel = function(username, uploaded_files, envHtmlName, folde
   var deferred = Q.defer();
 
   uploaded_files.forEach(file => {
-
     var params = {
       Bucket: bucketName,
       Body: file.buffer,
@@ -173,37 +164,23 @@ exports.localUploadModel = function(username, uploaded_files, envHtmlName, folde
     });
   });
 
-  // store file metadata info into local storage
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    var environmentCollection = db.collection("localEnvironments");
-    environmentCollection.findOne({'username' : username, "envName": folderName})
-      .then(function(result) {
-        var newEnvironment = {
-          "envName": folderName,
-          "htmlName": envHtmlName,
-          "uploadTime": new Date().toDateString(),
-          "description": envDescription,
-          "username": username,
-          "tag": envTag
-        };
-        if (result == null) {
-          environmentCollection.insert(newEnvironment).then(function() {
-            db.close();
-          });
-        } else {
-          environmentCollection.updateOne({'username' : username, "envName": folderName}
-            , { $set: {
-              "htmlName": envHtmlName,
-              "uploadTime": new Date().toDateString(),
-              "description": envDescription,
-              "tag": envTag
-            } }, function(err, result) {
-              db.close();
-          });
-        }
+  var findEnvWithNamesQuery = {...prepareStatements.findEnvWithUserAndEnvName};
+  findEnvWithNamesQuery['values'] = [username, folderName];
+  pool.query(findEnvWithNamesQuery, (err, result) => {
+    if (result.rows.length == 0) {
+      var insertNewEnvQuery = {...prepareStatements.insertNewEnvQuery};
+      insertNewEnvQuery['values'] = [folderName, envHtmlName, new Date().toDateString(), envDescription, username, envTag];
+      pool.query(insertNewEnvQuery, (err, result) => {
+        if (err) throw err;
       });
-
-    });
+    } else {
+      var updateEnvQuery = {...prepareStatements.updateEnvQuery};
+      updateEnvQuery['values'] = [folderName, envHtmlName, new Date().toDateString(), envDescription, username, envTag];
+      pool.query(updateEnvQuery, (err, result) => {
+        if (err) throw err;
+      });
+    }
+  });
 
   deferred.resolve(true);
   return deferred.promise;
@@ -216,20 +193,15 @@ exports.localRemoveModel = function(username, folderName) {
   const folderPath = username + "/" + folderName + "/";
   recursiveDeleteVREnvsInS3(folderPath);
 
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    var environmentCollection = db.collection("localEnvironments");
-    environmentCollection.deleteOne({'username': username, "envName":folderName})
-      .then(function(res) {
-        if (err) throw err;
-        console.log(`${folderName} for user ${username} is deleted`);
-        deferred.resolve(true);
-        db.close();
-      });
-  });
+  var deleteEnvQuery = {...prepareStatements.deleteEnvQuery};
+  deleteEnvQuery['values'] = [username, folderName];
+  pool.query(deleteEnvQuery, (err, result) => {
+    if (err) throw err;
+    console.log(`${folderName} for user ${username} is deleted`);
+    deferred.resolve(true);
+  })
 
   deferred.resolve(true);
-
-
   return deferred.promise;
 }
 
@@ -269,23 +241,15 @@ const recursiveDeleteVREnvsInS3 = function(folderPrefix) {
 exports.findEnvs = function(userNames) {
   var deferred = Q.defer();
 
-  console.log("In find Envs for userNames: " + userNames);
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    var environmentCollection = db.collection("localEnvironments");
-    const ORQuery = [];
-    userNames.forEach(
-      name => {
-        ORQuery.push({'username': name});
-      }
-    );
+  var findEnvsForUserQuery = {...prepareStatements.findEnvsForUserQuery};
 
-    environmentCollection.find({
-      "$or": ORQuery
-    }).toArray(function(err, res){
-      db.close();
-      deferred.resolve(res);
-    });
-  })
+  findEnvsForUserQuery['values'] = [[userNames]];
+
+  pool.query(findEnvsForUserQuery, (err, result) => {
+    if (err) throw err;
+    const envs = result.rows;
+    deferred.resolve(envs);
+  });
 
   return deferred.promise;
 }
@@ -303,10 +267,9 @@ exports.localGetVRFilesFromS3 = function(environmentList) {
   var deferred = Q.defer();
 
   environmentList.forEach(env => {
-      const prefix = env.username + "/" + env.envName + "/";
-      recursiveGetVREnvsFromS3(prefix);
-    }
-  );
+    const prefix = env.username + "/" + env.envName + "/";
+    recursiveGetVREnvsFromS3(prefix);
+  });
 
   deferred.resolve(true);
   return deferred.promise;
@@ -332,7 +295,6 @@ const recursiveGetVREnvsFromS3 = (folderPrefix) => {
 
   s3.listObjectsV2(params, function(err, data) {
     if(err)throw err;
-    // console.log(data);
 
     // for files in the directory
     data.Contents.forEach(files => {
@@ -386,12 +348,13 @@ exports.localRemoveVRFilesInTemp = function() {
  */
 exports.localGetModels = function(username) {
   var deferred = Q.defer();
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    var environmentCollection = db.collection("localEnvironments");
-    environmentCollection.find({'username': username}).toArray(function(err, res) {
-      deferred.resolve(res);
-      db.close();
-    })
+
+  var getEnvForUserQuery = {...prepareStatements.getEnvForUserQuery};
+  getEnvForUserQuery['values'] = [username];
+
+  pool.query(getEnvForUserQuery, (err, result) => {
+    if (err) throw err;
+    deferred.resolve(result.rows);
   });
 
   return deferred.promise;
@@ -403,55 +366,47 @@ exports.localGetModels = function(username) {
 exports.localCheckGroupExist = function(groupID) {
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    const groupCollection = db.collection("localGroups");
-    groupCollection.findOne({'id' : groupID}).then(
-      res => {
-        if (err) throw err;
-        if (!res) {
-          deferred.resolve(false);
-        } else {
-          deferred.resolve(true);
-        }
-        db.close();
-      }
-    );
+  var findGroupQuery = {...prepareStatements.findGroupQuery};
+  findGroupQuery['values'] = [groupID];
+  pool.query(findGroupQuery, (err, result) => {
+    if (err) throw err;
+    if (!result) {
+      deferred.resolve(false);
+    } else {
+      deferred.resolve(true);
+    }
   });
 
   return deferred.promise;
 }
 
-exports.localCreateGroup = function(groupID, defaultDirectories) {
+exports.localCreateGroup = function(groupID, defaultUsers) {
   var deferred = Q.defer();
+  var findGroupQuery = {...prepareStatements.findGroupQuery};
+  findGroupQuery['values'] = [groupID];
+  pool.query(findGroupQuery, (err, result) => {
+    if (err) throw err;
+    if (result.rows.length == 0) {
+      var insertGroupQuery = {...prepareStatements.insertGroupQuery};
+      insertGroupQuery['values'] = [groupID, 1];
+      pool.query(insertGroupQuery, (err, result) => {
+        if(err) throw err;
 
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    const groupCollection = db.collection("localGroups");
-    groupCollection.findOne({'id' : groupID}).then(
-      res => {
-        if (err) throw err;
-        if (!res) {
+        var groupArr = [];
+        defaultUsers.forEach(() => groupArr.push(groupID));
 
-          const group = {
-            directories: defaultDirectories,
-            id: groupID,
-            userCount: 1
-          }
+        var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
+        insertGroupUserQuery['values'] = [[groupArr],[defaultUsers]];
 
-          console.log("CREATING GROUP:", group);
+        pool.query(insertGroupUserQuery, (err, res) => {
+          if (err) throw err;
+          deferred.resolve(true);
+        });
 
-          groupCollection.insert(group)
-            .then(function() {
-              db.close();
-              console.log("Resolved in insert")
-              deferred.resolve(group);
-            })
-        } else {
-          console.log("Resolved here")
-          deferred.resolve(false);
-          db.close();
-        }
-      }
-    );
+      });
+    } else {
+      deferred.resolve(false);
+    }
   });
 
   return deferred.promise;
@@ -460,30 +415,28 @@ exports.localCreateGroup = function(groupID, defaultDirectories) {
 exports.localJoinGroup = function(groupID) {
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    const groupCollection = db.collection("localGroups");
-    groupCollection.findOne({'id' : groupID}).then(
-      res => {
+  var findGroupQuery = {...prepareStatements.findGroupQuery};
+  findGroupQuery['values'] = [groupID];
+  pool.query(findGroupQuery, (err, result) => {
+    if (err) throw err;
+    if (result.rows.length == 0) {
+      deferred.resolve(false);
+    } else {
+      const groupInfo = result.rows[0];
+      var updateGroupQuery = {...prepareStatements.updateGroupQuery};
+      updateGroupQuery['values'] = [groupInfo.usercount + 1, groupID];
+      pool.query(updateGroupQuery, (err, res) => {
         if (err) throw err;
-        if (!res) {
-          deferred.resolve(false);
-          db.close();
-        } else {
-          groupCollection.findOneAndUpdate({'id': groupID}, {
-            $set: {
-              "directories": res.directories,
-              "id": groupID,
-              "userCount": res.userCount + 1
-            }
-          }, function(err, result) {
-            console.log("Update result");
-            console.log(result); 
-            deferred.resolve(result.value);
-            db.close();
-          });
-        }
-      }
-    )
+
+        var findGroupUserQuery = {...prepareStatements.findGroupUserQuery};
+        findGroupUserQuery['values'] = [groupID];
+        pool.query(findGroupUserQuery, (err, res) => {
+          if (err) throw err;
+          deferred.resolve(res.rows);
+        });
+
+      });
+    }
   });
 
   return deferred.promise;
@@ -492,70 +445,62 @@ exports.localJoinGroup = function(groupID) {
 exports.localLeaveGroup = function(groupID) {
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    const groupCollection = db.collection("localGroups");
-    groupCollection.findOne({'id' : groupID}).then(
-      res => {
-        if (err) throw err;
-        if (!res) {
+  var findGroupQuery = {...prepareStatements.findGroupQuery};
+  findGroupQuery['values'] = [groupID];
+  pool.query(findGroupQuery, (err, result) => {
+    if (err) throw err;
+    if (result.rows.length == 0) {
+      deferred.resolve(false);
+    } else {
+      const groupInfo = result.rows[0];
+      if (groupInfo.usercount > 1) {
+        var updateGroupQuery = {...prepareStatements.updateGroupQuery};
+        updateGroupQuery['values'] = [groupInfo.usercount - 1, groupID];
+        pool.query(updateGroupQuery, (err, res) => {
+          if (err) throw err;
           deferred.resolve(true);
-          db.close();
-        } else {
-          if (res.userCount > 1) {
-            groupCollection.updateOne({'id': groupID}, {
-              $set: {
-                "directories": res.directories,
-                "id": groupID,
-                "userCount": res.userCount - 1
-              }
-            }, function(err, result) {
-  
-              deferred.resolve(true);
-              db.close();
-            });
-          } else {
-            groupCollection.deleteOne({'id' : groupID}).then(res => {
-              if (err) throw err;
-              console.log(`groupID ${groupID} is deleted`);
-              deferred.resolve(true);
-              db.close();
-            })
-          }
+        });
+      } else {
+        var deleteGroupQuery = {...prepareStatements.deleteGroupQuery};
+        deleteGroupQuery['values'] = [groupID];
 
-        }
+        pool.query(deleteGroupQuery, (err, res) => {
+          if (err) throw err;
+          var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
+          deleteGroupUserQuery['values'] = [groupID];
+
+          pool.query(deleteGroupUserQuery, (err, res) => {
+            if (err) throw err;
+            deferred.resolve(true);
+          });
+        })
       }
-    )
+    }
   });
+
 
   return deferred.promise;
 }
 
-exports.localUpdateGroupEnvs = function(groupID, newEnvironments) {
+exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
   var deferred = Q.defer();
+  var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
+  deleteGroupUserQuery['values'] = [groupID];
+  pool.query(deleteGroupUserQuery, (err, res) => {
+    if (err) throw err;
+    deferred.resolve(true);
+    var groupArr = [];
+    newUserEnvironments.forEach(() => groupArr.push(groupID));
 
-  MongoClient.connect(mongodbUrl, function(err, db) {
-    const groupCollection = db.collection("localGroups");
-    groupCollection.findOne({'id' : groupID}).then(
-      res => {
-        if (err) throw err;
-        if (!res) {
-          deferred.resolve(false);
-          db.close();
-        } else {
-          groupCollection.updateOne({'id': groupID}, {
-            $set: {
-              "directories": newEnvironments,
-              "id": groupID,
-              "userCount": res.userCount
-            }
-          }, function(err, result) {
+    var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
+    insertGroupUserQuery['values'] = [[groupArr],[newUserEnvironments]];
 
-            deferred.resolve(true);
-            db.close();
-          })
-        }
-      }
-    )
+    pool.query(insertGroupUserQuery, (err, res) => {
+      if (err) throw err;
+      deferred.resolve(true);
+    })
+
+
   });
 
   return deferred.promise;
@@ -601,34 +546,38 @@ exports.localUpdateGroupEnvs = function(groupID, newEnvironments) {
 exports.setUserRoom = function(username,room_id){
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function (err, db) {
-      var collection = db.collection('localUsers');
-
-      // find user
-      collection.findOne({'username': username}).then(function(result) {
-          if (null != result) {
-            // update the room entree in the user model
-            collection.updateOne({"_id":result._id}, {$set: {"room":room_id}})
-          }
-          else{
-            deferred.resolve(false);
-          }
-      });
-      
+  var findUserQuery = {...prepareStatements.findUserQuery};
+  findUserQuery['values'] = [username]; 
+  pool.query(findUserQuery, (err, result) => {
+    if (err) throw err;
+    if (result.rows.length == 0) {
+      deferred.resolve(false); // username does not exists
+    } else {
+      var updateUserRoomQuery = {...prepareStatements.updateUserRoomQuery};
+      updateUserRoomQuery['values'] = [room_id, username];
+      pool.query(updateUserRoomQuery, (err, res) => {
+        if (err) throw err;
+        deferred.resolve(true);
+      })
+    }
   });
+
 }
 
 // get the room that the user has
 exports.getUserRoom = function(username,vus_group_session_auth){
   var deferred = Q.defer();
 
-  MongoClient.connect(mongodbUrl, function (err, db) {
-      var collection = db.collection('localUsers');
-
-      // find user
-      collection.findOne({'username': username}).then(function(result) {
-          deferred.resolve(result.room);
-      }); 
+  var findUserQuery = {...prepareStatements.findUserQuery};
+  findUserQuery['values'] = [username]; 
+  pool.query(findUserQuery, (err, result) => {
+    if (err) throw err;
+    if (result.rows.length == 0) {
+      deferred.resolve(false); // username does not exists
+    } else {
+      const user = result.rows[0];
+      deferred.resolve(user.room);
+    }
   });
   return deferred.promise;
 };
