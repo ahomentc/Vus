@@ -356,7 +356,7 @@ exports.localCheckGroupExist = function(groupID) {
   findGroupQuery['values'] = [groupID];
   pool.query(findGroupQuery, (err, result) => {
     if (err) throw err;
-    if (!result) {
+    if (result.rows.length == 0) {
       deferred.resolve(false);
     } else {
       deferred.resolve(true);
