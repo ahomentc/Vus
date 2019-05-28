@@ -167,9 +167,9 @@ app.get('/lobby', function(req, res){
             });
 
             req.session.env_list = resultList;
-            console.log(req.session.env_list);
+            console.log('env_list = '+ req.session.env_list);
             req.session.group_map = resultMap;
-            
+            res.cookie("env_list",JSON.stringify(resultList));
             // resultMap will be passed to lobby to give each environment better explainations
             if (req.session.user) {
               res.render('lobby', {error: req.session.error, group_session_room:room, user: req.session.user, group_map: resultMap});
@@ -435,8 +435,9 @@ app.get('/loadRoom', (req, res) => {
 });
 
 
-app.use('/room', serveStatic('server/static', {'index': ['home.html']}));
+app.use('/room', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
 
+app.use('/envs',serveStatic('tempEnvs'));
 //======== CREATING GROUP SESSION ========
 
 // Maybe switch to just session instead of cookies for security reasons

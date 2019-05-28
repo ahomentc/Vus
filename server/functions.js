@@ -318,7 +318,7 @@ exports.localGetVRFilesFromS3 = function(environmentList) {
  * @param folderPrefix directory path in S3 bucket
  */
 const recursiveGetVREnvsFromS3 = (folderPrefix) => {
-  // console.log(`Folder prefix = '${folderPrefix}'`);
+  console.log(`Folder prefix = '${folderPrefix}'`);
   const params = {
     Bucket: bucketName,
     Delimiter: '/',
