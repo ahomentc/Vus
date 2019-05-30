@@ -29,8 +29,8 @@ var funct = require('./functions.js'); //funct file contains our helper function
 process.title = "node-easyrtc";
 
 // Get port or default to 8080
-// var port = process.env.PORT || 8090;
-var port = process.env.PORT || 8443;
+var port = process.env.PORT || 8090;
+// var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
 const host = '127.0.0.1'
@@ -578,11 +578,11 @@ app.post('/joinRoom', function(req, res){
 
 // Start Express http server
 
-// var webServer = http.createServer(app);
-var webServer = https.createServer({
-  key: fs.readFileSync(__dirname + '/server.key'),
-  cert: fs.readFileSync(__dirname + '/server.cert')
-}, app);
+var webServer = http.createServer(app);
+// var webServer = https.createServer({
+//   key: fs.readFileSync(__dirname + '/server.key'),
+//   cert: fs.readFileSync(__dirname + '/server.cert')
+// }, app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = socketIo.listen(webServer, {"log level":1});
