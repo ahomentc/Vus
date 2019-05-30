@@ -364,7 +364,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
 passport.use(new FacebookStrategy({
   clientID: keys.facebook.clientID,
   clientSecret: keys.facebook.clientSecret,
-  callbackURL: "/auth/facebook/callback"
+  callbackURL: "https://www.vusgroup.com/auth/facebook/callback"
 }, (accessToken, refreshToken, profile, cb) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
