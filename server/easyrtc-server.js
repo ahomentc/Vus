@@ -322,7 +322,7 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
 passport.use(new GoogleStrategy({
   clientID: keys.google.clientID,
   clientSecret: keys.google.clientSecret,
-  callbackURL: location.host + "/auth/google/callback"
+  callbackURL: "https://localhost:8090/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
@@ -364,7 +364,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
 passport.use(new FacebookStrategy({
   clientID: keys.facebook.clientID,
   clientSecret: keys.facebook.clientSecret,
-  callbackURL: location.host + "/auth/facebook/callback"
+  callbackURL: "https://localhost:8090/auth/facebook/callback"
 }, (accessToken, refreshToken, profile, cb) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
