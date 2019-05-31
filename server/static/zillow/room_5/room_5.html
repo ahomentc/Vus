@@ -1,0 +1,162 @@
+<html style="background-color: black">
+  <head>
+    <meta charset="utf-8">
+    <title>Dev Example — Networked-Aframe</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+
+    <script src="../vr_group_session.js"></script>   
+    <script src="../aframe.min.js"></script> 
+    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
+    <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script> -->
+    <script src='../kinematic-body.js'></script>
+    <script src="../movement-controls.js"></script>
+    <script src="../touch-controls.js"></script>
+    <script src="../trackpad-controls.js"></script>
+    <script src='../kinematic-body.js'></script>
+
+    <script>
+      AFRAME.registerComponent("forward_space", {
+        init: function() {
+          var camera = document.querySelector("a-camera")
+          var player = document.querySelector("#player")
+          window.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+               var angle = camera.getAttribute("rotation")
+               var x = .3 * Math.cos((angle.y+90) * Math.PI / 180)
+               var y = .3 * Math.sin((angle.y+90) * Math.PI / 180)
+               var pos = player.getAttribute("position")
+               pos.x -= y;
+               pos.z -= x;
+               player.setAttribute("position", pos);
+             }
+           })
+         }
+        })
+    </script>
+
+  </head>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <a-scene antialias="true" physics="gravity:0;"  networked-scene="
+      room: dev;
+      debug: true;
+      adapter: wseasyrtc;
+      connectOnLoad: false;
+      audio: true;
+    ">
+      <a-assets>
+        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
+        <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+
+        <!-- Templates -->
+
+        <!-- Avatar -->
+        <template id="player-template">
+          <a-entity></a-entity>
+        </template>
+
+        <!-- Avatar -->
+        <template id="head-template">
+          <a-entity class="avatar">
+            <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
+
+            <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- Hand -->
+        <template id="hand-template">
+          <a-entity>
+            <a-box position="0 0 .08" scale="0.07 0.01 0.07"></a-box>
+          </a-entity>
+        </template>
+
+
+        <!-- /Templates -->
+      </a-assets>
+
+      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+            <a-sphere class="head"
+              random-color
+              visible="false"
+            ></a-sphere>
+        </a-camera>
+
+        <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
+      </a-entity>
+
+      <a-gltf-model id="apt-mtl" position="-20.617 .95 3.244" scale="0.025 0.025 0.025" src="assets/floor_plan_york/scene.gltf" gltf-model="assets/floor_plan_york/scene.gltf"></a-gltf-model>
+      <a-entity position="-6.70959 3.33095 -0.09491" scale="18.60207 0.103 9.01858" geometry="" material=""></a-entity>
+      <a-gltf-model id="background" position="119.192 11.759 4.82" scale="300 300 300" src="assets/mountain/scene.gltf" rotation="0 -165.47021123378175 0" gltf-model="assets/mountain/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="sky" position="0 0 0" scale="10 10 10" src="assets/background_1/scene.gltf"></a-gltf-model>
+
+
+      <a-entity light="intensity:1.12;color:#222;type:ambient"></a-entity>
+      <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
+      <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
+
+
+      <!-- Ground -->
+      <!-- we've made the ground at height 2. Aweful but works for now -->
+      <a-grid static-body material="visible:false;"></a-grid>
+
+      <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
+
+    </a-scene>
+
+    <script>
+        // host = "http://127.0.0.1"
+        host = "http://192.168.0.128"
+        document.querySelector('#link_button').addEventListener('click', function() {
+            window.location.href =  host + ':8080/room/google-blocks.html';
+            // window.location.href =  host + ':8080/google-blocks.html';
+        });
+    </script>
+
+    <script>
+      // Define custom schema for syncing avatar color, set by random-color
+      NAF.schemas.add({
+        template: '#head-template',
+        components: [
+          'position',
+          'rotation',
+          {
+            selector: '.head',
+            component: 'material'
+          }
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#player-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#hand-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      // Called by Networked-Aframe when connected to server
+      function onConnect () {
+        console.log("onConnect", new Date());
+      }
+
+    </script>
+  </body>
+</html>
