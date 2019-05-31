@@ -3,20 +3,41 @@
     <meta charset="utf-8">
     <title>Dev Example — Networked-Aframe</title>
     <meta name="description" content="Dev Example — Networked-Aframe">
-    <script src="./vr_group_session.js"></script>   
-    <script src="./aframe.min.js"></script> 
-    <script src="./build.js"></script>
+
+    <script src="vr_group_session.js"></script>   
+    <script src="aframe.min.js"></script> 
     <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
-    <!-- <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script> -->
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
-    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script>
-    <script src='./kinematic-body.js'></script>
+    <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script> -->
+    <script src='kinematic-body.js'></script>
+    <script src="movement-controls.js"></script>
+    <script src="touch-controls.js"></script>
+    <script src="trackpad-controls.js"></script>
+
+    <script>
+      AFRAME.registerComponent("forward_space", {
+        init: function() {
+          var camera = document.querySelector("a-camera")
+          var player = document.querySelector("#player")
+          window.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+               var angle = camera.getAttribute("rotation")
+               var x = .3 * Math.cos((angle.y+90) * Math.PI / 180)
+               var y = .3 * Math.sin((angle.y+90) * Math.PI / 180)
+               var pos = player.getAttribute("position")
+               pos.x -= y;
+               pos.z -= x;
+               player.setAttribute("position", pos);
+             }
+           })
+         }
+        })
+    </script>
+
   </head>
 
   <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-    <script src="/easyrtc/easyrtc.js"></script>
-    <a-scene physics="gravity:0;"  networked-scene="
+    <a-scene antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
       adapter: wseasyrtc;
@@ -29,8 +50,13 @@
 
         <!-- Templates -->
 
+        <!-- Player -->
+        <template id="player-template">
+          <a-entity></a-entity>
+        </template>
+
         <!-- Avatar -->
-        <template id="avatar-template">
+        <template id="head-template">
           <a-entity class="avatar">
             <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
 
@@ -74,18 +100,30 @@
           </a-entity>
         </template>
 
+        <!-- Hand -->
+        <template id="hand-template">
+          <a-entity>
+            <!-- <a-box position="0 0 .08" scale="0.07 0.01 0.07"></a-box> -->
+          </a-entity>
+        </template>
+
         <!-- /Templates -->
       </a-assets>
 
-      <a-entity id="player" rotation="-7.105 74.714 0" position="5.984 1.6 0.604" networked="template:#avatar-template;attachTemplateToLocal:false;" camera="userHeight: 2.5" networked-audio-source spawn-in-circle="radius:3" wasd-controls look-controls>
-        <a-sphere class="head"
-          visible="false"
-          random-color
-        ></a-sphere>
+      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="5.984 1.6 0.604" rotation="0 74.714 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+            <a-sphere class="head"
+              random-color
+              visible="false"
+            ></a-sphere>
+        </a-camera>
+
+        <a-entity rotation="-7.105 74.714 0" position="0 1.6 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1.6 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
-      <a-gltf-model id="room" position="0 0 0" scale=".0092 .0092 .0092" src="./assets/lobby/scene.gltf"></a-gltf-model>
-      <a-gltf-model id="background" position="0 0 0" scale="10 10 10" src="./assets/background_1/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="room" position="0 0 0" scale="0.01 0.01 0.01" src="assets/lobby/scene.gltf" gltf-model="assets/lobby/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="background" position="0 0 0" scale="10 10 10" src="assets/background_1/scene.gltf"></a-gltf-model>
 
       <a-entity light="color: #222; intensity: 5; type: ambient;" visible=""></a-entity>
       <a-entity light="color:#0a1b22;intensity:2.4100000000000006" position="5 13.902 5"></a-entity>
@@ -109,54 +147,51 @@
     </a-scene>
 
     <script>
-        host = "http://localhost:8090/envs/"
-        let scene=document.getElementsByTagName("a-scene")[0];
-        let counter=0;
-        let portal_data=JSON.parse(getCookie("env_list"));
-        for(i in portal_data)
-        {
-          if(counter>=16)break;
-          let angle=11+counter*22.5;
-          let x=-9.0946*Math.sin(2*angle*Math.PI/360);
-          let z=-9.0946*Math.cos(2*angle*Math.PI/360);
-          var portal=document.createElement("a-box");
-          portal.setAttribute("position",x+" 3.3 "+z);
-          portal.setAttribute("rotation","0 "+angle+" 0");
-          portal.setAttribute("scale","2.194 3.606 0.086");
-          portal.setAttribute("static-body","sphereRadius:NaN");
-          portal.setAttribute("id",i);
-          portal.setAttribute("material","opacity:.6; emissive:#040404;side:double;color:#fff9ed");
-          let info=portal_data[i];
-          portal.addEventListener("collide", (e)=>{
-            window.location.href =  host + info["username"]+"/"+info["envName"]+"/"+info["htmlName"];
-          });
-          scene.appendChild(portal);
-          x=-9*Math.sin(2*angle*Math.PI/360);
-          z=-9*Math.cos(2*angle*Math.PI/360)
-          var title=document.createElement("a-entity");
-          title.setAttribute("position",x+" 4.364 "+z);
-          title.setAttribute("rotation","0 "+angle+" 0");
-          title.setAttribute("scale","10 10 10");
-          title.setAttribute("text__text_portal_1","color:#1f2b5d;align:center;value:"+info["envName"]);
-          scene.appendChild(title);
-          counter++;
-        }
+        // host = "http://192.168.0.104"
+        host = 'https://vusgroup.com'
+        // port = "8090"
+        port = ""
+        document.querySelector('#zillow').addEventListener("collide", (e)=>{
+            window.location.href =  host + ':' + port + '/room/zillow/zillowLobby/zillowLobby.html';
+        });
+        document.querySelector('#theater').addEventListener("collide", (e)=>{
+            window.location.href =  host + ':' + port + '/room/theater/theater.html';
+        });
+        // document.querySelector('#house1').addEventListener("click", (e)=>{
+            // alert("Teleporting!");
+        // });
     </script>
 
     <script>
       // Define custom schema for syncing avatar color, set by random-color
       NAF.schemas.add({
-        template: '#avatar-template',
+        template: '#head-template',
         components: [
           'position',
           'rotation',
           {
             selector: '.head',
-            component: 'material',
-            property: 'color'
+            component: 'material'
           }
         ]
       });
+
+      NAF.schemas.add({
+        template: '#player-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#hand-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
       // Called by Networked-Aframe when connected to server
       function onConnect () {
         console.log("onConnect", new Date());

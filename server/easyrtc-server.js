@@ -28,13 +28,14 @@ var funct = require('./functions.js'); //funct file contains our helper function
 // Set process name
 process.title = "node-easyrtc";
 
-// Get port or default to 8080
+// Get port or default to 8090
 var port = process.env.PORT || 8090;
 // var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
-const host = '127.0.0.1'
-// host = '192.168.0.102'
+// const host = '127.0.0.1'
+host = '192.168.0.104'
+// host = '169.234.29.179'
 var app = express(host);
 
 
