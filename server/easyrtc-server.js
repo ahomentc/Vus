@@ -421,8 +421,10 @@ function ensureAuthenticated(req, res, next) {
 app.get('/loadRoom', (req, res) => {
   funct.localRemoveVRFilesInTemp().then(
     () => {
+      console.log("Temp folders removed");
       funct.localGetVRFilesFromS3(req.session.env_list).then(
         () => {
+          console.log("Temp folders loaded from S3");
           res.redirect('room');
         }
       )
