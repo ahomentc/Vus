@@ -106,6 +106,13 @@ acorn@^6.0.2:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.1.1.tgz#7d25ae05bb8ad1f9b699108e1094ecd7884adc1f"
   integrity sha512-jPTiwtOxaHNaAPg/dmrJ/beuzLRnXtB0kQPQ8JpotKJgTB6rX6c8mlf315941pyjBSaPg8NHXS9fhP4u17DpGA==
 
+aframe-joysticks-movement-component@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/aframe-joysticks-movement-component/-/aframe-joysticks-movement-component-0.1.2.tgz#2eb8750a7603a510d588aa957cc5a7100fa6b80b"
+  integrity sha1-Lrh1CnYDpRDViKqVfMWnEA+muAs=
+  dependencies:
+    three "^0.87.1"
+
 aframe@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aframe/-/aframe-0.7.0.tgz#2c7b31466452d0060ad14426f8d660f97440e3b8"
@@ -2599,6 +2606,11 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
+
+ejs@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
+  integrity sha512-0xy4A/twfrRCnkhfk8ErDi5DqdAsAqeGxht4xkCUrsvhhbQNs7E+4jV0CN7+NKIY0aHE72+XvqtBIXzD31ZbXQ==
 
 elliptic@^6.0.0:
   version "6.4.1"
@@ -5884,6 +5896,11 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
+nipplejs@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/nipplejs/-/nipplejs-0.8.2.tgz#c1fea02e0259b577b100c7a6275598d9a12493d9"
+  integrity sha512-WcVfU1fDseq0RTak9mKQSsHvA1qZ1z8kyNo5qHqBE/mgKKgkWP8VFHwCF1GpQIitk743gcffjA5IcBWpa/VGFg==
+
 node-fetch@^1.6.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
@@ -8503,7 +8520,7 @@ three-buffer-vertex-data@^1.0.0:
   dependencies:
     flatten-vertex-data "^1.0.0"
 
-three@^0.87.0:
+three@^0.87.0, three@^0.87.1:
   version "0.87.1"
   resolved "https://registry.yarnpkg.com/three/-/three-0.87.1.tgz#466a34edc4543459ced9b9d7d276b65216fe2ba8"
   integrity sha1-Rmo07cRUNFnO2bnX0na2Uhb+K6g=

@@ -153,26 +153,29 @@ app.get('/lobby', function(req, res){
       if (value && room_types && room_types !== []) {
         const resultMap = {};
         funct.findEnvs(room_types).then(resultList => {
-            resultList.forEach(environment => {
-              if(resultMap[environment.username]) {
-                resultMap[environment.username].push(environment);
-              } else {
-                resultMap[environment.username] = [environment];
-              }
-            });
-
-            req.session.env_list = resultList;
-            req.session.group_map = resultMap;
-            res.cookie("env_list",JSON.stringify(resultList));
-            // resultMap will be passed to lobby to give each environment better explainations
-            if (req.session.user) {
-              res.render('lobby', {error: req.session.error, group_session_room:room, user: req.session.user, group_map: resultMap});
+          resultList.forEach(environment => {
+            if(resultMap[environment.username]) {
+              resultMap[environment.username].push(environment);
             } else {
-              res.render('lobby', {error: req.session.error, group_session_room:room, group_map: resultMap});
+              resultMap[environment.username] = [environment];
             }
-          }
-        )
+          });
 
+          req.session.env_list = resultList;
+          req.session.group_map = resultMap;
+          res.cookie("env_list",JSON.stringify(resultList));
+          
+          const hasEnvs = resultList.length > 0;
+
+          // resultMap will be passed to lobby to give each environment better explainations
+          if (req.session.user) {
+            res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
+              user: req.session.user, group_map: resultMap});
+          } else {
+            res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
+              group_map: resultMap});
+          }
+        })
       } else {
         if (req.session.user) {
           res.render('lobby', {error: req.session.error, user: req.session.user});
@@ -573,6 +576,41 @@ app.post('/joinRoom', function(req, res){
       })
 
     }
+});
+
+
+app.post('/addMoreRooms', (req, res) => {
+  // update group cookie
+  let room_types = req.cookies['group_room_types'];
+  room_types.push(req.body.newRoom);
+  res.cookie('group_room_types', room_types);
+
+  // update group in DB
+  const groupID = req.cookies['group_session_room'];
+  funct.localUpdateGroupEnvs(groupID, room_types).then(
+    () => {
+      res.redirect('lobby');
+    }
+  );
+});
+
+app.post('/deleteRooms', (req, res) => {
+  // update group cookie
+  const room_types = req.cookies['group_room_types'];
+
+  // remove the type
+  const updatedRoomTypes = room_types.filter(type => type !== req.body.deletedOwner);
+
+  res.cookie('group_room_types', updatedRoomTypes);
+
+  // update group in DB
+  const groupID = req.cookies['group_session_room'];
+  funct.localUpdateGroupEnvs(groupID, updatedRoomTypes).then(
+    () => {
+      res.redirect('lobby');
+    }
+  );
+
 });
 
 //=====================================

@@ -3,8 +3,7 @@
         <div class="roomOptionWrapper">
             <div class="roomSeparateDivs">
                 <h2 style="margin-bottom: 10px">
-                    Room Code: 
-                    <strong>{{group_session_room}}</strong>
+                    Room Code: <strong>{{group_session_room}}</strong>
                 </h2>
                 <div>
                     <a href="/loadRoom" class="btn btn-success btn-lg" role="button">
@@ -14,31 +13,55 @@
             </div>
             <div class="roomSeparateDivs">
                 <h2>Room Information: </h2>
-                <div>
-                    {{#each group_map}}
-                    <div>
-                        <h3><b>{{@key}}: </b></h3>
-                        <ul>
-                        {{#each this}}
-                            <button class="btn btn-secondary" type="button" data-toggle="collapse" 
-                                    data-target="#{{this.tag}}{{this.id}}" 
-                                aria-expanded="false">
-                                {{this.envname}}
-                            </button>
-                            <p>
-                                <div class="collapse envDetail" id="{{this.tag}}{{this.id}}">
-                                    <div class="card-header"><b>{{this.envname}}</b> by {{this.username}}</div>
-                                    <div class="card card-body">
-                                        {{this.description}}    
-                                    </div>
-                                </div>
-                            </p>
-                        {{/each}}
-                        </ul>
-
+                {{!-- form for adding more owner for current group --}}
+                <form action="/addMoreRooms" method="POST">
+                    <div class="form-row align-items-center">
+                        <div class="col-auto">
+                            <label class="sr-only">Name</label>
+                            <input type="text" class="form-control mb-2" name="newRoom" placeholder="Eg: zillow" required>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary mb-2">Add</button>
+                        </div>
                     </div>
-                    {{/each}}
-                </div>
+                </form>
+                {{!-- table for showing current group --}}
+                {{#if hasEnvs}}
+                <table class="table table-striped ">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Username</th>
+                            <th scope="col">Environments</th>
+                            <th scope="col">Remove User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each group_map}}
+                        <tr>
+                            <td><b class="ownerName">{{@key}}</b></td>
+                            <td>
+                            {{#each this}}
+                                <button class="btn btn-secondary" type="button" data-toggle="collapse" 
+                                        data-target="#{{this.tag}}{{this.id}}" 
+                                    aria-expanded="false">
+                                    {{this.envname}}
+                                </button>
+                                <p>
+                                    <div class="collapse envDetail" id="{{this.tag}}{{this.id}}">
+                                        <div class="card-header"><b>{{this.envname}}</b> by {{this.username}}</div>
+                                        <div class="card card-body">
+                                            {{this.description}}    
+                                        </div>
+                                    </div>
+                                </p>
+                            {{/each}}
+                            </td>
+                            <td><button class="btn btn-danger removeButton">Remove</button></td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+                {{/if}}
             </div>
         </div>
     </div>
@@ -50,16 +73,13 @@
             <input name="room_id" class="form-control" placeholder="Room Code" required>
         </div>
         <div>
-            <button type="submit" class="btn btn-primary">Join New Room</button>
+            <button type="submit" class="btn btn-primary">Join Room</button>
             <a id="createRoom" href="/createRoom" class="btn btn-secondary" role="button">
                 Create New Room
             </a>
         </div>
     </form>
 </div>
-
-{{!-- <a href="/createUserRoom" class="btn btn-secondary" role="button">Test Room Session</a> --}}
-
 <style>
 
 #roomOptionContainer{
@@ -89,6 +109,12 @@
     border: 1px solid rgb(49, 49, 49);
     border-radius: 5px;
 }
- 
 
 </style>
+<script>
+    $('.removeButton').click(function() {
+        const ownerToRemove = $(this).closest("tr").find('.ownerName').text();
+        console.log(ownerToRemove);
+        $.post('/deleteRooms', {deletedOwner: ownerToRemove}).then(() => location.reload());
+    })
+</script>

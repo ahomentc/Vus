@@ -228,16 +228,19 @@ const recursiveDeleteVREnvsInS3 = function(folderPrefix) {
 
 exports.findEnvs = function(userNames) {
   var deferred = Q.defer();
+  if (userNames.length == 0) {
+    deferred.resolve([]);
+  } else {
+    var findEnvsForUserQuery = {...prepareStatements.findEnvsForUserQuery};
 
-  var findEnvsForUserQuery = {...prepareStatements.findEnvsForUserQuery};
-
-  findEnvsForUserQuery['values'] = [[userNames]];
-
-  pool.query(findEnvsForUserQuery, (err, result) => {
-    if (err) throw err;
-    const envs = result.rows;
-    deferred.resolve(envs);
-  });
+    findEnvsForUserQuery['values'] = [[userNames]];
+  
+    pool.query(findEnvsForUserQuery, (err, result) => {
+      if (err) throw err;
+      const envs = result.rows;
+      deferred.resolve(envs);
+    });
+  }
 
   return deferred.promise;
 }
@@ -253,9 +256,9 @@ exports.findEnvs = function(userNames) {
  */
 exports.localGetVRFilesFromS3 = function(environmentList) {
   var deferred = Q.defer();
-
+  console.log(environmentList);
   environmentList.forEach(env => {
-    const prefix = env.username + "/" + env.envName + "/";
+    const prefix = env.username + "/" + env.envname + "/";
     recursiveGetVREnvsFromS3(prefix);
   });
 
@@ -474,7 +477,14 @@ exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
   deleteGroupUserQuery['values'] = [groupID];
   pool.query(deleteGroupUserQuery, (err, res) => {
     if (err) throw err;
-    deferred.resolve(true);
+
+    console.log('newUserEnvironments');
+    console.log(newUserEnvironments);
+    if (newUserEnvironments.length == 0) {
+      deferred.resolve(true);
+      return deferred.promise;
+    }
+
     var groupArr = [];
     newUserEnvironments.forEach(() => groupArr.push(groupID));
 
@@ -485,8 +495,6 @@ exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
       if (err) throw err;
       deferred.resolve(true);
     })
-
-
   });
 
   return deferred.promise;
@@ -503,9 +511,9 @@ exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
  *  enviornments: string[] (name of the environment that the user owns)
  * 
  * environment =>
- *  envName: string
- *  htmlName: string
- *  uploadTime: Date
+ *  envname: string
+ *  htmlname: string
+ *  uploadtime: Date
  *  description: string
  *  username: string
  *  tag: string
