@@ -254,16 +254,20 @@ exports.findEnvs = function(userNames) {
  * username => string
  * envName => [env folder 1, env folder 1, env folder 1]
  */
-exports.localGetVRFilesFromS3 = function(environmentList) {
+exports.localGetVRFilesFromS3 = async function(environmentList) {
   var deferred = Q.defer();
-  console.log(environmentList);
+
+  await fetchVRFiles(environmentList);
+  
+  deferred.resolve(true);
+  return deferred.promise;
+}
+
+function fetchVRFiles(environmentList) {
   environmentList.forEach(env => {
     const prefix = env.username + "/" + env.envname + "/";
     recursiveGetVREnvsFromS3(prefix);
   });
-
-  deferred.resolve(true);
-  return deferred.promise;
 }
 
 /**
