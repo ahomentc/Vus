@@ -34,8 +34,8 @@ var port = process.env.PORT || 8090;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
 // const host = '127.0.0.1'
-host = '192.168.0.104'
-// host = '169.234.29.179'
+// host = '192.168.0.104'
+host = '169.234.50.46'
 var app = express(host);
 
 
@@ -425,7 +425,7 @@ app.get('/loadRoom', (req, res) => {
       funct.localGetVRFilesFromS3(req.session.env_list).then(
         () => {
           console.log("Temp folders loaded from S3");
-          res.redirect('room');
+          res.redirect('VRHome');
         }
       )
     }
@@ -433,7 +433,8 @@ app.get('/loadRoom', (req, res) => {
 });
 
 
-app.use('/room', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
+app.use('/VRHome', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
+app.use('/room', serveStatic('server/static'));
 
 app.use('/envs',serveStatic('tempEnvs'));
 //======== CREATING GROUP SESSION ========
