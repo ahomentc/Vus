@@ -10,6 +10,9 @@ import { UserEnvironmentComponent } from './components/main-platform/user-enviro
 import { UserGroupComponent } from './components/main-platform/user-group/user-group.component';
 import { MainLobbyComponent } from './components/main-platform/main-lobby/main-lobby.component';
 
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +25,9 @@ import { MainLobbyComponent } from './components/main-platform/main-lobby/main-l
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FlexLayoutModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]
