@@ -1,10 +1,10 @@
 // Load required modules
 var http    = require("http");              // http server core module
+var https   = require("https");
 var express = require("express");           // web framework external module
 var serveStatic = require('serve-static');  // serve static files
 var socketIo = require("socket.io");        // web socket external module
 var easyrtc = require("easyrtc");               // EasyRTC external module
-var mongoose = require('mongoose');
 var exphbs = require('express-handlebars'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
@@ -19,11 +19,8 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const multer  = require('multer');
 const upload = multer({ preservePath: true });
 const keys = require('../privateKeys/keys');
-const formidable = require('formidable');
+const fs = require('fs');
 var SHA256 = require("crypto-js/sha256");
-
-// connect to the database
-mongoose.connect('mongodb://localhost/my_db');
 
 var config = require('./config.js'); //config file contains all tokens and other private info
 var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
@@ -33,11 +30,12 @@ process.title = "node-easyrtc";
 
 // Get port or default to 8090
 var port = process.env.PORT || 8090;
+// var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
 // const host = '127.0.0.1'
-host = '192.168.0.104'
-// host = '169.234.29.179'
+// host = '192.168.0.104'
+host = '169.234.50.46'
 var app = express(host);
 
 
@@ -62,12 +60,10 @@ passport.use('local-signin', new LocalStrategy(
     .then(function (user) {
       if (user) {
         console.log("LOGGED IN AS: " + user.username);
-        req.session.success = 'You are successfully logged in ' + user.username + '!';
         done(null, user);
       }
       if (!user) {
         console.log("COULD NOT LOG IN");
-        req.session.error = 'Could not log user in. Please try again.'; //inform user could not log them in
         done(null, user);
       }
     })
@@ -85,13 +81,9 @@ passport.use('local-signup', new LocalStrategy(
     funct.localReg(username, password)
     .then(function (user) {
       if (user) {
-        console.log("REGISTERED: " + user.username);
-        req.session.success = 'You are successfully registered and logged in ' + user.username + '!';
         done(null, user);
       }
       if (!user) {
-        console.log("COULD NOT REGISTER");
-        req.session.error = 'That username is already in use, please try a different one.'; //inform user could not log them in
         done(null, user);
       }
     })
@@ -139,6 +131,10 @@ app.set('view engine', 'handlebars');
 
 //===============ROUTES===============
 
+app.get('/', function(req, res) {
+  res.redirect('lobby');
+});
+
 // displays our homepage
 app.get('/home', function(req, res){
   res.render('home', {user: req.session.user});
@@ -154,32 +150,32 @@ app.get('/lobby', function(req, res){
 
   funct.localCheckGroupExist(room).then(
     value => {
-      console.log('group exist = ' + value);
-      if (value && room_types) {
+      if (value && room_types && room_types !== []) {
         const resultMap = {};
         funct.findEnvs(room_types).then(resultList => {
-          console.log(resultList);
-            resultList.forEach(environment => {
-              if(resultMap[environment.username]) {
-                resultMap[environment.username].push(environment);
-              } else {
-                resultMap[environment.username] = [environment];
-              }
-            });
-
-            req.session.env_list = resultList;
-            console.log('env_list = '+ req.session.env_list);
-            req.session.group_map = resultMap;
-            res.cookie("env_list",JSON.stringify(resultList));
-            // resultMap will be passed to lobby to give each environment better explainations
-            if (req.session.user) {
-              res.render('lobby', {error: req.session.error, group_session_room:room, user: req.session.user, group_map: resultMap});
+          resultList.forEach(environment => {
+            if(resultMap[environment.username]) {
+              resultMap[environment.username].push(environment);
             } else {
-              res.render('lobby', {error: req.session.error, group_session_room:room, group_map: resultMap});
+              resultMap[environment.username] = [environment];
             }
-          }
-        )
+          });
 
+          req.session.env_list = resultList;
+          req.session.group_map = resultMap;
+          res.cookie("env_list",JSON.stringify(resultList));
+          
+          const hasEnvs = resultList.length > 0;
+
+          // resultMap will be passed to lobby to give each environment better explainations
+          if (req.session.user) {
+            res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
+              user: req.session.user, group_map: resultMap});
+          } else {
+            res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
+              group_map: resultMap});
+          }
+        })
       } else {
         if (req.session.user) {
           res.render('lobby', {error: req.session.error, user: req.session.user});
@@ -242,7 +238,6 @@ app.get('/logout', function(req, res){
     res.redirect('/signin'); 
   } else {
     const name = req.session.user.username;
-    console.log("LOGGIN OUT " + req.session.user.username);
     delete req.session.error;
     delete req.session.user;
     req.logout();
@@ -331,7 +326,7 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
 passport.use(new GoogleStrategy({
   clientID: keys.google.clientID,
   clientSecret: keys.google.clientSecret,
-  callbackURL: "http://localhost:8080/auth/google/callback"
+  callbackURL: "/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
@@ -373,7 +368,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
 passport.use(new FacebookStrategy({
   clientID: keys.facebook.clientID,
   clientSecret: keys.facebook.clientSecret,
-  callbackURL: "http://localhost:8080/auth/facebook/callback"
+  callbackURL: "https://www.vusgroup.com/auth/facebook/callback"
 }, (accessToken, refreshToken, profile, cb) => {
   funct.localAuth(profile.displayName, profile.id)
   .then(function (user) {
@@ -426,9 +421,11 @@ function ensureAuthenticated(req, res, next) {
 app.get('/loadRoom', (req, res) => {
   funct.localRemoveVRFilesInTemp().then(
     () => {
+      console.log("Temp folders removed");
       funct.localGetVRFilesFromS3(req.session.env_list).then(
         () => {
-          res.redirect('room');
+          console.log("Temp folders loaded from S3");
+          res.redirect('VRHome');
         }
       )
     }
@@ -436,7 +433,8 @@ app.get('/loadRoom', (req, res) => {
 });
 
 
-app.use('/room', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
+app.use('/VRHome', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
+app.use('/room', serveStatic('server/static'));
 
 app.use('/envs',serveStatic('tempEnvs'));
 //======== CREATING GROUP SESSION ========
@@ -461,7 +459,6 @@ app.get('/createRoom', function(req, res){
   const previousID =  req.cookies['group_session_room'];
   funct.localLeaveGroup(previousID).then(
     value => {
-      console.log("Leave group then => ");
       // generate a random hex roomname
       let randomInt = Math.floor((Math.random() * 10000000) + 1);
       let room_id = randomInt.toString(16);
@@ -549,8 +546,13 @@ app.post('/joinRoom', function(req, res){
                 res.cookie('group_session_room', newRoomID.toString());
                 req.session.group_session_room = newRoomID;
 
-                res.cookie('group_room_types', result.directories);
-                req.session.group_room_types = result.directories;
+                var directories = [];
+                result.forEach(groupUser => {
+                  directories.push(groupUser.username);
+                });
+
+                res.cookie('group_room_types', directories);
+                req.session.group_room_types = directories;
 
                 // create a session id to be stored in cookie for user authentication
                 var sessionID = SHA256(Math.random().toString())
@@ -579,10 +581,50 @@ app.post('/joinRoom', function(req, res){
     }
 });
 
+
+app.post('/addMoreRooms', (req, res) => {
+  // update group cookie
+  let room_types = req.cookies['group_room_types'];
+  room_types.push(req.body.newRoom);
+  res.cookie('group_room_types', room_types);
+
+  // update group in DB
+  const groupID = req.cookies['group_session_room'];
+  funct.localUpdateGroupEnvs(groupID, room_types).then(
+    () => {
+      res.redirect('lobby');
+    }
+  );
+});
+
+app.post('/deleteRooms', (req, res) => {
+  // update group cookie
+  const room_types = req.cookies['group_room_types'];
+
+  // remove the type
+  const updatedRoomTypes = room_types.filter(type => type !== req.body.deletedOwner);
+
+  res.cookie('group_room_types', updatedRoomTypes);
+
+  // update group in DB
+  const groupID = req.cookies['group_session_room'];
+  funct.localUpdateGroupEnvs(groupID, updatedRoomTypes).then(
+    () => {
+      res.redirect('lobby');
+    }
+  );
+
+});
+
 //=====================================
 
 // Start Express http server
+
 var webServer = http.createServer(app);
+// var webServer = https.createServer({
+//   key: fs.readFileSync(__dirname + '/server.key'),
+//   cert: fs.readFileSync(__dirname + '/server.cert')
+// }, app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = socketIo.listen(webServer, {"log level":1});

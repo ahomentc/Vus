@@ -60,42 +60,10 @@
           <a-entity class="avatar">
             <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
 
-            <a-asset-item id="raccoon-obj" src="./assets/Raccoon_Blocks/model.obj"></a-asset-item>
-            <a-asset-item id="raccoon-mtl" src="./assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+            <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
 
-            <a-asset-item id="scene-obj" src="./assets/Campfire_Blocks/model.obj"></a-asset-item>
-            <a-asset-item id="scene-mtl" src="./assets/Campfire_Blocks/materials.mtl"></a-asset-item>
             <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
-
-            <!-- <a-sphere class="head"
-              color="#ffffff"
-              scale="0.45 0.5 0.4"
-            ></a-sphere>
-            <a-entity class="face"
-              position="0 0.05 0"
-            >
-              <a-sphere class="eye"
-                color="#efefef"
-                position="0.16 0.1 -0.35"
-                scale="0.12 0.12 0.12"
-              >
-                <a-sphere class="pupil"
-                  color="#000"
-                  position="0 0 -1"
-                  scale="0.2 0.2 0.2"
-                ></a-sphere>
-              </a-sphere>
-              <a-sphere class="eye"
-                color="#efefef"
-                position="-0.16 0.1 -0.35"
-                scale="0.12 0.12 0.12"
-              >
-                <a-sphere class="pupil"
-                  color="#000"
-                  position="0 0 -1"
-                  scale="0.2 0.2 0.2"
-                ></a-sphere>
-              </a-sphere> -->
             </a-entity>
           </a-entity>
         </template>
@@ -129,37 +97,73 @@
       <a-entity light="color:#0a1b22;intensity:2.4100000000000006" position="5 13.902 5"></a-entity>
       <a-entity light="intensity:2.3400000000000007;color:#0a1b22" position="4.857 4.219 5"></a-entity>
 
-      <!--
-      <a-entity position="1.832 3.302 -8.765" rotation="0 -12.76 0" scale="2.194 3.606 0.086" geometry="" material="opacity:.6; emissive:#040404;side:double;color:#fff9ed"></a-entity>
+      <!-- Portals -->
+      <!-- <a-entity position="1.832 3.302 -8.765" rotation="0 -12.76 0" scale="2.194 3.606 0.086" geometry="" material="opacity:.6; emissive:#040404;side:double;color:#fff9ed"></a-entity>
       <a-entity static-body="sphereRadius:NaN" position="1.832 3.302 -9.761" rotation="0 -12.76 0" scale="2.194 3.606 0.086" geometry="" material="opacity:0.6;emissive:#040404;side:double;color:#fff9ed;visible:false" id="zillow" velocity=""></a-entity>
       <a-entity position="1.852 4.25 -8.578" rotation="0 -8.136 0" scale="10 10 10" text__text_portal_1="color:#1f2b5d;align:center;value:Zillow"></a-entity>
       <a-entity static-body="sphereRadius:NaN" position="-2.107 3.302 -9.761" rotation="0 3.2658594322456924 0" scale="2.194 3.606 0.086" geometry="" material="opacity:0.6;side:double;visible:false;color:#fff9ed;emissive:#040404" id="theater" velocity=""></a-entity>
+
       <a-entity position="-1.934 3.302 -8.968" rotation="0 14.896902673401405 0" scale="2.194 3.606 0.086" geometry="" material="opacity:0.7;side:double;color:#fff9ed;emissive:#040404"></a-entity>
-      <a-entity position="-1.912 4.25 -8.846" rotation="0 18.96490301883025 0" scale="10 10 10" text__text_portal_1="value:Theatre;color:#1f2b5d;align:center"></a-entity>
- Portals -->
+      <a-entity position="-1.912 4.25 -8.846" rotation="0 18.96490301883025 0" scale="10 10 10" text__text_portal_1="value:Theatre;color:#1f2b5d;align:center"></a-entity> -->
 
       <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
-
-      <a-camera kinematic-body-hover rotation="-7.105 74.714 0" position="5.984 2.6 0.604"> 
-        <a-entity cursor="fuse: false"  position="0 0 -1"   geometry="primitive:ring; radiusInner: 0.02; radiusOuter: 0.03"  material="color: black; shader: flat"></a-ring>
-      </a-camera>
 
     </a-scene>
 
     <script>
-        // host = "http://192.168.0.104"
-        host = 'https://vusgroup.com'
-        // port = "8090"
-        port = ""
-        document.querySelector('#zillow').addEventListener("collide", (e)=>{
-            window.location.href =  host + ':' + port + '/room/zillow/zillowLobby/zillowLobby.html';
-        });
-        document.querySelector('#theater').addEventListener("collide", (e)=>{
-            window.location.href =  host + ':' + port + '/room/theater/theater.html';
-        });
-        // document.querySelector('#house1').addEventListener("click", (e)=>{
-            // alert("Teleporting!");
+        // var host = "http://localhost"
+        // host = 'https://vusgroup.com'
+        
+        var port = "8090"
+        // port = ""
+
+
+        // document.querySelector('#zillow').addEventListener("collide", (e)=>{
+        //     window.location.href =  host + ':' + port + '/room/zillow/zillowLobby/zillowLobby.html';
         // });
+        // document.querySelector('#theater').addEventListener("collide", (e)=>{
+        //   console.log("Theater :D")
+        //     window.location.href =  host + ':' + port + '/room/theater/theater.html';
+        // });
+        // // document.querySelector('#house1').addEventListener("click", (e)=>{
+        //     // alert("Teleporting!");
+        // // });
+
+
+        let host = "http://localhost:8090/envs/"
+        // let host = 'http://169.234.50.46/envs/'
+        let scene=document.getElementsByTagName("a-scene")[0];
+        let counter=0;
+        let portal_data=JSON.parse(getCookie("env_list"));
+        for(i in portal_data)
+        {
+          if(counter>=16)break;
+          let angle=11+counter*22.5;
+          let x=-9.0946*Math.sin(2*angle*Math.PI/360);
+          let z=-9.0946*Math.cos(2*angle*Math.PI/360);
+          var portal=document.createElement("a-box");
+          portal.setAttribute("position",x+" 3.3 "+z);
+          portal.setAttribute("rotation","0 "+angle+" 0");
+          portal.setAttribute("scale","2.194 3.606 0.086");
+          portal.setAttribute("static-body","sphereRadius:NaN");
+          portal.setAttribute("id",i);
+          portal.setAttribute("material","opacity:.6; emissive:#040404;side:double;color:#fff9ed");
+          let info=portal_data[i];
+          portal.addEventListener("collide", (e)=>{
+            window.location.href =  host + info["username"]+"/"+info["envname"]+"/"+info["htmlname"];
+          });
+          scene.appendChild(portal);
+          x=-9*Math.sin(2*angle*Math.PI/360);
+          z=-9*Math.cos(2*angle*Math.PI/360)
+          var title=document.createElement("a-entity");
+          title.setAttribute("position",x+" 4.364 "+z);
+          title.setAttribute("rotation","0 "+angle+" 0");
+          title.setAttribute("scale","10 10 10");
+          title.setAttribute("text__text_portal_1","color:#1f2b5d;align:center;value:"+info["envname"]);
+          scene.appendChild(title);
+          counter++;
+        }
+        
     </script>
 
     <script>
@@ -196,6 +200,7 @@
       function onConnect () {
         console.log("onConnect", new Date());
       }
+
     </script>
   </body>
 </html>
