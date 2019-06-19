@@ -12,14 +12,14 @@
     "directive-selector": [
       true,
       "attribute",
-      "app",
+      "vus",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "app",
-      "kebab-case"
+      "vus",
+      "ksebab-case"
     ],
     "import-blacklist": [
       true,
