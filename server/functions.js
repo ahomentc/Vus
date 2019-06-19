@@ -9,15 +9,18 @@ const rimraf = require("rimraf");
 
 const AWSAccessKeyId = keys.aws.AWSAccessKeyId;
 const AWSSecretKey = keys.aws.AWSSecretKey;
+const bucketName = "vusbutterworth";
+const VREnvironmentsDir = "tempEnvs";
 
 AWS.config.update({
   accessKeyId: AWSAccessKeyId,
-  secretAccessKey: AWSSecretKey
+  secretAccessKey: AWSSecretKey,
+  region: 'us-west-2',
+  s3BucketEndpoint: true,
+  endpoint:"http://" + bucketName + ".s3.amazonaws.com"
 });
 
 var s3 = new AWS.S3();
-const bucketName = "vusbutterworth";
-const VREnvironmentsDir = "tempEnvs";
 
 /**
  * This method will check if the vus bucket already exist
@@ -136,25 +139,64 @@ exports.localAuth = function (username, password) {
   return deferred.promise;
 }
 
-exports.localUploadModel = function(username, uploaded_files, envHtmlName, folderName, envDescription, envTag) {
-
-  var deferred = Q.defer();
-
-  uploaded_files.forEach(file => {
-    var params = {
+async function uploadToAWS (deferred, username, uploaded_files) {
+  console.log("Upload to aws");
+  var count = 0;
+  let result = [];
+  for (let file of uploaded_files) {
+    const params = {
       Bucket: bucketName,
       Body: file.buffer,
       Key: username + "/" + file.originalname
     }
 
-    s3.upload(params, function (err, data) {
+    result.push(s3.upload(params, function (err, data) {
       // handle error
+      ++count;
       if (err) {
+        console.log(err);
         deferred.resolve(false);
         return deferred.promise;
       }
-    });
-  });
+      console.log("File " + count + " upload success");
+    }));
+
+    // await s3.upload(params, function (err, data) {
+    //   // handle error
+    //   ++count;
+    //   if (err) {
+    //     console.log(err);
+    //     deferred.resolve(false);
+    //     return deferred.promise;
+    //   }
+    //   console.log("File " + count + " upload success");
+    // });
+  }
+
+  await Promise.all(result);
+}
+
+exports.localUploadModel = async function(username, uploaded_files, envHtmlName, folderName, envDescription, envTag) {
+
+  var deferred = Q.defer();
+  // uploaded_files.forEach(file => {
+  //   var params = {
+  //     Bucket: bucketName,
+  //     Body: file.buffer,
+  //     Key: username + "/" + file.originalname
+  //   }
+
+  //   s3.upload(params, function (err, data) {
+  //     // handle error
+  //     if (err) {
+  //       deferred.resolve(false);
+  //       return deferred.promise;
+  //     }
+  //   });
+  // });
+
+  console.log("uploaded_files length = " + uploaded_files.length);
+  await uploadToAWS(deferred, username, uploaded_files);
 
   var findEnvWithNamesQuery = {...prepareStatements.findEnvWithUserAndEnvName};
   findEnvWithNamesQuery['values'] = [username, folderName];
@@ -254,28 +296,72 @@ exports.findEnvs = function(userNames) {
  * username => string
  * envName => [env folder 1, env folder 1, env folder 1]
  */
-exports.localGetVRFilesFromS3 = async function(environmentList) {
+exports.localGetVRFilesFromS3 = function(environmentList) {
   var deferred = Q.defer();
 
-  await fetchVRFiles(environmentList);
-  
-  deferred.resolve(true);
+  fetchVRFiles(environmentList).then(() => {
+    deferred.resolve(true);
+  });
+
   return deferred.promise;
+
 }
 
-function fetchVRFiles(environmentList) {
-  environmentList.forEach(env => {
+async function fetchVRFiles(environmentList) {
+  let result = [];
+  for (let env of environmentList) {
     const prefix = env.username + "/" + env.envname + "/";
-    recursiveGetVREnvsFromS3(prefix);
+    result.push(recursiveGetVREnvsFromS3(prefix));
+  }
+
+  console.log("FInishes Fetch VR files");
+  return await Promise.all(result);
+}
+
+async function getS3Object(files, getFileParam){
+  return new Promise((resolve,reject) => {
+    const getFileParam = {
+      Bucket: bucketName,
+      Key: files.Key
+    }
+
+    s3.getObject(getFileParam, function(err, data) {
+      if (err) {
+        console.log(err);
+        throw err;
+      } else if (data) {
+        const file = fs.createWriteStream(`./${VREnvironmentsDir}/${files.Key}`);
+        file.write(data.Body, () => {
+          file.end();
+          resolve(1);
+        });
+      }
+    });
   });
 }
 
-/**
- * This method will recursively load folders from S3
- * 
- * @param folderPrefix directory path in S3 bucket
- */
-const recursiveGetVREnvsFromS3 = (folderPrefix) => {
+async function process(contents, prefixes) {
+  let result = [];
+  for (const files of contents) {
+    const getFileParam = {
+      Bucket: bucketName,
+      Key: files.Key
+    }
+
+    // get the file content and write to temporary folder in the disk
+    result.push(getS3Object(files, getFileParam));
+    console.log(1);
+  }
+
+  await Promise.all(result);
+
+  console.log("Finish process content");
+  await loadMultiple(prefixes);
+
+  console.log("Load mUltiple also finishes, exit process");
+}
+
+async function readS3Directory(folderPrefix) {
   const params = {
     Bucket: bucketName,
     Delimiter: '/',
@@ -287,37 +373,45 @@ const recursiveGetVREnvsFromS3 = (folderPrefix) => {
     if (err) throw err;
   });
 
-  s3.listObjectsV2(params, function(err, data) {
-    if(err)throw err;
+  return new Promise((resolve,reject) => {
 
-    // for files in the directory
-    data.Contents.forEach(files => {
-      var getFileParam = {
-        Bucket: bucketName,
-        Key: files.Key
+    s3.listObjectsV2(params, async function(err, data) {
+      if(err){
+        console.log(err);
+        throw err;
       }
-
-      const file = fs.createWriteStream(`./${VREnvironmentsDir}/${files.Key}`);
-
-      // get the file content and write to temporary folder in the disk
-      s3.getObject(getFileParam, function(err, data) {
-        if (err) {
-          throw err;
-        } else if (data) {
-          file.write(data.Body, () => {
-            file.end();
-          });
+  
+      process(data.Contents, data.CommonPrefixes).then(
+        res => {
+          console.log(res);
+          resolve(1);
         }
-      });
-    });
+      );
 
-    // for folders in the directory
-    data.CommonPrefixes.forEach(prefix => {
-      recursiveGetVREnvsFromS3(prefix.Prefix);
     });
-  })
+  });
+}
 
-  return;
+async function loadMultiple(folders) {
+  const result = []
+  for (let folder of folders) {
+    result.push(recursiveGetVREnvsFromS3(folder.Prefix));
+  }
+  return await Promise.all(result);
+}
+
+
+/**
+ * This method will recursively load folders from S3
+ * 
+ * @param folderPrefix directory path in S3 bucket
+ */
+const recursiveGetVREnvsFromS3 = async (folderPrefix) => {
+  return new Promise(async(resolve,reject) => {
+    await readS3Directory(folderPrefix).then(res => {
+      resolve(1);
+    });
+  });
 }
 
 /**
