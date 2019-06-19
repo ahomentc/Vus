@@ -1,90 +1,34 @@
-{{#if group_session_room}}
-    <div class="jumbotron">
-        <div class="roomOptionWrapper">
-            <div class="roomSeparateDivs">
-                <h2 style="margin-bottom: 10px">
-                    Room Code: <strong>{{group_session_room}}</strong>
-                </h2>
+<div class="groupBar">
+    <div class="roomOptionWrapper">
+        <div class="roomSeparateDivs">                
+            <form action="/joinRoom" method="post">
+                <div class="form-group" style="width:50%;">
+                    {{#if group_session_room}}
+                        Room Code: <strong>{{group_session_room}}</strong>
+                    {{/if}}
+                    <input style="margin-top: 10px;" name="room_id" class="form-control" placeholder="Room Code" required>
+                </div>
                 <div>
-                    <a href="/loadRoom" class="btn btn-success btn-lg" role="button">
-                        Enter VR Experience
+                    <button type="submit" class="btn btn-primary">Join Room</button>
+                    <a id="createRoom" href="/createRoom" class="btn btn-secondary" role="button">
+                        Create New Room
                     </a>
                 </div>
-            </div>
-            <div class="roomSeparateDivs">
-                <h2>Room Information: </h2>
-                {{!-- form for adding more owner for current group --}}
-                <form action="/addMoreRooms" method="POST">
-                    <div class="form-row align-items-center">
-                        <div class="col-auto">
-                            <label class="sr-only">Name</label>
-                            <input type="text" class="form-control mb-2" name="newRoom" placeholder="Eg: zillow" required>
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary mb-2">Add</button>
-                        </div>
-                    </div>
-                </form>
-                {{!-- table for showing current group --}}
-                {{#if hasEnvs}}
-                <table class="table table-striped ">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Username</th>
-                            <th scope="col">Environments</th>
-                            <th scope="col">Remove User</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{#each group_map}}
-                        <tr>
-                            <td><b class="ownerName">{{@key}}</b></td>
-                            <td>
-                            {{#each this}}
-                                <button class="btn btn-secondary" type="button" data-toggle="collapse" 
-                                        data-target="#{{this.tag}}{{this.id}}" 
-                                    aria-expanded="false">
-                                    {{this.envname}}
-                                </button>
-                                <p>
-                                    <div class="collapse envDetail" id="{{this.tag}}{{this.id}}">
-                                        <div class="card-header"><b>{{this.envname}}</b> by {{this.username}}</div>
-                                        <div class="card card-body">
-                                            {{this.description}}    
-                                        </div>
-                                    </div>
-                                </p>
-                            {{/each}}
-                            </td>
-                            <td><button class="btn btn-danger removeButton">Remove</button></td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
-                {{/if}}
-            </div>
+            </form>
         </div>
     </div>
-{{/if}}
-<div id="roomOptionContainer">
-    <form action="/joinRoom" method="post">
-        <div class="form-group">
-            <label>Enter New Room Code to Join:</label>
-            <input name="room_id" class="form-control" placeholder="Room Code" required>
-        </div>
-        <div>
-            <button type="submit" class="btn btn-primary">Join Room</button>
-            <a id="createRoom" href="/createRoom" class="btn btn-secondary" role="button">
-                Create New Room
-            </a>
-        </div>
-    </form>
 </div>
+
 <style>
 
+.groupBar{
+    border: 1px solid #cbcbcb;
+    margin: 10px;
+    border-radius:10px;
+    display: grid;
+}
+
 #roomOptionContainer{
-    margin: auto;
-    width: 60%;
     padding: 20px;
     font-size: 1.5em;
 }
@@ -96,8 +40,8 @@
 }
 
 .roomSeparateDivs {
-    width: 50%;
-    border: 1px solid black;
+    width: 100%;
+    border: 0px solid black;
     padding: 20px;
 }
 

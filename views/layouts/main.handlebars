@@ -56,6 +56,16 @@
         width: 100%
       }
 
+      .nav-link{
+        color:white;
+        border-radius: 10px;
+      }
+
+      .nav-link:hover {
+        color:white;
+        background-color:black;
+      }
+
     </style>
   </head>
   <body>
@@ -67,31 +77,33 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      {{#if user}}
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/userconsole" title="Manage your VR spaces">User Console</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/vrmanager" title="Upload your personal VR space">Upload VR Space</a>
+          <li class="nav-item"> 
           </li>
         </ul>
       </div>
-      {{/if}}
-
-
-
+      
+      <div id="nav_button">
+        <a class="nav-link" style='margin-right: 10px;' href="/vrmanager" title="Upload your personal VR space">Upload VR Space</a>
+      </div>
       <form class="form-inline">
         {{#if user}}
-          <div class="navbar-text welcome-user"> Welcome Back, <span class="user-name">{{user.username}}</span> </div>
-          <button type="button" id="signOutButton" class="btn btn-info  my-2 my-sm-0" onclick="location.href='/logout'">
-            Log Out
-          </button> 
-        {{else}}
-          <button type="button" id="signInButton" class="btn btn-info  my-2 my-sm-0" onclick="location.href='/signin'">
-            Sign In
-          </button>          
+          <div class="dropdown">
+              <div class="navbar-text welcome-user"> 
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.username}}</a>
+                  <div class="dropdown-menu">
+                      <button type="button" id="signOutButton" class="btn btn-light" onclick="location.href='/logout'">Profile</button> 
+                      <button type="button" class="btn btn-light" onclick="location.href='/userconsole'">My Envs</button> 
+                      <button type="button" class="btn btn-light" onclick="location.href='/logout'">Log Out</button> 
+                  </div>
+              </div>
+              
+          </div>
+        {{else}}  
+          <div id="nav_button">
+            <a class="nav-link" style='margin-right: 10px;' href="/signin" title="Upload your personal VR space">Sign In</a>
+          </div>   
         {{/if}}
       </form>
     </nav>
