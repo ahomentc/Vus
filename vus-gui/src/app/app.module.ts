@@ -10,8 +10,9 @@ import { UserEnvironmentComponent } from './components/main-platform/user-enviro
 import { UserGroupComponent } from './components/main-platform/user-group/user-group.component';
 import { MainLobbyComponent } from './components/main-platform/main-lobby/main-lobby.component';
 
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SuggestionContainerComponent } from './components/main-platform/main-lobby/suggestion-container/suggestion-container.component';
+import { RecommendationComponent } from './components/main-platform/main-lobby/recommendation/recommendation.component';
 
 @NgModule({
   declarations: [
@@ -21,12 +22,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     SignInComponent,
     UserEnvironmentComponent,
     UserGroupComponent,
-    MainLobbyComponent
+    MainLobbyComponent,
+    SuggestionContainerComponent,
+    RecommendationComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FlexLayoutModule,
     NgbModule
   ],
   providers: [],
