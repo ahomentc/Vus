@@ -1,0 +1,30 @@
+.grid-container {
+  min-width: 100%;
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+$nav-suggestion-width: 100px;
+
+.vus-main-lobby-grid-container {
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: $nav-suggestion-width auto;
+}
+
+.vus-suggestion-nav-container {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  border: 1px solid black;
+}
+
+.vus-recommendation-container {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  border: 1px solid black;
+}
