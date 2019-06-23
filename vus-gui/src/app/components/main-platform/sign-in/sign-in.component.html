@@ -1,3 +1,49 @@
-<p>
-  sign-in works!
-</p>
+<div class="sign-in-container">
+  <div class="sign-in-form-container">
+    <h2 class="sign-in-title">Sign In</h2>
+    <div class="sign-in-form">
+      <form [formGroup]="signInFormGroup">
+        <mat-form-field class="vus-form-field">
+          <input matInput placeholder="Email" type="email" formControlName="email" required>
+          <mat-error class="error-message" *ngIf="signInFormGroup.get('email').hasError('email')
+            && !signInFormGroup.get('email').hasError('required')
+            && (signInFormGroup.get('email').dirty || signInFormGroup.get('email').touched)">
+            Please enter a valid email address
+          </mat-error>
+          <mat-error class="error-message" *ngIf="signInFormGroup.get('email').hasError('required')
+            && (signInFormGroup.get('email').dirty || signInFormGroup.get('email').touched)">
+            Email is <strong>required</strong>.
+          </mat-error>
+
+          <button mat-button *ngIf="signInFormGroup.value.email" matSuffix mat-icon-button
+              aria-label="Clear" (click)="resetEmail()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field class="vus-form-field">
+          <input matInput placeholder="Password" type="password" formControlName="password" required>
+          <mat-error class="error-message" *ngIf="signInFormGroup.get('password').hasError('required')
+            && (signInFormGroup.get('password').dirty || signInFormGroup.get('password').touched)">
+            Password is <strong>required</strong>.
+          </mat-error>
+
+
+          <button mat-button *ngIf="signInFormGroup.value.password" matSuffix mat-icon-button
+            aria-label="Clear" (click)="resetPassword()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+
+    </div>
+    <button type="button" class="btn btn-primary form-button" [disabled]="!signInFormGroup.valid"
+      (click)="signInFormSubmit()">Login</button>
+
+    <div class="form-bottom">
+      <div class="alternative-login"><img src="assets/facebookIcon.png">  Login with Facebook</div>
+      <div class="alternative-login"><img src="assets/googleIcon.png">  Login With Google</div>
+      <div>New to VUS? <span class="sign-up-link" (click)="navigateToSignup()">Sign Up Now.</span> </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-.sign-in-container{
+.sign-up-container{
   min-width: 100%;
   min-height: 100%;
   padding: 40px;
@@ -9,7 +9,7 @@
 
 }
 
-.sign-in-form-container{
+.sign-up-form-container{
   background-color: black;
   opacity: 0.8;
   width: 35%;
@@ -19,14 +19,14 @@
   border-radius: 5px;
 }
 
-.sign-in-form {
+.sign-up-form {
   display: flex;
   flex-direction: column;
   border-radius: 5px;
   margin-bottom: 15px
 }
 
-.sign-in-title {
+.sign-up-title {
   font-weight: bold;
   color: white;
 }
@@ -45,25 +45,8 @@
   font-weight: bold;
 }
 
-.form-bottom {
-  margin-top: 70px;
-  color: #8F8F8F;
-}
 
 img {
   width: 40px;
   height: 40px;
-}
-
-.alternative-login {
-  margin-bottom: 10px;
-}
-
-.sign-up-link {
-  color: white !important;
-  cursor: pointer;
-}
-
-.sign-up-link:hover {
-  text-decoration: underline;
 }
