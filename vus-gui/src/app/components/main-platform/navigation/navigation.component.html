@@ -14,9 +14,26 @@
       <li class="nav-item">
         <a routerLink="/user-group" routerLinkActive="active" class="nav-link">View Group</a>
       </li>
-      <li class="nav-item">
-        <a routerLink="/user-environment" routerLinkActive="active" class="nav-link">View User Profile</a>
+
+      <li class="nav-item dropdown">
+        <button class="nav-link dropdown-toggle profile-dropdown-button" id="navbarDropdownMenuLink" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user-circle-o" aria-hidden="true" title="user profile" style="color:white"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+          <div class="dropdown-account-header">
+            <div class="account-name">Henry Chen</div>
+            <div class="account-email">henry@gmail.com</div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a routerLink="/user-environment" routerLinkActive="active" class="dropdown-item">
+            Edit User Profile</a>
+          <a class="dropdown-item" href="#">View Uploaded Environments</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Sign Out</a>
+        </div>
       </li>
+
       <li class="nav-item">
         <a routerLink="/sign-in" routerLinkActive="active" class="nav-link">Login</a>
       </li>

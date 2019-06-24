@@ -18,7 +18,7 @@ $nav-suggestion-width: 100px;
   grid-column-end: 2;
   grid-row-start: 1;
   grid-row-end: 2;
-  border: 1px solid black;
+  background-color: #ECECEC;
 }
 
 .vus-recommendation-container {
@@ -26,5 +26,6 @@ $nav-suggestion-width: 100px;
   grid-column-end: 3;
   grid-row-start: 1;
   grid-row-end: 2;
-  border: 1px solid black;
+  background-color: #F5F5F5;
+  overflow: auto;
 }
