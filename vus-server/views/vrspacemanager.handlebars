@@ -1,30 +1,30 @@
 <div style="margin: 10px;padding:20px;">
-    <div>
-        <h3><label>Upload Your Environments </label></h3>
+    <div class="enclose">
+        <h4><label>Submit Your VR Environment</label></h4>
         <form id="uploadModelForm" action="/uploadModel" enctype="multipart/form-data" method="POST">
             <div class="form-group custom-file file-upload">
                 <input name="new_models" type="file" webkitdirectory multiple class="custom-file-input" id="customFile" required />  
                 <label class="custom-file-label" for="customFile">Choose a Folder</label>
             </div>
             <div class="form-group">
-                <label>New Environment Name (start with alphabet):</label>
-                <input id="folderNameInput" type="text" class="form-control" name="folderName" pattern="[A-Za-z][-A-Za-z0-9_:.]*" required/>
+                <label>Name:</label>
+                <input id="folderNameInput" type="text" class="form-control" name="folderName" pattern="[A-Za-z][-A-Za-z0-9_:.]*" placeholder="Enter Name" required/>
             </div>
             <div class="form-group">
-                <label>Main HTML Name (Eg: index):</label>
-                <input type="text" class="form-control" name="htmlName" pattern="[-A-Za-z0-9_]+" required/>
+                <label>Main HTML Name:</label>
+                <input type="text" class="form-control" name="htmlName" pattern="[-A-Za-z0-9_]+" placeholder="Enter HTML name (Eg: index)" required/>
             </div>
             <div class="form-group">
-                <label>Environment Description:</label>
+                <label>Description:</label>
                 <input id="envDescription" type="text" class="form-control" name="description" 
-                    placeholder="Enter Environment Description" required/>
+                    placeholder="Enter Description" required/>
             </div>
             <div class="form-group">
-                <label>Environment Tag (must start with alphabet and not contain any space)</label>
-                <input id="envTag" type="text" class="form-control" name="tag" pattern="[A-Za-z][-A-Za-z0-9_:.]*"
-                    placeholder="Enter Environment Tag" required/>
+                <label>Price</label>
+                <input id="price" type="Number" class="form-control" name="price"
+                    placeholder="Enter Price Per Copy" required/>
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
+            <button type="submit" class="btn btn-primary">Submit for Review</button>
         </form>
     </div>
 </div>
@@ -47,4 +47,20 @@
     .file-upload{
         margin-bottom: 15px;
     }
+
+    body {
+        background-color:#6b6b6b;
+    }
+
+    .enclose{
+        border-radius:10px;
+        display: flex;
+        flex-wrap: wrap;
+        width: 26%;
+        margin:0 auto;
+        margin-top: 40px;
+        border: 1px solid #cbcbcb;
+        padding: 20px;
+        background-color:white;
+    }  
 </style>

@@ -4,7 +4,7 @@ var bcrypt = require('bcryptjs'),
 var fs = require('fs');
 var AWS = require('aws-sdk');
 
-const keys = require('../privateKeys/keys');
+const keys = require('../../privateKeys/keys');
 const rimraf = require("rimraf");
 
 const AWSAccessKeyId = keys.aws.AWSAccessKeyId;

@@ -18,7 +18,7 @@ var exphbs = require('express-handlebars'),
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const multer  = require('multer');
 const upload = multer({ preservePath: true });
-const keys = require('../privateKeys/keys');
+const keys = require('../../privateKeys/keys');
 const fs = require('fs');
 var SHA256 = require("crypto-js/sha256");
 
@@ -132,12 +132,16 @@ app.set('view engine', 'handlebars');
 //===============ROUTES===============
 
 app.get('/', function(req, res) {
-  res.redirect('lobby');
+  // res.redirect('home');
+  res.render('home', {user: req.session.user});
 });
 
-// displays our homepage
-app.get('/home', function(req, res){
-  res.render('home', {user: req.session.user});
+app.get('/requestvr', (req, res) => {
+  if(!req.session.user) {
+    res.render('request_vr')
+  } else {
+    res.render('request_vr', {user: req.session.user})
+  }
 });
 
 // display lobby
@@ -196,6 +200,8 @@ app.get('/signin', function(req, res){
   if (req.session.user && room) {
     // if already signin, redirect to lobby page
     res.render('lobby', {group_session_room:room, user: req.session.user});
+    // res.redirect(req.session.returnTo || '/');
+    // delete req.session.returnTo;
   } else {
     // reset previous group session cookie if not entering as the same user
     res.clearCookie('group_session_room');
