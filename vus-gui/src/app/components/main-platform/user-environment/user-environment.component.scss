@@ -1,0 +1,41 @@
+.user-env-container {
+  padding: 30px 30px;
+  min-height: 100%;
+  background-color: #F5F5F5;
+}
+
+.room-list {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.room-info {
+  display: flex;
+  font-size: 18px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.env-image {
+  height: 170px;
+  width: 170px;
+}
+
+.room-header {
+  margin-right: 30px;
+}
+
+.room-metadata {
+  margin-right: 30px;
+  width: 300px;
+}
+
+.room-option {
+  display: flex;
+  width: 100%;
+  margin-bottom: 15px;
+}

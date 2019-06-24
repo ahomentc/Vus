@@ -1,0 +1,36 @@
+.user-group-container {
+  padding: 10px 30px;
+  font-size: 20px;
+  background-color: #F5F5F5;
+  min-height: 100%;
+}
+
+.user-group-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.group-id-number {
+  margin-right: 40px;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.header-item {
+  margin-right: 20px;
+}
+
+.card-containers {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.group-section {
+  margin-top: 20px;
+}
+
+.card {
+  margin-right: 20px;
+}
+

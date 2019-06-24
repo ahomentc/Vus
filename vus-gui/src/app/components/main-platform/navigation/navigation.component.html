@@ -9,16 +9,15 @@
   <div class="collapse navbar-collapse" id="vusNavigationBar" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
       <li class="nav-item">
-        <a routerLink="/lobby" routerLinkActive="active" class="nav-link">Enter VR Experience</a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/user-group" routerLinkActive="active" class="nav-link">View Group</a>
+        <a routerLink="/lobby" routerLinkActive="active" class="nav-link" title="Enter VR Experience">
+          <i class="fa fa-sign-in" aria-hidden="true"></i>  Enter VR Experience
+        </a>
       </li>
 
       <li class="nav-item dropdown">
         <button class="nav-link dropdown-toggle profile-dropdown-button" id="navbarDropdownMenuLink" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-user-circle-o" aria-hidden="true" title="user profile" style="color:white"></i>
+        aria-haspopup="true" aria-expanded="false" title="user profile">
+          <i class="fa fa-user-circle-o" aria-hidden="true" style="color:white"></i>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
           <div class="dropdown-account-header">
@@ -26,16 +25,21 @@
             <div class="account-email">henry@gmail.com</div>
           </div>
           <div class="dropdown-divider"></div>
-          <a routerLink="/user-environment" routerLinkActive="active" class="dropdown-item">
-            Edit User Profile</a>
-          <a class="dropdown-item" href="#">View Uploaded Environments</a>
+          <a routerLink="/user-group" class="dropdown-item">
+            View Current Group
+          </a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Sign Out</a>
+          <a class="dropdown-item">Edit User Profile</a>
+          <a routerLink="/user-environment" class="dropdown-item">
+            View Uploaded Environments
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item">Sign Out</a>
         </div>
       </li>
 
       <li class="nav-item">
-        <a routerLink="/sign-in" routerLinkActive="active" class="nav-link">Login</a>
+        <a routerLink="/sign-in" routerLinkActive="active" class="nav-link">Sign In</a>
       </li>
     </ul>
   </div>

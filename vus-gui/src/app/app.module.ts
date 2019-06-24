@@ -15,9 +15,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SuggestionContainerComponent } from './components/main-platform/main-lobby/suggestion-container/suggestion-container.component';
 import { RecommendationComponent } from './components/main-platform/main-lobby/recommendation/recommendation.component';
 import { SignUpComponent } from './components/main-platform/sign-up/sign-up.component';
-import { FirstPageComponent } from './components/main-platform/first-page/first-page.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CustomNgMaterialModule } from './common/custom-ng-material-module';
+import { LandingPageComponent } from './components/main-platform/landing-page/landing-page.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +31,7 @@ import { CustomNgMaterialModule } from './common/custom-ng-material-module';
     SuggestionContainerComponent,
     RecommendationComponent,
     SignUpComponent,
-    FirstPageComponent
+    LandingPageComponent
   ],
   imports: [
     BrowserModule,
