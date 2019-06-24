@@ -1,5 +1,5 @@
 <nav class="navbar navbar-dark bg-dark navbar-expand-lg fixed-top">
-  <a routerLink="/lobby" routerLinkActive="active" class="navbar-brand">Vus</a>
+  <a routerLink="/landing-page" routerLinkActive="active" class="navbar-brand">Vus</a>
 
   <button class="navbar-toggler d-lg-none" type="button" (click)="isCollapsed = !isCollapsed"
     [attr.aria-expanded]="!isCollapsed" aria-controls="vusNavigationBar" aria-label="Toggle navigation">
@@ -9,7 +9,12 @@
   <div class="collapse navbar-collapse" id="vusNavigationBar" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
       <li class="nav-item">
-        <a routerLink="/lobby" routerLinkActive="active" class="nav-link" title="Enter VR Experience">
+        <a routerLink="/lobby" routerLinkActive="active" class="nav-link" title="Search For Enviornments">
+          <i class="fa fa-search" aria-hidden="true"></i> Search For Enviornments
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" title="Enter VR Experience">
           <i class="fa fa-sign-in" aria-hidden="true"></i>  Enter VR Experience
         </a>
       </li>

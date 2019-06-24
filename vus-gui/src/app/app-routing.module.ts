@@ -5,14 +5,16 @@ import { UserEnvironmentComponent } from './components/main-platform/user-enviro
 import { UserGroupComponent } from './components/main-platform/user-group/user-group.component';
 import { SignInComponent } from './components/main-platform/sign-in/sign-in.component';
 import { SignUpComponent } from './components/main-platform/sign-up/sign-up.component';
+import { LandingPageComponent } from './components/main-platform/landing-page/landing-page.component';
 
 const routes: Routes = [
-  { path: '',   redirectTo: '/lobby', pathMatch: 'full' },
+  { path: '',   redirectTo: '/landing-page', pathMatch: 'full' },
   { path: 'lobby', component: MainLobbyComponent },
   { path: 'user-environment', component: UserEnvironmentComponent},
   { path: 'user-group', component: UserGroupComponent},
   { path: 'sign-in', component: SignInComponent},
-  { path: 'sign-up', component: SignUpComponent}
+  { path: 'sign-up', component: SignUpComponent},
+  { path: 'landing-page', component: LandingPageComponent}
 ];
 
 @NgModule({
