@@ -6,7 +6,7 @@
 
     <script src="vr_group_session.js"></script>   
     <script src="aframe.min.js"></script> 
-    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+    <script>window.NAF || document.write('<script src="networked-aframe.js">\x3C/script>')</script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
     <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script> -->
     <script src='kinematic-body.js'></script>
@@ -37,6 +37,9 @@
   </head>
 
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+
     <a-scene antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
@@ -60,10 +63,12 @@
           <a-entity class="avatar">
             <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
 
-            <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
-            <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+            <!-- <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item> -->
+            <!-- <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item> -->
 
-            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+            <!-- <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity> -->
+            <a-gltf-model id="female" position="0 0 0" rotation="0 180 0" scale=".1 .1 .1" gltf-model="assets/female/scene.gltf" animation-mixer></a-gltf-model>
+
             </a-entity>
           </a-entity>
         </template>
@@ -91,6 +96,7 @@
       </a-entity>
 
       <a-gltf-model id="dino" position="0 2.93 0" scale="1 1 1" gltf-model="assets/velociraptor/scene.gltf" animation-mixer></a-gltf-model>
+      <!-- <a-gltf-model id="dino" position="0 2.93 0" scale=".1 .1 .1" gltf-model="assets/female/scene.gltf" animation-mixer></a-gltf-model> -->
 
       <a-entity light="color: #222; intensity: 5; type: ambient;" visible=""></a-entity>
       <a-entity light="color:#0a1b22;intensity:2.4100000000000006" position="5 13.902 5"></a-entity>

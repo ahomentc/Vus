@@ -1,43 +1,102 @@
-<div id='buttons'>
-  <button class="btn btn-primary but" onclick="window.location.href = '/vrmanager'">Sell Your WebVR Experience</button>
-  <button class="btn btn-primary but" onclick="window.location.href = '/requestvr'">Request WebVR Experience</button>
-  <button class="btn btn-primary but" onclick="window.location.href = '/lobby'">Try a Basic Demo</button>
+<link href="https://fonts.googleapis.com/css?family=DM+Sans&display=swap" rel="stylesheet">
+
+<div id="page1">
+  <div id='buttons'>
+    <button class="btn btn-primary but" onclick="window.location.href = '/vrmanager'">Sell Your WebVR Experience</button>
+    <button class="btn btn-primary but" onclick="window.location.href = '/requestvr'">Request WebVR Experience</button>
+    <button class="btn btn-primary but" onclick="window.location.href = '/lobby'">Try a Basic Demo</button>
+  </div>
+</div>
+
+<div id="page2">
+  <div class='vid_label'>
+    <label>Education</label><br/>
+    <h5>Interact with your students in whole new ways</h5> 
+  </div>
+  <div class="vid">
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/33tsxNLoLDk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
+
+<div id="page3">
+  <br/>
+  <div class='vid_label' style='margin-top:0px;'>
+    <label>Real Estate</label><br/>
+    <h5>House hunt faster with virtual tours by real agents</h5> 
+  </div>
+  <div class="vid">
+    <img width="560" src="http://localhost:8090/room/media/vus_gif.gif"/>
+  </div>
+</div>
+
+<div id="page4">
+  <div class='vid_label'>
+    <label>See what's possible with VUS</label><br/>
+    <button class="btn btn-primary but">Contact Us</button>
+  </div>
 </div>
 
 <style>
-  body {
-      background: #ffffff url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
-      background-size: 100% auto;
+  body{
+    background-color: #fafafa;
   }
 
-  #button1{
-      position: relative;
-      left: 60%;
-      top: 500px;
-
+  #page1{
+    height: 100vh;
+    background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) ), url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
+    background-size: cover;
   }
 
-  #button2{
-      position: relative;
-      left: 63%;
-      top: 500px;
+  #page2{
+    height: 60vh;
+    background-size: cover;
   }
 
-  #button3{
-      position: relative;
-      left: 40%;
-      top: 600px;
+  #page3{
+    height: 63vh;
+    background-size: cover;
+    background-color: #f1f1f1;
+  }
+
+  #page4{
+    height: 30vh;
+    background-size: cover;
+  }
+
+  .vid{
+    margin: 0 auto; 
+    width: 560px;
+    margin-top: 10px;
+  }
+
+  .vid_label{
+     text-align:center;
+     margin-top: 40px;
+     margin-bottom: 40px;
+  }
+
+  .vid_label label{
+    font-size: 28px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .vid_label h5{
+    font-size: 22px;
+    font-family: 'DM Sans', sans-serif;
   }
 
   .but{
       margin: 10px;
       font-size: 100%;
-      float:right;
+      display: inline-block;
   }
 
   #buttons{
-      margin: 32% 0 0 60%;
-      width:300px;
+      display: inline-block;
+      // position: fixed;
+      position: absolute;
+      bottom:4%;
+      left:27%;
   }
 
 </style>
