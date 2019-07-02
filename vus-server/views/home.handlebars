@@ -1,10 +1,17 @@
 <link href="https://fonts.googleapis.com/css?family=DM+Sans&display=swap" rel="stylesheet">
 
 <div id="page1">
+  <div id="vus_label">
+    <label>Vus</label>
+  </div>
+  <div id="vus_desc">
+    <label>Social VR Marketplace. <label>
+    <label>For Enterprise and Education</label>
+  </div>
   <div id='buttons'>
-    <button class="btn btn-primary but" onclick="window.location.href = '/vrmanager'">Sell Your WebVR Experience</button>
-    <button class="btn btn-primary but" onclick="window.location.href = '/requestvr'">Request WebVR Experience</button>
-    <button class="btn btn-primary but" onclick="window.location.href = '/lobby'">Try a Basic Demo</button>
+    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/vrmanager'">Sell Your WebVR Experience</button>
+    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/requestvr'">Request WebVR Experience</button>
+    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/lobby'">Try a Basic Demo</button>
   </div>
 </div>
 
@@ -14,7 +21,7 @@
     <h5>Interact with your students in whole new ways</h5> 
   </div>
   <div class="vid">
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/33tsxNLoLDk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+   <iframe id="vid_frame" width="560" height="315" src="https://www.youtube.com/embed/33tsxNLoLDk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -25,35 +32,51 @@
     <h5>House hunt faster with virtual tours by real agents</h5> 
   </div>
   <div class="vid">
-    <img width="560" src="http://localhost:8090/room/media/vus_gif.gif"/>
+    <img id="vid_frame" width="560" src="http://localhost:8090/room/media/vus_gif.gif"/>
   </div>
 </div>
 
 <div id="page4">
   <div class='vid_label'>
     <label>See what's possible with VUS</label><br/>
-    <button class="btn btn-primary but">Contact Us</button>
+    <h5 style='font-size: 18px;'>contact.vusgroup@gmail.com</h5>
+    <h5 style='font-size: 18px;'>+1 (925) 639 4140</h5>
   </div>
 </div>
+
 
 <style>
   body{
     background-color: #fafafa;
   }
 
+  #vus_label{
+    font-size: 80px;
+    text-align: right;
+    margin-right: 10%;
+    // color: #0d7db9;
+    color: white;
+    padding-top: 80px;
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  #vus_desc{
+    display: none;
+  }
+
   #page1{
-    height: 100vh;
-    background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) ), url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
+    height: 93vh;
+    background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2) ), url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
     background-size: cover;
   }
 
   #page2{
-    height: 60vh;
+    height: 67vh;
     background-size: cover;
   }
 
   #page3{
-    height: 63vh;
+    height: 71vh;
     background-size: cover;
     background-color: #f1f1f1;
   }
@@ -85,10 +108,75 @@
     font-family: 'DM Sans', sans-serif;
   }
 
+  @media only screen and (max-width: 800px) {
+
+    #vus_label{
+      margin-right: 0px;
+      font-size: 60px;
+      padding-top: 40px;
+      text-align: center;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    #vus_desc{
+      font-size: 25px;
+      text-align: center;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      display: block;
+    }
+
+    #page1{
+      height: 93vh;
+      background: linear-gradient( rgba(0, 0, 0, .6), rgba(0, 0, 0, 0.7) ), url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
+      background-size: cover;
+      padding-top: 100px;
+    }
+
+    #page2{
+      height: 60vh;
+      background-size: cover;
+    }
+
+    #page3{
+      height: 58vh;
+      background-size: cover;
+      background-color: #f1f1f1;
+    }
+
+    .vid{
+      margin: 0 auto; 
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    #vid_frame{
+        width: 100%;
+    }
+
+    .vid_label{
+       text-align:center;
+       margin-top: 40px;
+       margin-bottom: 40px;
+    }
+
+    .vid_label label{
+      font-size: 24px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .vid_label h5{
+      font-size: 18px;
+      font-family: 'DM Sans', sans-serif;
+    }
+  }
+
   .but{
       margin: 10px;
       font-size: 100%;
       display: inline-block;
+      align: center
   }
 
   #buttons{

@@ -1,28 +1,26 @@
 <div style="margin: 10px;padding:20px;">
     <div class="enclose">
         <h4><label>Request a WebVR Experience</label></h4>
-        <form id="uploadModelForm" action="/request_vr_exp" enctype="multipart/form-data" method="POST">
+        <form id="uploadModelForm" action="/requestVrForm" method="POST">
             <div class="form-group">
                 <label>Name:</label>
-                <input id="folderNameInput" type="text" class="form-control" name="name" pattern="[A-Za-z][-A-Za-z0-9_:.]*" placeholder="Enter your name" required/>
+                <input id="folderNameInput" type="text" class="form-control" name="name" placeholder="Enter your name" required/>
             </div>
             <div class="form-group">
                 <label>Email Address:</label>
-                <input type="text" class="form-control" name="email" pattern="[-A-Za-z0-9_]+" placeholder="Enter your email" required/>
+                <input type="text" class="form-control" name="email" placeholder="Enter your email" required/>
             </div>
             <div class="form-group">
                 <label>Phone Number:</label>
-                <input type="Number" class="form-control" name="phone" pattern="[-A-Za-z0-9_]+" placeholder="Enter your phone number (optional)" required/>
+                <input type="Number" class="form-control" name="phone" placeholder="Enter your phone number (optional)" required/>
             </div>
             <div class="form-group">
                 <label>Select a category:</label>
-                <select>
+                <select name="category">
                   <option>----</option>
                   <option value="Education">Education</option>
-                  <option value="Enterprise_Training">Enterprise Training</option>
-                  <option value="Enterprise_Simulation">Enterprise Simulation</option>
-                  <option value="Enterprise_Communication">Enterprise Communication</option>
-                  <option value="Other">Other</option>
+                  <option value="Enterprise">Enterprise</option>
+                  <option value="Real_Estate">Real Estate</option>
                 </select>
             </div>
             <div class="form-group">

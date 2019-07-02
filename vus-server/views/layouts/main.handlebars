@@ -71,23 +71,11 @@
   <body>
     <nav class="navbar navbar-dark navbar-expand-sm bg-dark justify-content-between">
       <a href="/lobby" class="navbar-brand navigation-header" title="main lobby">Vus</a>
-
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item"> 
-          </li>
-        </ul>
-      </div>
       
-      <div id="nav_button">
-        <a class="nav-link" style='margin-right: 10px;' href="/vrmanager" title="Upload your personal VR space">Submit VR Space</a>
-      </div>
       <form class="form-inline">
+        <div id="nav_button">
+          <a class="nav-link" style='margin-right: 10px; float:right;' href="/vrmanager" title="Upload your personal VR space">Submit VR Space</a>
+        </div>
         {{#if user}}
           <div class="dropdown">
               <div class="navbar-text welcome-user"> 

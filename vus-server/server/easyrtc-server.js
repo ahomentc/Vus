@@ -323,6 +323,24 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
     );
 });
 
+
+app.post('/requestVrForm', (req, res) => {
+
+  const name = req.body.name;
+  const email = req.body.email;
+  const phone = req.body.phone;
+  const category = req.body.category;
+  const description = req.body.description;
+  funct.vusRequest(name, email, phone, category, description).then(
+      result => {
+        if (!result) {
+          req.session.error = "Form didn't submit";
+        }
+        return res.redirect('');  
+      }
+    );
+});
+
 //===============External Strategies====================
 
 // Use the GoogleStrategy within Passport.
