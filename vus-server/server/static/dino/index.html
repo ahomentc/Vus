@@ -41,7 +41,7 @@
     <div style="background-color: rgba(0, 0, 0, .7); width:100%; height: 120px; position: fixed; bottom:0px;z-index: 2;">
       <br/><br/>
       <label style='color: white; font-size: 20px; width:50%; margin: 30px;'>Share with others:</label><br/> 
-      <button style='margin-left: 30px; background-color: transparent; border-width: 0;' onclick='document.getElementById("shareURL").select();document.execCommand("copy");'><i style="color:white; font-size: 20px; cursor: pointer; " class="fa fa-copy"></i></button><input type='text' id='shareURL' style='color: white; border-width: 0; outline: none; background-color: transparent; font-size: 20px; width:50%; margin: 10px;' value='http://localhost:8090/room/dino/index.html/abcd123'/>
+      <button style='margin-left: 30px; background-color: transparent; border-width: 0;' onclick='document.getElementById("shareURL").select();document.execCommand("copy");'><i style="color:white; font-size: 20px; cursor: pointer; " class="fa fa-copy"></i></button><input type='text' id='shareURL' style='color: white; border-width: 0; outline: none; background-color: transparent; font-size: 20px; width:50%; margin: 10px;' value=''/>
     </div>
     <script>
         function getCookie(cname) {
@@ -59,7 +59,10 @@
           }
           return "";
         }
-        document.getElementById("shareURL").value = window.location.href + "/" +  getCookie('group_session_room')
+        //document.getElementById("shareURL").value = window.location.href + "/GroupCode=" +  getCookie('group_session_room')
+        var url = window.location.href
+        var insertPt = url.indexOf('room')
+        document.getElementById("shareURL").value = url.slice(0,insertPt-1) + "/grouplink/" +  getCookie('group_session_room') + url.slice(insertPt-1)
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>

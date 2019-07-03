@@ -269,6 +269,64 @@ app.get('/userconsole', (req, res) => {
   }
 });
 
+app.get('^/grouplink/.*$', (req, res) => {
+    var url = req.url;
+    var newRoomID = url.split("/")[1]
+    console.log(newRoomID)
+
+    const previousID =  req.cookies['group_session_room'];
+    funct.localJoinGroup(newRoomID).then(
+      result => {
+        if (!result) {
+          const error = "group ID does not exist";
+          req.session.error = error;
+          res.redirect('lobby');
+        } else {
+          funct.localLeaveGroup(previousID).then(
+            value => {
+              // TODO: Save room_id in database under logged in user's account
+              // req.session.user.room = room_id;
+              // console.log(req.session.user.room)
+              // req.session.user.room = room_id
+              const vus_username = req.cookies['vus_username'];
+              funct.setUserRoom(vus_username,newRoomID);
+
+              res.cookie('group_session_room', newRoomID.toString());
+              req.session.group_session_room = newRoomID;
+
+              var directories = [];
+              result.forEach(groupUser => {
+                directories.push(groupUser.username);
+              });
+
+              res.cookie('group_room_types', directories);
+              req.session.group_room_types = directories;
+
+              // create a session id to be stored in cookie for user authentication
+              var sessionID = SHA256(Math.random().toString())
+
+              // store username and auth code in cookie
+              res.cookie('vus_group_session_auth', sessionID.toString());
+
+              if (req.session.user) {
+                res.cookie('vus_username', req.session.user.username);
+              }
+
+              // store the room in cookie... remove this later
+              res.cookie('group_session_room', newRoomID.toString());
+              req.session.group_session_room = newRoomID;
+
+              delete req.session.error;
+              res.redirect('lobby');
+            }
+          )
+        }
+      }
+    ).catch(err => {
+      console.log(err);
+    })
+});
+
 app.post('/removeFile', (req, res) => {
   if (!req.session.user) {
     res.redirect('signin');
