@@ -181,11 +181,7 @@ app.get('/lobby', function(req, res){
           }
         })
       } else {
-        if (req.session.user) {
-          res.render('lobby', {error: req.session.error, user: req.session.user});
-        } else {
-          res.render('lobby', {error: req.session.error});
-        }
+        res.redirect('createRoom');
       }
     }
   )
