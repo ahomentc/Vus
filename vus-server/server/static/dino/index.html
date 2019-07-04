@@ -62,7 +62,7 @@
         //document.getElementById("shareURL").value = window.location.href + "/GroupCode=" +  getCookie('group_session_room')
         var url = window.location.href
         var insertPt = url.indexOf('room')
-        document.getElementById("shareURL").value = url.slice(0,insertPt-1) + "/grouplink/" +  getCookie('group_session_room') + url.slice(insertPt-1)
+        document.getElementById("shareURL").value = url.slice(0,insertPt-1) + "/grouplink?groupid=" +  getCookie('group_session_room') + "&reroute=" + url.slice(insertPt-1)
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>

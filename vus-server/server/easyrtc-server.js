@@ -269,10 +269,10 @@ app.get('/userconsole', (req, res) => {
   }
 });
 
-app.get('^/grouplink/.*$', (req, res) => {
-    var url = req.url;
-    var newRoomID = url.split("/")[1]
-    console.log(newRoomID)
+// http://localhost:8090/grouplink?groupid=6bea02&reroute=/room/dino/index.html
+app.get('/grouplink', (req, res) => {
+    var newRoomID = req.query.groupid;
+    var reroute = req.query.reroute;
 
     const previousID =  req.cookies['group_session_room'];
     funct.localJoinGroup(newRoomID).then(
@@ -284,10 +284,6 @@ app.get('^/grouplink/.*$', (req, res) => {
         } else {
           funct.localLeaveGroup(previousID).then(
             value => {
-              // TODO: Save room_id in database under logged in user's account
-              // req.session.user.room = room_id;
-              // console.log(req.session.user.room)
-              // req.session.user.room = room_id
               const vus_username = req.cookies['vus_username'];
               funct.setUserRoom(vus_username,newRoomID);
 
@@ -317,7 +313,7 @@ app.get('^/grouplink/.*$', (req, res) => {
               req.session.group_session_room = newRoomID;
 
               delete req.session.error;
-              res.redirect('lobby');
+              res.redirect(reroute);
             }
           )
         }
