@@ -82,23 +82,20 @@
       </a-assets>
 
       <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1.6 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
-        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+        <a-camera id='camera' look-controls networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
               visible="false"
             ></a-sphere>
         </a-camera>
 
+        <!-- <a-entity id="next-button" geometry="primitive: box" material="color: red" position="0 0 0"></a-entity> -->
         <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
         <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
       <!-- <a-gltf-model id="apt-mtl" position="0 1.62011 0" scale="0.05 0.05 0.05" src="assets/living_room/scene.gltf" gltf-model="assets/living_room/scene.gltf"></a-gltf-model> -->
-      <a-gltf-model id="apt-mtl" position="0 1.62011 0" scale="0.05 0.05 0.05" src="assets/demo_apt.glb" gltf-model="assets/demo_apt.glb"></a-gltf-model>
-
-      <a-entity light="intensity:3.16;color:#222;type:ambient"></a-entity>
-      <a-entity light="intensity:17.46;decay:3;color:#222;distance:5.18" position="-2.7239 5.62142 1.553"></a-entity>
-      <a-entity light="intensity:4.28;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42000000000000004 0.64 3.06"></a-entity>
+      <a-gltf-model id="apt-mtl" position="-3.60825 1.62011 -2.344" scale="0.01 0.01 0.01" src="assets/demo_apt2.glb" gltf-model="assets/demo_apt2.glb"></a-gltf-model>
 
       <!-- Ground -->
       <!-- we've made the ground at height 2. Aweful but works for now -->
