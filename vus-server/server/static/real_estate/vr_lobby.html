@@ -1,0 +1,212 @@
+<html style="background-color: black">
+  <head>
+    <meta charset="utf-8">
+    <title>Dev Example — Networked-Aframe</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+
+    <script src="js/vr_group_session.js"></script>   
+    <script src="js/aframe.min.js"></script> 
+    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
+    <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script> -->
+    <script src='js/kinematic-body.js'></script>
+    <script src="js/movement-controls.js"></script>
+    <script src="js/touch-controls.js"></script>
+    <script src="js/trackpad-controls.js"></script>
+
+    <script>
+      AFRAME.registerComponent("forward_space", {
+        init: function() {
+          var camera = document.querySelector("a-camera")
+          var player = document.querySelector("#player")
+          window.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+               var angle = camera.getAttribute("rotation")
+               var x = .3 * Math.cos((angle.y+90) * Math.PI / 180)
+               var y = .3 * Math.sin((angle.y+90) * Math.PI / 180)
+               var pos = player.getAttribute("position")
+               pos.x -= y;
+               pos.z -= x;
+               player.setAttribute("position", pos);
+             }
+           })
+         }
+        })
+    </script>
+
+  </head>
+
+  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div style="background-color: rgba(0, 0, 0, .7); width:100%; height: 120px; position: fixed; bottom:0px;z-index: 2;">
+      <br/><br/>
+      <label style='color: white; font-size: 20px; width:50%; margin: 30px;'>Share with others:</label><br/> 
+      <button style='margin-left: 30px; background-color: transparent; border-width: 0;' onclick='document.getElementById("shareURL").select();document.execCommand("copy");'><i style="color:white; font-size: 20px; cursor: pointer; " class="fa fa-copy"></i></button><input type='text' id='shareURL' style='color: white; border-width: 0; outline: none; background-color: transparent; font-size: 20px; width:50%; margin: 10px;' value=''/>
+    </div>
+    <script>
+        function getCookie(cname) {
+          var name = cname + "=";
+          var decodedCookie = decodeURIComponent(document.cookie);
+          var ca = decodedCookie.split(';');
+          for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+          return "";
+        }
+        //document.getElementById("shareURL").value = window.location.href + "/GroupCode=" +  getCookie('group_session_room')
+        var url = window.location.href
+        var insertPt = url.indexOf('room')
+        document.getElementById("shareURL").value = url.slice(0,insertPt-1) + "/grouplink?groupid=" +  getCookie('group_session_room') + "&reroute=" + url.slice(insertPt-1)
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <a-scene antialias="true" physics="gravity:0;"  networked-scene="
+      room: dev;
+      debug: true;
+      adapter: wseasyrtc;
+      connectOnLoad: false;
+      audio: true;
+    ">
+      <a-assets>
+        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
+        <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+
+        <!-- Templates -->
+
+        <!-- Avatar -->
+        <template id="player-template">
+          <a-entity></a-entity>
+        </template>
+
+        <!-- Avatar -->
+        <template id="head-template">
+          <a-entity class="avatar">
+            <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
+
+            <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- Hand -->
+        <template id="hand-template">
+          <a-entity>
+            <a-box position="0 0 .08" scale="0.07 0.01 0.07"></a-box>
+          </a-entity>
+        </template>
+
+
+        <!-- /Templates -->
+      </a-assets>
+
+      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="17.984 1.9 2.604" rotation="0 74.714 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+            <a-sphere class="head"
+              random-color
+              visible="false"
+            ></a-sphere>
+        </a-camera>
+
+        <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
+      </a-entity>
+
+      <a-gltf-model id="room" position="0 1.6 0" scale=".0015 .0015 .0015" src="assets/gallary/scene.gltf"></a-gltf-model>
+
+      <a-gltf-model id="door" position="-0.195 1.543 -1.155" scale="0.014 0.014 0.014" src="assets/door/scene.gltf" gltf-model="assets/door/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="door-2" position="5.969 1.575 -1.043" scale="0.014 0.014 0.014" src="assets/door/scene.gltf" gltf-model="assets/door/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="door-3" position="1.739 1.604 0.956" scale="0.014 0.014 0.014" src="assets/door/scene.gltf" gltf-model="assets/door/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="door-4" position="7.206 1.669 0.899" scale="0.014 0.014 0.014" src="assets/door/scene.gltf" gltf-model="assets/door/scene.gltf"></a-gltf-model>
+
+      <a-entity light="color: #222; intensity: 5; type: ambient;" visible=""></a-entity>
+      <a-entity light="color: #222; intensity: 1.5" position="5 5 5"></a-entity>
+
+      <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
+
+      <!-- Cover -->
+      <a-entity position="2.312 4.317 2.645" scale="14.947 4.477 3.152" geometry="" material="side:double;color:#131313" id="cover"></a-entity>
+      <a-entity position="2.545 4.737 -3.148" scale="15.646 5.881 2.997" geometry="" material="side:double;color:#131313" id="cover-2"></a-entity>
+
+      <!-- Portals -->
+      <a-entity static-body="sphereRadius:NaN" position="7.316 2.571 2.10587" scale="1.888 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_6"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="6.11424 2.825 -2.18129" scale="2.438 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_2"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="1.81321 1.79 2.02595" scale="2.148 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_5"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="-0.098 2.625 -2.34931" scale="2.25 4.431 -0.017" geometry="" velocity="" material="color:#131313" id="room_4"></a-entity>
+    </a-scene>
+
+    <script>
+        // host = "http://192.168.0.104"
+        const host = 'https://vusgroup.com'
+        // port = "8090"
+        const port = ""
+
+        let currentPath = window.location.href;
+        let pathArr = currentPath.split('/');
+        pathArr.pop();
+        currentPath = pathArr.join('/');
+
+        document.querySelector('#room_6').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_6/room_6.html';
+        });
+        document.querySelector('#room_2').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_2/room_2.html';
+        });
+        document.querySelector('#room_5').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_5/room_5.html';
+        });
+        document.querySelector('#room_4').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_4/room_4.html';
+        });
+        // document.querySelector('#room_1').addEventListener("click", (e)=>{
+            // alert("Teleporting!");
+        // });
+    </script>
+
+    <script>
+      // Define custom schema for syncing avatar color, set by random-color
+      NAF.schemas.add({
+        template: '#head-template',
+        components: [
+          'position',
+          'rotation',
+          {
+            selector: '.head',
+            component: 'material'
+          }
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#player-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#hand-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      // Called by Networked-Aframe when connected to server
+      function onConnect () {
+        console.log("onConnect", new Date());
+      }
+
+    </script>
+  </body>
+</html>

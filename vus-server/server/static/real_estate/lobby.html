@@ -1,0 +1,112 @@
+<br/><label class='page_desc'>Homes in Irvine</label>
+<div class='houses'>
+	<div class="tile" id='room_2'>
+	  <div class='cover'>
+	  	<img src="https://www.incimages.com/uploaded_files/image/1940x900/getty_856794670_385651.jpg" alt="Avatar" style="width:100%">
+	  </div>
+	  <div class="container">
+	    <h4><b>For Sale: $1,140,000</b></h4>
+	    <p>124 Agustin Narvaez, Irvine, CA 92602</p>
+	    <p>4 beds  |  2.5 baths  |  2,148 sqft </p>
+	  </div>
+	</div>
+
+	<div class="tile" id='room_4'>
+	  <div class='cover'>
+	  	<img src="https://assets.themortgagereports.com/wp-content/uploads/2017/12/How-to-Buy-a-House-with-Low-Income-This-Year.jpg" alt="Avatar" style="width:100%">
+	  </div>
+	  <div class="container">
+	    <h4><b>For Sale: $970,000</b></h4>
+	    <p>195 Rockview, Irvine, CA 92602</p>
+	    <p>3 beds  |  2 baths  |  1,983 sqft </p>
+	  </div>
+	</div>
+
+	<div class="tile" id='room_5'>
+	  <div class='cover'>
+	  	<img src="https://lodgesmarter.com/wp-content/uploads/2018/04/aaaatoronto-house-for-sale-53-burnhamthorpe-crescent-1-803x603.jpg" alt="Avatar" style="width:100%">
+	  </div>
+	  <div class="container">
+	    <h4><b>For Sale: $851,000</b></h4>
+	    <p>201 S 13th St, Irvine, CA 92602</p>
+	    <p>3 beds  |  2 baths  |  1,796 sqft </p>
+	  </div>
+	</div>
+
+	<div class="tile" id='room_6'>
+	  <div class='cover'>
+	  	<img src="https://www.houseincanada.ca/wp-content/uploads/2018/03/How-to-buy-a-house-in-Calgary-Home-Buying-Guide.-780x519.jpg?189db0&189db0" alt="Avatar" style="width:100%">
+	  </div>
+	  <div class="container">
+	    <h4><b>For Sale: $730,000</b></h4>
+	    <p>14 Octavus, Irvine, CA 92602</p>
+	    <p>4 beds  |  2.5 baths  |  2,148 sqft </p>
+	  </div>
+	</div>
+</div>
+
+<style>
+	.page_desc{
+		font-size: 25px;
+		margin: 5%;
+	}
+
+	.houses{
+		display: grid;
+	 	grid-gap: 15px;
+	  	grid-template-columns: repeat(auto-fit, 400px);
+	  	margin-left: 5%;
+	  	margin-top: 50px;
+	}
+
+	.tile {
+	  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+	  transition: 0.3s;
+	  border-radius: 5px; /* 5px rounded corners */
+	  cursor: pointer;
+	}
+
+	.tile:hover {
+	  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+	}
+
+	.container {
+	  padding: 2px 16px;
+	}
+
+	img {
+	  border-radius: 5px 5px 0 0;
+	  height: 220px;
+	}
+
+	.cover {
+	  width: 100%;
+	  object-fit: cover;
+	}
+
+</style>
+
+<script>
+    host = "http://192.168.0.104"
+    // const host = 'https://vusgroup.com'
+    port = "8090"
+    // const port = ""
+
+    let currentPath = window.location.href;
+    let pathArr = currentPath.split('/');
+    pathArr.pop();
+    currentPath = pathArr.join('/');
+
+    document.querySelector('#room_6').addEventListener("click", (e)=>{
+        window.location.href =  currentPath + '/room_6/room_6.html';
+    });
+    document.querySelector('#room_2').addEventListener("click", (e)=>{
+        window.location.href =  currentPath + '/room_2/room_2.html';
+    });
+    document.querySelector('#room_5').addEventListener("click", (e)=>{
+        window.location.href =  currentPath + '/room_5/room_5.html';
+    });
+    document.querySelector('#room_4').addEventListener("click", (e)=>{
+        window.location.href =  currentPath + '/room_4/room_4.html';
+    });
+</script>
