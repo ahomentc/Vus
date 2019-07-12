@@ -1,7 +1,7 @@
 <html style="background-color: black">
   <head>
     <meta charset="utf-8">
-    <title>124 Agustin Narvaez, Irvine, CA</title>
+    <title>195 Rockview, Irvine, CA 92602</title>
     <meta name="description" content="Dev Example — Networked-Aframe">
 
     <script src="../js/vr_group_session.js"></script>   
@@ -34,6 +34,7 @@
          }
         })
     </script>
+
   </head>
 
   <body>
@@ -81,21 +82,30 @@
         <!-- /Templates -->
       </a-assets>
 
-      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1.6 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
-        <a-camera id='camera' look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
               visible="false"
             ></a-sphere>
         </a-camera>
 
-        <!-- <a-entity id="next-button" geometry="primitive: box" material="color: red" position="0 0 0"></a-entity> -->
-        <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
-        <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
-      <!-- <a-gltf-model id="apt-mtl" position="0 1.62011 0" scale="0.05 0.05 0.05" src="assets/living_room/scene.gltf" gltf-model="assets/living_room/scene.gltf"></a-gltf-model> -->
-      <a-gltf-model id="apt-mtl" position="-3.60825 1.62011 -2.344" scale="0.01 0.01 0.01" src="assets/demo_apt2.glb" gltf-model="assets/demo_apt2.glb"></a-gltf-model>
+      <!-- <a-gltf-model id="apt-mtl" position="-13.492 0.95 3.244" scale="0.025 0.025 0.025" src="assets/apartment_floorplan/scene.gltf" gltf-model="assets/apartment_floorplan/scene.gltf"></a-gltf-model> -->
+
+      <a-gltf-model id="apt-mtl" position="-3.60825 0.95 -2.344" scale="0.01 0.01 0.01" src="assets/house2.glb" gltf-model="assets/house2.glb"></a-gltf-model>
+
+      <!-- <a-entity position="-0.653 3.56977 -1.37604" scale="11.18346 0.103 9.21251" geometry="" material=""></a-entity> -->
+      <a-gltf-model id="background" position="67.476 2.802 25.853" scale="300 300 300" src="assets/mountain/scene.gltf" rotation="0 -165.47021123378175 0" gltf-model="assets/mountain/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="sky" position="0 0 0" scale="10 10 10" src="assets/background_1/scene.gltf"></a-gltf-model>
+
+      <a-entity light="intensity:1.12;color:#222;type:ambient"></a-entity>
+      <a-entity light="intensity:1.91;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
+      <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
+
 
       <!-- Ground -->
       <!-- we've made the ground at height 2. Aweful but works for now -->
@@ -104,6 +114,15 @@
       <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
 
     </a-scene>
+
+    <script>
+        // host = "http://127.0.0.1"
+        host = "http://192.168.0.128"
+        document.querySelector('#link_button').addEventListener('click', function() {
+            window.location.href =  host + ':8080/room/google-blocks.html';
+            // window.location.href =  host + ':8080/google-blocks.html';
+        });
+    </script>
 
     <script>
       // Define custom schema for syncing avatar color, set by random-color

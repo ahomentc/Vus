@@ -138,34 +138,34 @@
       <a-entity position="2.545 4.737 -3.148" scale="15.646 5.881 2.997" geometry="" material="side:double;color:#131313" id="cover-2"></a-entity>
 
       <!-- Portals -->
-      <a-entity static-body="sphereRadius:NaN" position="7.316 2.571 2.10587" scale="1.888 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_6"></a-entity>
-      <a-entity static-body="sphereRadius:NaN" position="6.11424 2.825 -2.18129" scale="2.438 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_2"></a-entity>
-      <a-entity static-body="sphereRadius:NaN" position="1.81321 1.79 2.02595" scale="2.148 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_5"></a-entity>
-      <a-entity static-body="sphereRadius:NaN" position="-0.098 2.625 -2.34931" scale="2.25 4.431 -0.017" geometry="" velocity="" material="color:#131313" id="room_4"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="7.316 2.571 2.10587" scale="1.888 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_4"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="6.11424 2.825 -2.18129" scale="2.438 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_1"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="1.81321 1.79 2.02595" scale="2.148 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="room_3"></a-entity>
+      <a-entity static-body="sphereRadius:NaN" position="-0.098 2.625 -2.34931" scale="2.25 4.431 -0.017" geometry="" velocity="" material="color:#131313" id="room_2"></a-entity>
     </a-scene>
 
     <script>
-        // host = "http://192.168.0.104"
-        const host = 'https://vusgroup.com'
-        // port = "8090"
-        const port = ""
+        host = "http://192.168.50.98"
+        // const host = 'https://vusgroup.com'
+        port = "8090"
+        // const port = ""
 
         let currentPath = window.location.href;
         let pathArr = currentPath.split('/');
         pathArr.pop();
         currentPath = pathArr.join('/');
 
-        document.querySelector('#room_6').addEventListener("collide", (e)=>{
-            window.location.href =  currentPath + '/room_6/room_6.html';
+        document.querySelector('#room_4').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_4/room_4.html';
+        });
+        document.querySelector('#room_1').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_1/room_1.html';
+        });
+        document.querySelector('#room_3').addEventListener("collide", (e)=>{
+            window.location.href =  currentPath + '/room_3/room_3.html';
         });
         document.querySelector('#room_2').addEventListener("collide", (e)=>{
             window.location.href =  currentPath + '/room_2/room_2.html';
-        });
-        document.querySelector('#room_5').addEventListener("collide", (e)=>{
-            window.location.href =  currentPath + '/room_5/room_5.html';
-        });
-        document.querySelector('#room_4').addEventListener("collide", (e)=>{
-            window.location.href =  currentPath + '/room_4/room_4.html';
         });
         // document.querySelector('#room_1').addEventListener("click", (e)=>{
             // alert("Teleporting!");
