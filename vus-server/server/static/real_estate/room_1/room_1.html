@@ -38,7 +38,7 @@
 
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="../easyrtc.js"></script>
     <a-scene antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
@@ -59,7 +59,7 @@
 
         <!-- Avatar -->
         <template id="head-template">
-          <a-entity class="avatar">
+          <a-entity class="avatar" networked-audio-source="">
             <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
 
             <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
