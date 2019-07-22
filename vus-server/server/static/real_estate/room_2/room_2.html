@@ -46,8 +46,8 @@
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src='../js/shareBar.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="../js/socket.io.min.js"></script>
+    <script src="../js/easyrtc.js"></script>
     <a-scene antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
@@ -129,15 +129,6 @@
       <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
 
     </a-scene>
-
-    <script>
-        // host = "http://127.0.0.1"
-        host = "http://192.168.0.128"
-        document.querySelector('#link_button').addEventListener('click', function() {
-            window.location.href =  host + ':8080/room/google-blocks.html';
-            // window.location.href =  host + ':8080/google-blocks.html';
-        });
-    </script>
 
     <script>
       // Define custom schema for syncing avatar color, set by random-color
