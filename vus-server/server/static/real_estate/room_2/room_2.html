@@ -7,9 +7,10 @@
     <script src="../js/vr_group_session.js"></script>   
     <!-- <script src="../js/aframe.min.js"></script>  -->
     <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
-    <script>window.NAF || document.write('<script src="../js/networked-aframe.min.js">\x3C/script>')</script>
+    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+    <!-- <script>window.NAF || document.write('<script src="../js/networked-aframe.js">\x3C/script>')</script> -->
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
-    <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script> -->
+    <!-- <script src='../js/networked-aframe.min.js'></script> -->
     <script src='../js/kinematic-body.js'></script>
     <script src="../js/movement-controls.js"></script>
     <script src="../js/touch-controls.js"></script>
@@ -35,7 +36,6 @@
          }
         })
     </script>
-    <script src="https://jsconsole.com/js/remote.js?7577e904-2efd-4491-bd31-d5ce3d286f06"></script>
   </head>
 
   <body>
@@ -162,8 +162,12 @@
 
       // Called by Networked-Aframe when connected to server
       function onConnect () {
-        console.log("onConnect", new Date());
+          console.log("onConnect", new Date());
       }
+
+      document.querySelector('a-scene').addEventListener('enter-vr', function () {
+          setTimeout(setRoom, 1000);
+      });
 
     </script>
   </body>
