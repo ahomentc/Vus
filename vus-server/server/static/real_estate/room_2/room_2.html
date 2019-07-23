@@ -166,12 +166,15 @@
       }
 
       document.body.addEventListener('clientDisconnected', function (evt) {
-          var room_name = getCookie("group_session_room");
-          var room_url = window.location.pathname.split('/').pop();
-          room_name = room_name + "_" + room_url;
-          document.getElementsByTagName("a-scene")[0].setAttribute("networked-scene")
-          document.getElementsByTagName("a-scene")[0].getAttribute("networked-scene").room = room_name;
-          AFRAME.scenes[0].emit('connect');
+          alert("disconnected")
+          setTimeout(function(){
+              var room_name = getCookie("group_session_room");
+              var room_url = window.location.pathname.split('/').pop();
+              room_name = room_name + "_" + room_url;
+              document.getElementsByTagName("a-scene")[0].setAttribute("networked-scene")
+              document.getElementsByTagName("a-scene")[0].getAttribute("networked-scene").room = room_name;
+              AFRAME.scenes[0].emit('connect');
+            },1000)
       });
 
       // document.querySelector('a-scene').addEventListener('enter-vr', function () {
