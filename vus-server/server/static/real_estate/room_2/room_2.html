@@ -46,7 +46,7 @@
     <script src='../js/shareBar.js'></script>
     <script src="../js/socket.io.min.js"></script>
     <script src="../js/easyrtc.js"></script>
-    <a-scene antialias="true" physics="gravity:0;"  networked-scene="
+    <a-scene stats antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
       adapter: easyrtc;
@@ -108,13 +108,13 @@
       <!-- <a-gltf-model id="background" position="67.476 2.802 25.853" scale="300 300 300" src="assets/mountain/scene.gltf" rotation="0 -165.47021123378175 0" gltf-model="assets/mountain/scene.gltf"></a-gltf-model> -->
       <!-- <a-gltf-model id="sky" position="0 0 0" scale="10 10 10" src="assets/background_1/scene.gltf"></a-gltf-model> -->
 
-      <a-entity light="intensity:1.28;color:#222;type:ambient"></a-entity>
-      <!-- <a-entity light="intensity:.28;color:#222;type:ambient"></a-entity> -->
-<!--       <a-entity id="light2" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:true;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="-0.74347 2.75289 -2.18426"></a-entity>
-      <a-entity id="light3" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:true;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="3.86749 1.99616 0.11885"></a-entity>
-      <a-entity id="light4" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:true;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="-5.50615 2.20519 2.16374"></a-entity>
-      <a-entity id="light5" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:true;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="-5.50615 2.20519 0.18847"></a-entity>
-      <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity> -->
+      <!-- <a-entity light="intensity:1.28;color:#222;type:ambient"></a-entity> -->
+      <a-entity light="intensity:.28;color:#222;type:ambient"></a-entity>
+      <a-entity id="light2" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:false;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="-0.74347 2.75289 -2.18426"></a-entity>
+      <!-- <a-entity id="light3" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:true;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="3.86749 1.99616 0.11885"></a-entity> -->
+      <a-entity id="light4" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:false;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="-5.50615 2.20519 2.16374"></a-entity>
+      <!-- <a-entity id="light5" light="type:point;intensity:0.46;distance:3.26;decay:0.84;shadowCameraFar:0;color:#fffcd9;castShadow:true;shadowCameraFov:0;shadowMapHeight:0;shadowMapWidth:0" scale="0.96 1 1" position="-5.50615 2.20519 0.18847"></a-entity> -->
+      <a-entity light="intensity:1;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
 
 
       <!-- Ground -->
