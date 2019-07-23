@@ -38,12 +38,19 @@
   </head>
 
   <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-    <script src="/easyrtc/easyrtc.js"></script>
-    <a-scene antialias="true" physics="gravity:0;"  networked-scene="
+    <div style="background-color: rgba(20, 20, 20, .7); width:100%; height: 120px; position: fixed; left:0; bottom:0px;z-index: 2;">
+      <br/><br/>
+      <label style='color: white; font-size: 20px; width:50%; margin: 30px;'>Share with others:</label><br/> 
+      <button style='margin-left: 30px; background-color: transparent; border-width: 0;' onclick='copy()'><i style="color:white; font-size: 20px; cursor: pointer; " class="fa fa-copy"></i></button><input type='text' id='shareURL' style='color: white; border-width: 0; outline: none; background-color: transparent; font-size: 20px; width:50%; margin: 10px;' value=''/>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src='../js/shareBar.js'></script>
+    <script src="../js/socket.io.min.js"></script>
+    <script src="../js/easyrtc.js"></script>
+    <a-scene stats antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
-      adapter: wseasyrtc;
+      adapter: easyrtc;
       connectOnLoad: false;
       audio: true;
     ">
@@ -66,7 +73,7 @@
             <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
             <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
 
-            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="2.5 2.5 2.5"></a-entity>
             </a-entity>
           </a-entity>
         </template>
@@ -94,16 +101,16 @@
         <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
-      <a-gltf-model id="apt-mtl" position="-20.617 .95 3.244" scale="0.025 0.025 0.025" src="assets/floor_plan_york/scene.gltf" gltf-model="assets/floor_plan_york/scene.gltf"></a-gltf-model>
+      <a-gltf-model id="apt-mtl" position="-1.63727 3.90462 -0.07602" scale="0.0015 0.0015 0.0015" src="assets/apartment_vray/scene.gltf" gltf-model="assets/apartment_vray/scene.gltf" rotation="0 90 0"></a-gltf-model>
       <!-- <a-gltf-model id="apt-mtl" position="-20.617 0 3.244" scale="0.025 0.025 0.025" src="assets/apartament_bucurestii_noi/scene.gltf" gltf-model="assets/apartament_bucurestii_noi/scene.gltf"></a-gltf-model> -->
-      <a-entity position="-6.70959 3.33095 -0.09491" scale="18.60207 0.103 9.01858" geometry="" material=""></a-entity>
+      <!-- <a-entity position="-6.70959 3.33095 -0.09491" scale="18.60207 0.103 9.01858" geometry="" material=""></a-entity> -->
       <!-- <a-gltf-model id="background" position="119.192 11.759 4.82" scale="300 300 300" src="assets/mountain/scene.gltf" rotation="0 -165.47021123378175 0" gltf-model="assets/mountain/scene.gltf"></a-gltf-model> -->
       <!-- <a-gltf-model id="sky" position="0 0 0" scale="10 10 10" src="assets/background_1/scene.gltf"></a-gltf-model> -->
 
 
       <a-entity light="intensity:1.12;color:#222;type:ambient"></a-entity>
       <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
-      <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
+      <a-entity light="intensity:1.2;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
 
 
       <!-- Ground -->
