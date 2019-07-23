@@ -166,7 +166,6 @@
       }
 
       document.body.addEventListener('clientDisconnected', function (evt) {
-          alert("disconnected")
           setTimeout(function(){
               var room_name = getCookie("group_session_room");
               var room_url = window.location.pathname.split('/').pop();
