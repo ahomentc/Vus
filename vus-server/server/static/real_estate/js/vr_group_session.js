@@ -42,12 +42,10 @@ else{
 var findRoom = setInterval(setRoom, 4000);
 
 function setRoom(){
-    alert("hi");
-    // if(NAF.connection.isConnected()){
-    //     clearInterval(findRoom);
-    //     alert('bye');
-    //     return;
-    // }
+    if(NAF.connection.isConnected()){
+        clearInterval(findRoom);
+        return;
+    }
     // replace room in "<a-scene networked-scene" with room from cookie
     var room_name = getCookie("group_session_room");
     // add the actual room to the room_name. Otherwise visible if in different rooms
