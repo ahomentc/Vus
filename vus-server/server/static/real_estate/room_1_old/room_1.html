@@ -1,11 +1,12 @@
 <html style="background-color: black">
   <head>
     <meta charset="utf-8">
-    <title>195 Rockview, Irvine, CA 92602</title>
+    <title>124 Agustin Narvaez, Irvine, CA</title>
     <meta name="description" content="Dev Example — Networked-Aframe">
 
     <script src="../js/vr_group_session.js"></script>   
     <script src="../js/aframe.min.js"></script> 
+    <!-- <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script> -->
     <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
     <!-- <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"></script> -->
@@ -34,19 +35,19 @@
          }
         })
     </script>
-
   </head>
 
   <body>
-    <div style="background-color: rgba(20, 20, 20, .7); width:100%; height: 120px; position: fixed; left:0; bottom:0px;z-index: 2;">
+      <div style="background-color: rgba(20, 20, 20, .7); width:100%; height: 120px; position: fixed; left:0; bottom:0px;z-index: 2;">
       <br/><br/>
       <label style='color: white; font-size: 20px; width:50%; margin: 30px;'>Share with others:</label><br/> 
       <button style='margin-left: 30px; background-color: transparent; border-width: 0;' onclick='copy()'><i style="color:white; font-size: 20px; cursor: pointer; " class="fa fa-copy"></i></button><input type='text' id='shareURL' style='color: white; border-width: 0; outline: none; background-color: transparent; font-size: 20px; width:50%; margin: 10px;' value=''/>
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src='../js/shareBar.js'></script>
-    <script src="../js/socket.io.min.js"></script>
-    <script src="../js/easyrtc.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
     <a-scene antialias="true" physics="gravity:0;"  networked-scene="
       room: dev;
       debug: true;
@@ -67,13 +68,13 @@
 
         <!-- Avatar -->
         <template id="head-template">
-          <a-entity class="avatar">
+          <a-entity class="avatar" networked-audio-source>
             <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
 
             <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
             <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
 
-            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="2.5 2.5 2.5"></a-entity>
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
             </a-entity>
           </a-entity>
         </template>
@@ -89,29 +90,34 @@
         <!-- /Templates -->
       </a-assets>
 
-      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
-        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1.6 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+        <a-camera id='camera' cursor="maxDistance: 30; fuse: true" look-controls networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
               visible="false"
             ></a-sphere>
+            <a-entity position="0 0 -1" geometry="primitive: ring; radiusOuter: 0.02;radiusInner: 0.01;" material="color: cyan; shader: flat"
+                cursor="maxDistance: 3; fuse: true">
+            </a-entity>
         </a-camera>
 
-        <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
-        <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
+        <a-entity id="next-button" geometry="primitive: box" scale="1 0.1 1" material="color: blue" position="0 0 0"></a-entity>
+        <a-entity text__next_text="value:Next" position="2.687 0.049 0" rotation="-90 0 0" scale="6 6 6"></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1.9 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
-      <a-gltf-model id="apt-mtl" position="-1.63727 3.90462 -0.07602" scale="0.0015 0.0015 0.0015" src="assets/apartment_vray/scene.gltf" gltf-model="assets/apartment_vray/scene.gltf" rotation="0 90 0"></a-gltf-model>
-      <!-- <a-gltf-model id="apt-mtl" position="-20.617 0 3.244" scale="0.025 0.025 0.025" src="assets/apartament_bucurestii_noi/scene.gltf" gltf-model="assets/apartament_bucurestii_noi/scene.gltf"></a-gltf-model> -->
-      <!-- <a-entity position="-6.70959 3.33095 -0.09491" scale="18.60207 0.103 9.01858" geometry="" material=""></a-entity> -->
-      <!-- <a-gltf-model id="background" position="119.192 11.759 4.82" scale="300 300 300" src="assets/mountain/scene.gltf" rotation="0 -165.47021123378175 0" gltf-model="assets/mountain/scene.gltf"></a-gltf-model> -->
-      <!-- <a-gltf-model id="sky" position="0 0 0" scale="10 10 10" src="assets/background_1/scene.gltf"></a-gltf-model> -->
+      <a-gltf-model id="apt-mtl" position="0 1.62011 0" scale="0.05 0.05 0.05" src="assets/living_room/scene.gltf" gltf-model="assets/living_room/scene.gltf"></a-gltf-model>
+      <!-- <a-gltf-model id="apt-mtl" position="-3.60825 1.62011 -2.344" scale="0.01 0.01 0.01" src="assets/demo_apt3.glb" gltf-model="assets/demo_apt3.glb"></a-gltf-model> -->
+      <!-- <a-gltf-model id="apt-mtl" position="-3.60825 1.62011 -2.344" scale="0.01 0.01 0.01" src="assets/demo_apt2.glb" gltf-model="assets/alt_apt_2.glb" ></a-gltf-model> -->
+      <!-- <a-gltf-model id="apt-mtl" position="-3.60825 1.62011 -2.344" scale="0.01 0.01 0.01" src="assets/alt_apt_2.glb"></a-gltf-model> -->
 
 
-      <a-entity light="intensity:1.12;color:#222;type:ambient"></a-entity>
-      <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
-      <a-entity light="intensity:1.2;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
-
+      <a-entity light="intensity:2.5;color:#222;type:ambient"></a-entity>
+      <!-- <a-entity light="type: point; intensity: 1.2; distance: 4.03; decay: 0.84; shadowCameraFar: 499.66; color: #fffcd9" scale="0.96 1 1" position="-1.89823 3.58292 -1.15648"></a-entity> -->
+      <!-- <a-entity light="type: point; intensity: 0.9; distance: 4.03; decay: 0.84; shadowCameraFar: 499.66; color: #fffcd9" scale="0.96 1 1" position="-2.98907 3.58292 3.75952"></a-entity> -->
+      <!-- <a-entity light="type: point; intensity: 0.9; distance: 4.03; decay: 0.84; shadowCameraFar: 499.66; color: #fffcd9" scale="0.96 1 1" position="-2.55409 3.58292 1.96329"></a-entity> -->
+      <!-- <a-entity light="type: point; intensity: 1.2; distance: 4.03; decay: 0.84; shadowCameraFar: 499.66; color: #fffcd9" scale="0.96 1 1" position="0.55446 3.26689 3.6949"></a-entity> -->
 
       <!-- Ground -->
       <!-- we've made the ground at height 2. Aweful but works for now -->
@@ -122,12 +128,20 @@
     </a-scene>
 
     <script>
-        // host = "http://127.0.0.1"
-        host = "http://192.168.0.128"
-        document.querySelector('#link_button').addEventListener('click', function() {
-            window.location.href =  host + ':8080/room/google-blocks.html';
-            // window.location.href =  host + ':8080/google-blocks.html';
-        });
+      host = "http://192.168.0.127"
+      // const host = 'https://vusgroup.com'
+      port = "8090"
+      // const port = ""
+
+      let currentPath = window.location.href;
+      let pathArr = currentPath.split('/');
+      pathArr.pop();
+      currentPath = pathArr.join('/');
+
+      document.getElementById('next-button').addEventListener('click', function(){
+          window.location.href = host + ":" + port + "/room/real_estate/room_2/room_2.html"
+          // window.location.href =  currentPath + '/room_2/room_2.html';
+      });
     </script>
 
     <script>

@@ -1,62 +1,139 @@
-<br/><label class='page_desc'>Homes in Irvine</label>
+<!-- views/layouts/main.handlebars -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="User Authentication">
+    <meta name="author" content="">
+    <title>VUS</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" 
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <style>
+      .container {
+        width: 100%;
+        padding: 0px;
+        margin: 0px;
+      }
+      .navigation-header {
+        color: white !important;
+        font-weight: bold;
+      }
+      .signFormContainer {
+        margin: auto;
+        width: 50%;
+      }
+
+      .signForm {
+        font-size: 1.2em; 
+      }
+
+      .welcome-user {
+        margin-right: 10px;
+      }
+
+      .user-name {
+        font-weight: bold;
+        color: white
+      }
+
+      .signForm {
+        padding-top: 10px;
+      }
+
+      .formSubmitButton {
+        width: 100%
+      }
+
+      .nav-link{
+        color:white;
+        border-radius: 10px;
+      }
+
+      .nav-link:hover {
+        color:white;
+        background-color:black;
+      }
+
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark navbar-expand-sm bg-dark justify-content-between">
+      <a href="/lobby" class="navbar-brand navigation-header" title="main lobby">Vus</a>
+      
+      <form class="form-inline">
+        <div id="nav_button">
+          <a class="nav-link" style='margin-right: 10px; float:right;' href="/vrmanager" title="Upload your personal VR space">Submit VR Space</a>
+        </div>
+          <div id="nav_button">
+            <a class="nav-link" style='margin-right: 10px;' href="/signin" title="Sign in">Sign In</a>
+          </div>   
+
+      </form>
+    </nav>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+  </body>
+</html>
+
+
+<div class='page_desc'><label>Showing 2 Homes in Irvine, CA</label></div>
 <div class='houses'>
-	<div class="tile" id='room_2'>
+	<div class="tile" id='room_1'>
 	  <div class='cover'>
 	  	<img src="https://www.incimages.com/uploaded_files/image/1940x900/getty_856794670_385651.jpg" alt="Avatar" style="width:100%">
 	  </div>
-	  <div class="container">
-	    <h4><b>For Sale: $1,140,000</b></h4>
-	    <p>124 Agustin Narvaez, Irvine, CA 92602</p>
-	    <p>4 beds  |  2.5 baths  |  2,148 sqft </p>
+	  <div class="container2">
+	  	<br/>
+	    <p style='font-weight: bold'>For Sale: $940,000</p>
+	    <p>195 Rockview, Irvine, CA 92602</p>
+	    <p>1 bed  |  1 bath  |  1,148 sqft </p>
 	  </div>
 	</div>
 
-	<div class="tile" id='room_4'>
+	<div class="tile" id='room_2'>
 	  <div class='cover'>
 	  	<img src="https://assets.themortgagereports.com/wp-content/uploads/2017/12/How-to-Buy-a-House-with-Low-Income-This-Year.jpg" alt="Avatar" style="width:100%">
 	  </div>
-	  <div class="container">
-	    <h4><b>For Sale: $970,000</b></h4>
-	    <p>195 Rockview, Irvine, CA 92602</p>
-	    <p>3 beds  |  2 baths  |  1,983 sqft </p>
+	  <div class="container2">
+	  	<br/>
+	    <p style='font-weight: bold'>For Sale: $1,170,000</p>
+	    <p>201 South St, Irvine, CA</p>
+	    <p>3 beds  |  2 baths  |  2,983 sqft </p>
 	  </div>
 	</div>
 
-	<div class="tile" id='room_5'>
-	  <div class='cover'>
-	  	<img src="https://lodgesmarter.com/wp-content/uploads/2018/04/aaaatoronto-house-for-sale-53-burnhamthorpe-crescent-1-803x603.jpg" alt="Avatar" style="width:100%">
-	  </div>
-	  <div class="container">
-	    <h4><b>For Sale: $851,000</b></h4>
-	    <p>201 S 13th St, Irvine, CA 92602</p>
-	    <p>3 beds  |  2 baths  |  1,796 sqft </p>
-	  </div>
-	</div>
-
-	<div class="tile" id='room_6'>
-	  <div class='cover'>
-	  	<img src="https://www.houseincanada.ca/wp-content/uploads/2018/03/How-to-buy-a-house-in-Calgary-Home-Buying-Guide.-780x519.jpg?189db0&189db0" alt="Avatar" style="width:100%">
-	  </div>
-	  <div class="container">
-	    <h4><b>For Sale: $730,000</b></h4>
-	    <p>14 Octavus, Irvine, CA 92602</p>
-	    <p>4 beds  |  2.5 baths  |  2,148 sqft </p>
-	  </div>
-	</div>
 </div>
 
 <style>
 	.page_desc{
-		font-size: 25px;
-		margin: 5%;
+		font-size: 26px;
+		font-weight: lighter;
+		/*margin-left: 42%;*/
+		margin-top: 4%;
+		margin-bottom: 1%;
+		text-align: center;
 	}
 
 	.houses{
 		display: grid;
 	 	grid-gap: 15px;
 	  	grid-template-columns: repeat(auto-fit, 400px);
-	  	margin-left: 5%;
-	  	margin-top: 50px;
+	  	margin-left: 22%;
+	  	margin-top: 4%;
 	}
 
 	.tile {
@@ -64,14 +141,17 @@
 	  transition: 0.3s;
 	  border-radius: 5px; /* 5px rounded corners */
 	  cursor: pointer;
+	  background-color: white;
 	}
 
 	.tile:hover {
 	  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 	}
 
-	.container {
+	.container2 {
 	  padding: 2px 16px;
+	  line-height: 1;
+	  font-weight: lighter;
 	}
 
 	img {
@@ -82,6 +162,10 @@
 	.cover {
 	  width: 100%;
 	  object-fit: cover;
+	}
+
+	body{
+		background-color: #f5f5f5;
 	}
 
 </style>
@@ -97,17 +181,12 @@
     pathArr.pop();
     currentPath = pathArr.join('/');
 
-    document.querySelector('#room_6').addEventListener("click", (e)=>{
-        window.location.href =  currentPath + '/room_4/room_4.html';
+    document.querySelector('#room_1').addEventListener("click", (e)=>{
+        window.location.href =  currentPath + '/room_1/room_1.html';
+        // window.location.href = 'https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_1/room_1.html'
     });
     document.querySelector('#room_2').addEventListener("click", (e)=>{
-        window.location.href =  currentPath + '/room_1/room_1.html';
-    });
-    document.querySelector('#room_5').addEventListener("click", (e)=>{
-        window.location.href =  currentPath + '/room_3/room_3.html';
-    });
-    document.querySelector('#room_4').addEventListener("click", (e)=>{
-        // window.location.href =  currentPath + '/room_2/room_2.html';
-        window.location.href = 'https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_2/room_2.html'
+        window.location.href =  currentPath + '/room_2/room_2.html';
+        // window.location.href = 'https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_2/room_2.html'
     });
 </script>
