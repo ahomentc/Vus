@@ -7,6 +7,7 @@
     <script src="../js/vr_group_session.js"></script>   
     <script src="../js/aframe.min.js"></script> 
     <!-- <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script> -->
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
     <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
     <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
     <script src='../js/kinematic-body.js'></script>
@@ -14,6 +15,7 @@
     <script src="../js/touch-controls.js"></script>
     <script src="../js/trackpad-controls.js"></script>
     <script src='../js/kinematic-body.js'></script>
+    <script src="../js/utility-buttons.js"></script>
 
     <script>
       AFRAME.registerComponent("forward_space", {
@@ -89,11 +91,12 @@
       </a-assets>
 
       <a-entity id="player" kinematic-body-hover movement-controls forward_space position="0 1 0" rotation="0 90 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
-        <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+        <a-camera id="camera" look-controls utility-buttons="exitNevigation: https://www.vusgroup.com/room/real_estate/lobby.html" networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
               visible="false"
             ></a-sphere>
+            <a-cursor></a-cursor>
         </a-camera>
 
         <a-entity rotation="-7.105 74.714 0" position="0 1 0"  oculus-touch-controls="hand: left" hand-controls="left" networked="template:#hand-template;" ></a-entity>
