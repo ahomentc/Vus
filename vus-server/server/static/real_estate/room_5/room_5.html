@@ -97,8 +97,9 @@
         <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
-      <a-entity io3d-data3d="key:/fd72bf39-9d3a-471f-a4ff-ecaa3f5ff30b/bake/2017-04-15_22-45-14_XsiltX/regular/lighting.gz.data3d.buffer" position="0 1 -6"></a-entity>
-      <a-entity io3d-furniture="id:10a54bcf-3b9c-4518-b7ea-81c4251cf5a4" position="-0.85 1 -5.4"></a-entity>
+
+      <!-- <a-entity io3d-data3d="key:/fd72bf39-9d3a-471f-a4ff-ecaa3f5ff30b/bake/2017-04-15_22-45-14_XsiltX/regular/lighting.gz.data3d.buffer" position="0 1 -6"></a-entity> -->
+      <!-- <a-entity io3d-furniture="id:10a54bcf-3b9c-4518-b7ea-81c4251cf5a4" position="-0.85 1 -5.4"></a-entity> -->
 
       <a-entity light="intensity:1.12;color:#222;type:ambient"></a-entity>
       <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
@@ -115,6 +116,21 @@
       <!-- <a-entity static-body="sphereRadius:NaN" position="7.867 1.561 -4.035" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="zillowLobby"></a-entity> -->
 
     </a-scene>
+
+    <script>
+        var sceneId = '9684c5e1-2459-4f60-9477-9f5a44e04370'
+        var scene = document.querySelector('a-scene')
+
+        io3d.scene.getAframeElements(sceneId).then(function (elements) {
+          elements
+            .filter(function (elem) { return !elem.hasAttribute('camera') })
+            .forEach(function (elem) {
+              elem.setAttribute('rotation', '0 0 0')
+              elem.setAttribute('position', '11.330 1 -.41')
+              scene.appendChild(elem) 
+            })
+        })
+    </script>
 
     <script>
         host = "http://127.0.0.1"
