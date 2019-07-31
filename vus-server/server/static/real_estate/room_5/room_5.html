@@ -105,6 +105,8 @@
       <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
       <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
 
+      <a-entity position="8.573 1.06 -0.589" scale="1.973 -0.107 10.964" geometry="" material="color:#a9a9a9"></a-entity>
+      <a-entity position="13.887 1.06 -0.589" scale="1.973 -0.107 10.964" geometry="" material="color:#a9a9a9"></a-entity>
 
       <!-- Ground -->
       <!-- we've made the ground at height 2. Aweful but works for now -->
@@ -118,7 +120,8 @@
     </a-scene>
 
     <script>
-        var sceneId = '9684c5e1-2459-4f60-9477-9f5a44e04370'
+        // var sceneId = '9684c5e1-2459-4f60-9477-9f5a44e04370' 
+        var sceneId = 'e0500d95-0cc0-41b7-8ad2-fcc52d71e372' // vdc
         var scene = document.querySelector('a-scene')
 
         io3d.scene.getAframeElements(sceneId).then(function (elements) {
