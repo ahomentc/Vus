@@ -14,6 +14,8 @@ var exphbs = require('express-handlebars'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
     FacebookStrategy = require('passport-facebook');
+
+const path = require('path');
     
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const multer  = require('multer');
@@ -132,8 +134,12 @@ app.set('view engine', 'handlebars');
 
 //===============ROUTES===============
 
-app.get('/', function(req, res) {
-  // res.redirect('home');
+app.use(express.static(path.join(__dirname, '/static/landing_page')));
+app.get('/',function(req, res){
+  res.sendfile(path.join(__dirname + '/static/landing_page/index.html'));
+});
+
+app.get('/old', function(req, res) {
   res.render('home', {user: req.session.user});
 });
 
@@ -188,6 +194,11 @@ app.get('/lobby', function(req, res){
   )
 
   delete req.session.success;
+});
+
+app.use(express.static(path.join(__dirname, '/react_vus/build')));
+app.get('/real_estate',function(req, res){
+  res.sendfile(path.join(__dirname + '/react_vus/build/index.html'));
 });
 
 //displays our signin page
