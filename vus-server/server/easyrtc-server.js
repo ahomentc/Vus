@@ -347,6 +347,20 @@ app.post('/removeFile', (req, res) => {
   }
 });
 
+app.post('/floor_plan_upload', (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const file = req.file;
+  funct.uploadFloorPlan(name, email, file).then(
+      result => {
+        if (!result) {
+          req.session.error = "Form didn't submit";
+        }
+        return res.redirect('');  
+      }
+    );
+});
+
 app.post('/uploadModel', upload.array('new_models'), (req, res) => {
   if (req.session.user == null) {
     res.redirect('signin');
@@ -385,9 +399,7 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
     );
 });
 
-
 app.post('/requestVrForm', (req, res) => {
-
   const name = req.body.name;
   const email = req.body.email;
   const phone = req.body.phone;
@@ -706,7 +718,7 @@ app.post('/deleteRooms', (req, res) => {
 
 // Start Express http server
 
-var webServer = http.createServer(app);
+var webServer = http.createServer(app).listen(port);
 // var webServer = https.createServer({
 //   key: fs.readFileSync(__dirname + '/server.key'),
 //   cert: fs.readFileSync(__dirname + '/server.cert')
