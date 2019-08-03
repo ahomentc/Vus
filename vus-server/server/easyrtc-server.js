@@ -31,11 +31,12 @@ var funct = require('./functions.js'); //funct file contains our helper function
 process.title = "node-easyrtc";
 
 // Get port or default to 8090
-var port = process.env.PORT || 8090;
+var port = 8090;
 // var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
-const host = '127.0.0.1'
+//const host = '127.0.0.1'
+host = 'https://18.237.109.96'
 // host = '192.168.0.124'
 // host = '192.168.0.104'
 // host = '192.168.50.97'
@@ -106,6 +107,7 @@ app.use(express.session({ secret: 'anything' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
+app.use(require('express-status-monitor')());
 
 // Session-persisted message middleware
 app.use(function(req, res, next){
