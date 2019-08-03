@@ -35,8 +35,8 @@ var port = process.env.PORT || 8090;
 // var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
-// const host = '127.0.0.1'
-host = '18.237.109.96'
+const host = '127.0.0.1'
+// host = '192.168.0.124'
 // host = '192.168.0.104'
 // host = '192.168.50.97'
 var app = express(host);
@@ -718,7 +718,7 @@ app.post('/deleteRooms', (req, res) => {
 
 // Start Express http server
 
-var webServer = https.createServer(app).listen(port);
+var webServer = http.createServer(app);
 // var webServer = https.createServer({
 //   key: fs.readFileSync(__dirname + '/server.key'),
 //   cert: fs.readFileSync(__dirname + '/server.cert')
