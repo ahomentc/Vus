@@ -718,7 +718,7 @@ app.post('/deleteRooms', (req, res) => {
 
 // Start Express http server
 
-var webServer = http.createServer(app).listen(port);
+var webServer = https.createServer(app).listen(port);
 // var webServer = https.createServer({
 //   key: fs.readFileSync(__dirname + '/server.key'),
 //   cert: fs.readFileSync(__dirname + '/server.cert')
