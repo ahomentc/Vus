@@ -81,6 +81,11 @@ const updateUserRoomQuery = {
     text: 'update vususer set room = $1 where username = $2;'
 }
 
+const insertVusRequestQuery = {
+    name: 'insert-vus-request',
+    text: 'insert into vusrequest (name, email, phone, category, description) values ($1, $2, $3, $4, $5)'
+}
+
 // exports
 module.exports = {
     findUserQuery: findUserQuery,
@@ -98,5 +103,6 @@ module.exports = {
     insertGroupUserQuery: insertGroupUserQuery,
     deleteGroupQuery: deleteGroupQuery,
     updateUserRoomQuery: updateUserRoomQuery,
-    findGroupUserQuery: findGroupUserQuery
+    findGroupUserQuery: findGroupUserQuery,
+    insertVusRequestQuery: insertVusRequestQuery
 }

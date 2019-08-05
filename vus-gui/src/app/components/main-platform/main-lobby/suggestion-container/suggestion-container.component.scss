@@ -1,0 +1,19 @@
+.option {
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  padding: 15px 0px;
+  font-size: 14px;
+}
+
+.option:hover {
+  background-color: grey;
+}
+
+.option-icon {
+  font-size: 40px;
+}
+
+.suggestion-container {
+  padding: 5px 0px;
+}

@@ -1,0 +1,43 @@
+<div class="sign-up-container">
+  <div class="sign-up-form-container">
+    <h2 class="sign-up-title">Register: </h2>
+    <div class="sign-up-form">
+      <form [formGroup]="signUpFormGroup">
+        <mat-form-field class="vus-form-field">
+          <input matInput placeholder="Email" type="email" formControlName="email" required>
+          <mat-error class="error-message" *ngIf="signUpFormGroup.get('email').hasError('email')
+            && !signUpFormGroup.get('email').hasError('required')
+            && (signUpFormGroup.get('email').dirty || signUpFormGroup.get('email').touched)">
+            Please enter a valid email address
+          </mat-error>
+          <mat-error class="error-message" *ngIf="signUpFormGroup.get('email').hasError('required')
+            && (signUpFormGroup.get('email').dirty || signUpFormGroup.get('email').touched)">
+            Email is <strong>required</strong>.
+          </mat-error>
+
+          <button mat-button *ngIf="signUpFormGroup.value.email" matSuffix mat-icon-button
+              aria-label="Clear" (click)="resetEmail()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field class="vus-form-field">
+          <input matInput placeholder="Password" type="password" formControlName="password" required>
+          <mat-error class="error-message" *ngIf="signUpFormGroup.get('password').hasError('required')
+            && (signUpFormGroup.get('password').dirty || signUpFormGroup.get('password').touched)">
+            Password is <strong>required</strong>.
+          </mat-error>
+
+
+          <button mat-button *ngIf="signUpFormGroup.value.password" matSuffix mat-icon-button
+            aria-label="Clear" (click)="resetPassword()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+
+    </div>
+    <button type="button" class="btn btn-primary form-button" (click)="signUpFormSubmit()"
+      [disabled]="!signUpFormGroup.valid">Confirm</button>
+  </div>
+</div>

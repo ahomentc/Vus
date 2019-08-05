@@ -14,11 +14,13 @@ var exphbs = require('express-handlebars'),
     passport = require('passport'),
     LocalStrategy = require('passport-local'),
     FacebookStrategy = require('passport-facebook');
+
+const path = require('path');
     
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const multer  = require('multer');
 const upload = multer({ preservePath: true });
-const keys = require('../privateKeys/keys');
+const keys = require('../../privateKeys/keys');
 const fs = require('fs');
 var SHA256 = require("crypto-js/sha256");
 
@@ -29,13 +31,15 @@ var funct = require('./functions.js'); //funct file contains our helper function
 process.title = "node-easyrtc";
 
 // Get port or default to 8090
+//var port = 8090;
 var port = process.env.PORT || 8090;
-// var port = process.env.PORT || 8443;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
-// const host = '127.0.0.1'
+const host = '127.0.0.1'
+//host = 'https://18.237.109.96'
+// host = '192.168.0.124'
 // host = '192.168.0.104'
-host = '169.234.50.46'
+// host = '192.168.50.97'
 var app = express(host);
 
 
@@ -103,6 +107,7 @@ app.use(express.session({ secret: 'anything' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
+app.use(require('express-status-monitor')());
 
 // Session-persisted message middleware
 app.use(function(req, res, next){
@@ -131,13 +136,21 @@ app.set('view engine', 'handlebars');
 
 //===============ROUTES===============
 
-app.get('/', function(req, res) {
-  res.redirect('lobby');
+app.use(express.static(path.join(__dirname, '/static/landing_page')));
+app.get('/',function(req, res){
+  res.sendfile(path.join(__dirname + '/static/landing_page/index.html'));
 });
 
-// displays our homepage
-app.get('/home', function(req, res){
+app.get('/old', function(req, res) {
   res.render('home', {user: req.session.user});
+});
+
+app.get('/requestvr', (req, res) => {
+  if(!req.session.user) {
+    res.render('request_vr')
+  } else {
+    res.render('request_vr', {user: req.session.user})
+  }
 });
 
 // display lobby
@@ -177,16 +190,17 @@ app.get('/lobby', function(req, res){
           }
         })
       } else {
-        if (req.session.user) {
-          res.render('lobby', {error: req.session.error, user: req.session.user});
-        } else {
-          res.render('lobby', {error: req.session.error});
-        }
+        res.redirect('createRoom');
       }
     }
   )
 
   delete req.session.success;
+});
+
+app.use(express.static(path.join(__dirname, '/react_vus/build')));
+app.get('/real_estate',function(req, res){
+  res.sendfile(path.join(__dirname + '/react_vus/build/index.html'));
 });
 
 //displays our signin page
@@ -196,6 +210,8 @@ app.get('/signin', function(req, res){
   if (req.session.user && room) {
     // if already signin, redirect to lobby page
     res.render('lobby', {group_session_room:room, user: req.session.user});
+    // res.redirect(req.session.returnTo || '/');
+    // delete req.session.returnTo;
   } else {
     // reset previous group session cookie if not entering as the same user
     res.clearCookie('group_session_room');
@@ -267,6 +283,60 @@ app.get('/userconsole', (req, res) => {
   }
 });
 
+// http://localhost:8090/grouplink?groupid=6bea02&reroute=/room/dino/index.html
+app.get('/grouplink', (req, res) => {
+    var newRoomID = req.query.groupid;
+    var reroute = req.query.reroute;
+
+    const previousID =  req.cookies['group_session_room'];
+    funct.localJoinGroup(newRoomID).then(
+      result => {
+        if (!result) {
+          const error = "group ID does not exist";
+          req.session.error = error;
+          res.redirect('lobby');
+        } else {
+          funct.localLeaveGroup(previousID).then(
+            value => {
+              const vus_username = req.cookies['vus_username'];
+              funct.setUserRoom(vus_username,newRoomID);
+
+              res.cookie('group_session_room', newRoomID.toString());
+              req.session.group_session_room = newRoomID;
+
+              var directories = [];
+              result.forEach(groupUser => {
+                directories.push(groupUser.username);
+              });
+
+              res.cookie('group_room_types', directories);
+              req.session.group_room_types = directories;
+
+              // create a session id to be stored in cookie for user authentication
+              var sessionID = SHA256(Math.random().toString())
+
+              // store username and auth code in cookie
+              res.cookie('vus_group_session_auth', sessionID.toString());
+
+              if (req.session.user) {
+                res.cookie('vus_username', req.session.user.username);
+              }
+
+              // store the room in cookie... remove this later
+              res.cookie('group_session_room', newRoomID.toString());
+              req.session.group_session_room = newRoomID;
+
+              delete req.session.error;
+              res.redirect(reroute);
+            }
+          )
+        }
+      }
+    ).catch(err => {
+      console.log(err);
+    })
+});
+
 app.post('/removeFile', (req, res) => {
   if (!req.session.user) {
     res.redirect('signin');
@@ -277,6 +347,20 @@ app.post('/removeFile', (req, res) => {
       }
     );
   }
+});
+
+app.post('/floor_plan_upload', (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const file = req.file;
+  funct.uploadFloorPlan(name, email, file).then(
+      result => {
+        if (!result) {
+          req.session.error = "Form didn't submit";
+        }
+        return res.redirect('');  
+      }
+    );
 });
 
 app.post('/uploadModel', upload.array('new_models'), (req, res) => {
@@ -313,6 +397,22 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
           delete req.session.error;
         }
         return res.redirect('lobby');  
+      }
+    );
+});
+
+app.post('/requestVrForm', (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const phone = req.body.phone;
+  const category = req.body.category;
+  const description = req.body.description;
+  funct.vusRequest(name, email, phone, category, description).then(
+      result => {
+        if (!result) {
+          req.session.error = "Form didn't submit";
+        }
+        return res.redirect('');  
       }
     );
 });
@@ -628,6 +728,8 @@ var webServer = http.createServer(app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = socketIo.listen(webServer, {"log level":1});
+
+//var socketServer = socketIo.listen(5000);
 
 var myIceServers = [
   {"url":"stun:stun.l.google.com:19302"},

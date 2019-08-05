@@ -1,48 +1,70 @@
-<div class="groupBar">
-    <div class="roomOptionWrapper">
-        <div class="roomSeparateDivs">                
-            <form action="/joinRoom" method="post">
-                <div class="form-group" style="width:50%;">
-                    {{#if group_session_room}}
-                        Room Code: <strong>{{group_session_room}}</strong>
-                    {{/if}}
-                    <input style="margin-top: 10px;" name="room_id" class="form-control" placeholder="Room Code" required>
+<article>
+    <div style='display: none' class="enclose_room">   
+        <form class="form-inline" action="/joinRoom" method="post">
+            <div class="form-group">
+                {{#if group_session_room}}
+                    Group Code:<strong style='margin-left: 3px;'>{{group_session_room}}</strong>
+                {{/if}}
+                <div class="form-group">
+                    <input name="room_id" style='margin-right: 10px; margin-left: 20px;' class="form-control" placeholder="Enter Group Code" required>
+                    <button type="submit" style='margin-right: 10px;' class="btn btn-secondary">Join Group</button>
+                    <label style='font-size:20px;'>or</label>
+                    <a id="createRoom" style='margin-right: 10px; margin-left:10px; background-color:#545454; border-color:#343a40;' href="/createRoom" class="btn btn-primary" role="button"> Create New Group</a>
                 </div>
-                <div>
-                    <button type="submit" class="btn btn-primary">Join Room</button>
-                    <a id="createRoom" href="/createRoom" class="btn btn-secondary" role="button">
-                        Create New Room
-                    </a>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-</div>
+
+
+    <div class="enclose">
+        <div class="vr_world" onclick="window.location.href = '/room/real_estate/lobby.html'">Real Estate</div>
+        <div class="vr_world" onclick="window.location.href = '/room/dino/index.html'">Velociraptor</div>
+    </div>
+</article>
 
 <style>
 
-.groupBar{
-    border: 1px solid #cbcbcb;
-    margin: 10px;
-    border-radius:10px;
-    display: grid;
+article{
+    margin-top: 20px;
 }
 
-#roomOptionContainer{
-    padding: 20px;
-    font-size: 1.5em;
-}
-
-.roomOptionWrapper {
+.enclose_room{
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    width: 40%;
+    margin:0 auto;
 }
 
-.roomSeparateDivs {
+.enclose{
+    border-radius:10px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 300px;
+    margin:0 auto;
+}
+
+.vr_world{
+    border: 1px solid #cbcbcb;
     width: 100%;
-    border: 0px solid black;
-    padding: 20px;
+    height: 100px;
+    margin: 10px;
+    border-radius:10px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 22px;
+    text-align: center;
+    padding-top: 30px;
+}
+
+.vr_world:hover{
+    background-color: #343a40;
+    color: white;
+}
+
+.infoText{
+    margin-left: 45%;
+    margin-top: 30px;
+    font-size: 24;
 }
 
 .userName {

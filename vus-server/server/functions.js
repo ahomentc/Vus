@@ -4,7 +4,7 @@ var bcrypt = require('bcryptjs'),
 var fs = require('fs');
 var AWS = require('aws-sdk');
 
-const keys = require('../privateKeys/keys');
+const keys = require('../../privateKeys/keys');
 const rimraf = require("rimraf");
 
 const AWSAccessKeyId = keys.aws.AWSAccessKeyId;
@@ -174,6 +174,18 @@ async function uploadToAWS (deferred, username, uploaded_files) {
   }
 
   await Promise.all(result);
+}
+
+exports.vusRequest = function (name, email, phone, category, description) {
+  var deferred = Q.defer();
+  var insertVusRequestQuery = {...prepareStatements.insertVusRequestQuery};
+  insertVusRequestQuery['values'] = [name, email, phone.toString(), category.toString(), description];
+  pool.query(insertVusRequestQuery, (err, result) => {
+    if(err) throw err;
+    deferred.resolve(true);
+  });
+   
+  return deferred.promise;
 }
 
 exports.localUploadModel = async function(username, uploaded_files, envHtmlName, folderName, envDescription, envTag) {
@@ -463,7 +475,6 @@ exports.localCheckGroupExist = function(groupID) {
       deferred.resolve(true);
     }
   });
-
   return deferred.promise;
 }
 
