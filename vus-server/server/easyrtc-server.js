@@ -31,12 +31,12 @@ var funct = require('./functions.js'); //funct file contains our helper function
 process.title = "node-easyrtc";
 
 // Get port or default to 8090
-var port = 8090;
-// var port = process.env.PORT || 8443;
+//var port = 8090;
+var port = process.env.PORT || 8090;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
-//const host = '127.0.0.1'
-host = 'https://18.237.109.96'
+const host = '127.0.0.1'
+//host = 'https://18.237.109.96'
 // host = '192.168.0.124'
 // host = '192.168.0.104'
 // host = '192.168.50.97'
@@ -728,6 +728,8 @@ var webServer = http.createServer(app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = socketIo.listen(webServer, {"log level":1});
+
+//var socketServer = socketIo.listen(5000);
 
 var myIceServers = [
   {"url":"stun:stun.l.google.com:19302"},
