@@ -60,6 +60,8 @@
         <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
         <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
 
+        <img id="room_360" src="assets/360_img.jpg" crossorigin="anonymous" />
+
         <!-- Templates -->
 
         <!-- Avatar -->
@@ -120,7 +122,8 @@
       <!-- we've made the ground at height 2. Aweful but works for now -->
       <a-grid static-body material="visible:false;"></a-grid>
 
-      <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
+      <a-sky id='real_sky' src="#sky" rotation="0 -90 0"></a-sky>    
+      <a-sky id='apt_sky' src="#room_360"></a-sky>
 
     </a-scene>
 
@@ -183,6 +186,43 @@
       document.body.addEventListener('abuttondown', function (evt) {
           window.location.href = 'https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_2/room_2.html'
       });
+
+      var pano_enabled = false;
+      document.body.addEventListener('triggerdown', function (evt) {
+          if(pano_enabled){
+              document.getElementById("real_sky").setAttribute('visible', true);
+              document.getElementById("grid").setAttribute('visible', true);
+              document.getElementById("apt-mtl").setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('visible', false);
+              pano_enabled = false;
+          }
+          else{
+              document.getElementById("real_sky").setAttribute('visible', false);
+              document.getElementById("grid").setAttribute('visible', false);
+              document.getElementById("apt-mtl").setAttribute('visible', false);
+              document.getElementById("apt_sky").setAttribute('visible', true);
+              pano_enabled = true;
+          }
+      });
+
+      // document.body.onkeyup = function(e){
+      //     if(e.keyCode == 32){
+      //         if(pano_enabled){
+      //             document.getElementById("real_sky").setAttribute('visible', true);
+      //             document.getElementById("grid").setAttribute('visible', true);
+      //             document.getElementById("apt-mtl").setAttribute('visible', true);
+      //             document.getElementById("apt_sky").setAttribute('visible', false);
+      //             pano_enabled = false;
+      //         }
+      //         else{
+      //             document.getElementById("real_sky").setAttribute('visible', false);
+      //             document.getElementById("grid").setAttribute('visible', false);
+      //             document.getElementById("apt-mtl").setAttribute('visible', false);
+      //             document.getElementById("apt_sky").setAttribute('visible', true);
+      //             pano_enabled = true;
+      //         }
+      //     }
+      // }
 
     </script>
   </body>

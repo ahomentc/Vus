@@ -1,0 +1,36 @@
+.homepage {
+  height: 94%;
+  width: 100%;
+  background-color: #fbfbfb;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  overflow-y: auto;
+}
+
+.sectionMainTitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 39px;
+  color: #333333;
+  text-align: left;
+}
+
+.sectionSubTitle {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 22px;
+  color: #333333;
+  text-align: left;
+}
+
+.contentContainer {
+  align-content: center;
+  padding-left: 100px;
+}
+
+.downloadTippers {
+  height: 50px;
+}

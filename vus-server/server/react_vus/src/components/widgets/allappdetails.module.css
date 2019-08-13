@@ -1,0 +1,66 @@
+.menuUl {
+  list-style: none;
+}
+
+.menuLi {
+  display: inline;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+}
+
+.imageSlider {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 279px;
+  max-width: 800px;
+}
+
+.titleHr {
+  height: 5px;
+  width: 98%;
+  border: 0;
+  color: #000000;
+  background-color: #000000;
+}
+
+.titleFont {
+  font-family: "Montserrat", sans-serif;
+  font-size: 38px;
+}
+
+.subtitleFont {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+}
+
+.descriptionFont {
+  font-family: "Montserrat", sans-serif;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 20px;
+}
+
+.informationFont {
+  font-family: "Montserrat", sans-serif;
+  font-size: 18px;
+}
+
+.developersFont {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+}
+
+.dependenciesFont {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+}
+
+.sizeFont {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+}
+
+.addToCart {
+  font-size: 12px;
+}

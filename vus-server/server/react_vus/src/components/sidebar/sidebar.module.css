@@ -1,0 +1,44 @@
+.routeLinks {
+  outline: none !important;
+  border-bottom: 0px;
+  text-decoration: none;
+}
+
+.routeLinks:hover {
+  outline: none !important;
+  text-decoration: none;
+}
+
+.sidebarItems {
+  margin-top: 2em;
+}
+
+.sidebarItem { 
+  background-color: #2e2e2e;
+  color: white;
+  border: 0px;
+  display: flex;
+  flex-direction: row;
+}
+
+.sidebarItem:hover {
+  background-color: #4c4c4c;
+  color: white;
+}
+
+.sidebarItem:focus {
+  background-color: #4c4c4c;
+  color: white;
+  outline: 0;
+}
+
+.sidebarIcon {
+  width: 60px;
+  text-align: center;
+}
+
+.logo {
+  height: 60%;
+  width: 60%;
+  margin: 24px 24px 0px 24px;
+}
