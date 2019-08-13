@@ -41,7 +41,8 @@
         </div>
         <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
           <a class="btn btn-primary btn-lg" style='margin:5px;' href="https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_1/room_1.html">Try a demo</a>
-          <button class="btn btn-primary btn-lg" style='margin:5px;' data-toggle="modal" data-target="#floor_plan_upload">Submit a Floor Plan</button>
+          <!-- <button class="btn btn-primary btn-lg" style='margin:5px;' data-toggle="modal" data-target="#floor_plan_upload">Submit a Floor Plan</button> -->
+          <button class="btn btn-primary btn-lg" style='margin:5px;' onclick='upload_floorplan();'>Submit a Floor Plan</button>
         </div>
       </div>
     </div>
@@ -151,8 +152,9 @@
     }
   </style>
   <script>
-        var sceneId = '9684c5e1-2459-4f60-9477-9f5a44e04370' 
+ //       var sceneId = '9684c5e1-2459-4f60-9477-9f5a44e04370' 
         // var sceneId = 'e0500d95-0cc0-41b7-8ad2-fcc52d71e372' // vdc
+	var sceneId = '1cbff4c6-fce8-449c-9de0-969e8f877e59'
         var scene = document.querySelector('a-scene')
 
         io3d.scene.getAframeElements(sceneId).then(function (elements) {
@@ -177,7 +179,8 @@
         </div>
         <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
           <a class="btn btn-primary btn-lg" style='margin:5px;' href="https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_1/room_1.html">Try a demo</a>
-          <button class="btn btn-primary btn-lg" style='margin:5px;' data-toggle="modal" data-target="#floor_plan_upload">Submit a Floor Plan</button>
+<!--          <button class="btn btn-primary btn-lg" style='margin:5px;' data-toggle="modal" data-target="#floor_plan_upload">Submit a Floor Plan</button> -->
+          <button class="btn btn-primary btn-lg" style='margin:5px;' onclick='upload_floorplan();'>Submit a Floor Plan</button>
         </div>
       </div>
     </div>
@@ -221,6 +224,15 @@
     </div>
   </div>
 </div>
+
+<script src="https://static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
+<script>
+function upload_floorplan(){
+    alert("Please upload a file or zip with floorplan, name, and email.\n\nWe'll create a simple and free meetup environment.\nThen we'll email you a link along with more information.")
+    var client = filestack.init('AWRw60MITjmIRc3YhT4aQz');
+    client.picker().open();
+}
+</script>
 
   <!-- Footer -->
   <footer class="footer bg-light">

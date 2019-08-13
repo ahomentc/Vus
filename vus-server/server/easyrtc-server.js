@@ -36,7 +36,7 @@ var port = process.env.PORT || 8090;
 
 // Setup and configure Express http server. Expect a subfolder called "static" to be the web root.
 const host = '127.0.0.1'
-//host = 'https://18.237.109.96'
+//const host = 'https://18.237.109.96'
 // host = '192.168.0.124'
 // host = '192.168.0.104'
 // host = '192.168.50.97'
