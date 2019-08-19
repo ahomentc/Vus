@@ -54,6 +54,7 @@
       <a-assets>
         <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
         <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+        <img id="room_360" src="assets/360_img.jpg" crossorigin="anonymous" />
 
         <!-- Templates -->
 
@@ -102,18 +103,16 @@
       <!-- <a-entity io3d-data3d="key:/fd72bf39-9d3a-471f-a4ff-ecaa3f5ff30b/bake/2017-04-15_22-45-14_XsiltX/regular/lighting.gz.data3d.buffer" position="0 1 -6"></a-entity> -->
       <!-- <a-entity io3d-furniture="id:10a54bcf-3b9c-4518-b7ea-81c4251cf5a4" position="-0.85 1 -5.4"></a-entity> -->
 
-      <a-entity light="intensity:1.12;color:#222;type:ambient"></a-entity>
-      <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity>
-      <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity>
-
-      <a-entity position="8.573 1.06 -0.589" scale="1.973 -0.107 10.964" geometry="" material="color:#a9a9a9"></a-entity>
-      <a-entity position="13.887 1.06 -0.589" scale="1.973 -0.107 10.964" geometry="" material="color:#a9a9a9"></a-entity>
+      <a-entity light="intensity:5;color:#222;type:ambient"></a-entity>
+      <!-- <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity> -->
+      <!-- <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity> -->
 
       <!-- Ground -->
       <!-- we've made the ground at height 2. Aweful but works for now -->
       <a-grid static-body material="visible:false;"></a-grid>
 
-      <a-sky src="#sky" rotation="0 -90 0"></a-sky>      
+      <a-sky id='real_sky' src="#sky" rotation="0 -90 0"></a-sky>    
+      <a-sky id='apt_sky' src="#room_360" visible='false'></a-sky>     
 
       <!-- Portal home -->
       <!-- <a-entity static-body="sphereRadius:NaN" position="7.867 1.561 -4.035" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="zillowLobby"></a-entity> -->
@@ -122,7 +121,8 @@
 
     <script>
         // var sceneId = '9684c5e1-2459-4f60-9477-9f5a44e04370' 
-        var sceneId = 'e0500d95-0cc0-41b7-8ad2-fcc52d71e372' // vdc
+        // var sceneId = 'e0500d95-0cc0-41b7-8ad2-fcc52d71e372' // vdc
+        var sceneId = '2bbf2493-5c43-4ca3-93b5-88d9c94c0163'
         var scene = document.querySelector('a-scene')
 
         io3d.scene.getAframeElements(sceneId).then(function (elements) {
@@ -190,6 +190,52 @@
       // Called by Networked-Aframe when connected to server
       function onConnect () {
         console.log("onConnect", new Date());
+      }
+
+      var pano_enabled = false;
+      document.body.addEventListener('triggerdown', function (evt) {
+          if(pano_enabled){
+              document.getElementById("real_sky").setAttribute('visible', true);
+              document.getElementById("grid").setAttribute('visible', true);
+              document.getElementById("apt-mtl").setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('visible', false);
+              pano_enabled = false;
+          }
+          else{
+              document.getElementById("real_sky").setAttribute('visible', false);
+              document.getElementById("grid").setAttribute('visible', false);
+              document.getElementById("apt-mtl").setAttribute('visible', false);
+              document.getElementById("apt_sky").setAttribute('visible', true);
+              pano_enabled = true;
+          }
+      });
+
+      document.body.onkeydown = function(e){
+          if(e.keyCode == 32){
+              if(pano_enabled){
+                  document.getElementById("real_sky").setAttribute('visible', true);
+                  document.getElementById("grid").setAttribute('visible', true);
+                  document.getElementById("apt-mtl").setAttribute('visible', true);
+                  document.getElementById("apt_sky").setAttribute('visible', false);
+                  pano_enabled = false;
+              }
+              else{
+                  document.getElementById("real_sky").setAttribute('visible', false);
+                  document.getElementById("grid").setAttribute('visible', false);
+                  document.getElementById("apt-mtl").setAttribute('visible', false);
+                  document.getElementById("apt_sky").setAttribute('visible', true);
+                  pano_enabled = true;
+              }
+          }
+          else if(e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 || e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68){
+              if(pano_enabled){
+                  document.getElementById("real_sky").setAttribute('visible', true);
+                  document.getElementById("grid").setAttribute('visible', true);
+                  document.getElementById("apt-mtl").setAttribute('visible', true);
+                  document.getElementById("apt_sky").setAttribute('visible', false);
+                  pano_enabled = false;
+              }
+          }
       }
 
     </script>
