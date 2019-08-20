@@ -246,7 +246,7 @@
           }
       });
 
-      document.body.addEventListener('trackpaddown', function (evt) {
+      document.body.addEventListener('axismove', function (evt) {
           if(pano_enabled){
               document.getElementById("real_sky").setAttribute('visible', true);
               document.getElementById("grid").setAttribute('visible', true);
