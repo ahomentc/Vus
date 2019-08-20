@@ -185,7 +185,14 @@
       }
 
       // get the x and z coordinates for each photo
-      var photos = {
+      var photosDesktop = {
+        'master': [0.007, -2.306],
+        'living2': [5.362, -10.654],
+        'dining': [0.205, -15.310],
+        'room1': [-7.659, -1.668]
+      };
+
+      var photosHeadset = {
         'master': [0.007, -2.306],
         'living2': [5.362, -10.654],
         'dining': [0.205, -15.310],
@@ -193,6 +200,7 @@
       };
 
       function getClosestImage(x,z,photos){
+          alert(x.toString() + " " + z.toString());
           closestVal = 1000000;
           closestImage = ''
           for(var key in photos) {
@@ -203,7 +211,7 @@
                   closestVal = distance;
                   closestImage = key;
               }
-          }
+          }              
           return closestImage;
       }
 
@@ -220,7 +228,7 @@
               // getClosestImage
               var posx = document.getElementById("player").getAttribute('position').x;
               var posz = document.getElementById("player").getAttribute('position').z;
-              document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photos));  
+              document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));  
 
               document.getElementById("real_sky").setAttribute('visible', false);
               document.getElementById("grid").setAttribute('visible', false);
@@ -244,7 +252,7 @@
                   // getClosestImage
                   var posx = document.querySelector("a-camera").getAttribute('position').x;
                   var posz = document.querySelector("a-camera").getAttribute('position').z;
-                  document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photos));  
+                  document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosDesktop));  
 
                   document.getElementById("real_sky").setAttribute('visible', false);
                   document.getElementById("grid").setAttribute('visible', false);
