@@ -166,14 +166,13 @@
         ]
       });
 
-     //  document.body.addEventListener('enter-vr', function (evt) {
-     //  var posx = document.getElementById("player").getAttribute('position').x;
-	    // var posy = document.getElementById("player").getAttribute('position').y - 1;
-	    // var posz = document.getElementById("player").getAttribute('position').z;
-	    // var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
-	    // document.getElementById("player").setAttribute('position',pos);
-  	  
-     //    });
+      document.body.addEventListener('enter-vr', function (evt) {
+        var posx = document.getElementById("player").getAttribute('position').x;
+  	    var posy = document.getElementById("player").getAttribute('position').y - 1.2;
+  	    var posz = document.getElementById("player").getAttribute('position').z;
+  	    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
+  	    document.getElementById("player").setAttribute('position',pos);
+      });
 
       // Called by Networked-Aframe when connected to server
       function onConnect () {
