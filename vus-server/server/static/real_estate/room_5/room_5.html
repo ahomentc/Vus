@@ -173,7 +173,7 @@
 
       document.body.addEventListener('enter-vr', function (evt) {
         var posx = document.getElementById("player").getAttribute('position').x;
-  	    var posy = document.getElementById("player").getAttribute('position').y - 2.7;
+  	    var posy = document.getElementById("player").getAttribute('position').y - 1;
   	    var posz = document.getElementById("player").getAttribute('position').z;
   	    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
   	    document.getElementById("player").setAttribute('position',pos);
@@ -217,9 +217,15 @@
               pano_enabled = false;
           }
           else{
+              // getClosestImage
+              var posx = document.querySelector("a-camera").getAttribute('position').x;
+              var posz = document.querySelector("a-camera").getAttribute('position').z;
+              document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photos));  
+
               document.getElementById("real_sky").setAttribute('visible', false);
               document.getElementById("grid").setAttribute('visible', false);
               document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
+
               document.getElementById("apt_sky").setAttribute('visible', true);
               pano_enabled = true;
           }
