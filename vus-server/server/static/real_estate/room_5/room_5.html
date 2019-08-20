@@ -246,6 +246,16 @@
           }
       });
 
+      document.body.addEventListener('trackpaddown', function (evt) {
+          if(pano_enabled){
+              document.getElementById("real_sky").setAttribute('visible', true);
+              document.getElementById("grid").setAttribute('visible', true);
+              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('visible', false);
+              pano_enabled = false;
+          }
+      });
+
       document.body.onkeydown = function(e){
           if(e.keyCode == 32){
               if(pano_enabled){
