@@ -54,7 +54,7 @@
       <a-assets>
         <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
         <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
-        <img id="room_360" src="assets/360_img.jpg" crossorigin="anonymous" />
+        <img id="room_360" src="assets/360_img.jpg" />
 
         <!-- Templates -->
 
@@ -87,7 +87,7 @@
         <!-- /Templates -->
       </a-assets>
 
-      <a-entity id="player" kinematic-body-hover movement-controls forward_space position="8.867 1 -4.035" rotation="0 270 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+      <a-entity id="player" kinematic-body-hover movement-controls position="8.867 1 -4.035" rotation="0 270 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
         <a-camera look-controls networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
@@ -112,7 +112,7 @@
       <a-grid static-body material="visible:false;"></a-grid>
 
       <a-sky id='real_sky' src="#sky" rotation="0 -90 0"></a-sky>    
-      <a-sky id='apt_sky' src="#room_360" visible='false'></a-sky>     
+      <a-sky id='apt_sky' src="#room_360" rotation='0 -90 0' visible='false'></a-sky>     
 
       <!-- Portal home -->
       <!-- <a-entity static-body="sphereRadius:NaN" position="7.867 1.561 -4.035" scale="3.578 5.881 -0.017" geometry="" velocity="" material="color:#131313" id="zillowLobby"></a-entity> -->
@@ -134,18 +134,6 @@
               scene.appendChild(elem) 
             })
         })
-    </script>
-
-    <script>
-        host = "http://127.0.0.1"
-        // host = "http://192.168.0.128"
-        document.querySelector('#link_button').addEventListener('click', function() {
-            window.location.href =  host + ':8080/room/google-blocks.html';
-            // window.location.href =  host + ':8080/google-blocks.html';
-        });
-        document.querySelector('#zillowLobby').addEventListener("collide", (e)=>{
-            window.location.href =  host + ':8080/room/house/zillowLobby.html';
-        });
     </script>
 
     <script>
@@ -178,14 +166,14 @@
         ]
       });
 
-      document.body.addEventListener('enter-vr', function (evt) {
-          var posx = document.getElementById("player").getAttribute('position').x;
-	  var posy = document.getElementById("player").getAttribute('position').y - 1;
-	  var posz = document.getElementById("player").getAttribute('position').z;
-	  var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
-	  document.getElementById("player").setAttribute('position',pos);
+     //  document.body.addEventListener('enter-vr', function (evt) {
+     //  var posx = document.getElementById("player").getAttribute('position').x;
+	    // var posy = document.getElementById("player").getAttribute('position').y - 1;
+	    // var posz = document.getElementById("player").getAttribute('position').z;
+	    // var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
+	    // document.getElementById("player").setAttribute('position',pos);
   	  
-        });
+     //    });
 
       // Called by Networked-Aframe when connected to server
       function onConnect () {
@@ -197,14 +185,14 @@
           if(pano_enabled){
               document.getElementById("real_sky").setAttribute('visible', true);
               document.getElementById("grid").setAttribute('visible', true);
-              document.getElementById("apt-mtl").setAttribute('visible', true);
+              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
               document.getElementById("apt_sky").setAttribute('visible', false);
               pano_enabled = false;
           }
           else{
               document.getElementById("real_sky").setAttribute('visible', false);
               document.getElementById("grid").setAttribute('visible', false);
-              document.getElementById("apt-mtl").setAttribute('visible', false);
+              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
               document.getElementById("apt_sky").setAttribute('visible', true);
               pano_enabled = true;
           }
@@ -215,14 +203,14 @@
               if(pano_enabled){
                   document.getElementById("real_sky").setAttribute('visible', true);
                   document.getElementById("grid").setAttribute('visible', true);
-                  document.getElementById("apt-mtl").setAttribute('visible', true);
+                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                   document.getElementById("apt_sky").setAttribute('visible', false);
                   pano_enabled = false;
               }
               else{
                   document.getElementById("real_sky").setAttribute('visible', false);
                   document.getElementById("grid").setAttribute('visible', false);
-                  document.getElementById("apt-mtl").setAttribute('visible', false);
+                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
                   document.getElementById("apt_sky").setAttribute('visible', true);
                   pano_enabled = true;
               }
@@ -231,7 +219,7 @@
               if(pano_enabled){
                   document.getElementById("real_sky").setAttribute('visible', true);
                   document.getElementById("grid").setAttribute('visible', true);
-                  document.getElementById("apt-mtl").setAttribute('visible', true);
+                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                   document.getElementById("apt_sky").setAttribute('visible', false);
                   pano_enabled = false;
               }
