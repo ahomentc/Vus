@@ -116,8 +116,8 @@
 
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity> -->
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity> -->
-        <a-entity rotation="-7.105 74.714 0" position="0 1.6 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
-        <a-entity rotation="-7.105 74.714 0" position="0 1.6 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1.4 0" hand-controls="left" networked="template:#hand-template;" ></a-entity>
+        <a-entity rotation="-7.105 74.714 0" position="0 1.4 0" hand-controls="right" networked="template:#hand-template;"></a-entity>
       </a-entity>
 
       <!-- Use the right controller to raise up and down in altitude -->
@@ -205,7 +205,7 @@
 
       document.body.addEventListener('enter-vr', function (evt) {
         var posx = document.getElementById("player").getAttribute('position').x;
-  	    var posy = document.getElementById("player").getAttribute('position').y - 1.3;
+  	    var posy = document.getElementById("player").getAttribute('position').y - 1.1;
   	    var posz = document.getElementById("player").getAttribute('position').z;
   	    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
   	    document.getElementById("player").setAttribute('position',pos);
