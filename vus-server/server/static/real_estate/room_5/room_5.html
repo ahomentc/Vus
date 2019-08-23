@@ -321,6 +321,29 @@
   	    document.getElementById("player").setAttribute('position',pos);
       });
 
+      // also do for touch
+      document.body.addEventListener('axismove', function(evt)) {
+          if(pano_enabled){
+              // disable the movement
+              document.getElementById("player").setAttribute("movement-controls", 'speed', 0)
+
+              // move the player forwards out of the circle
+              var camera = document.querySelector("a-camera")
+              var player = document.querySelector("#player")
+              var angle = camera.getAttribute("rotation")
+              var x = .9 * Math.cos((angle.y-90) * Math.PI / 180)
+              var y = .9 * Math.sin((angle.y-90) * Math.PI / 180)
+              var pos = player.getAttribute("position")
+              pos.x -= y;
+              pos.z -= x;
+              player.setAttribute("position", pos);
+
+              setTimeout(function(){
+                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0.1)
+              }, 1500);
+          }
+      }
+
       // // if moving when in pano mode
       // document.body.addEventListener('axismove', function (evt) {
       //       if(pano_enabled){
@@ -331,9 +354,9 @@
       //           var newposz = document.getElementById("player").getAttribute('position').z;
       //           var newpos = newposx.toString() + " " + newposy.toString() + " " + newposz.toString();
       //           document.getElementById("player").setAttribute('position',newpos);
-      //           setTimeout(function(){
-      //               document.getElementById("player").setAttribute('movement-controls','speed',0.1);
-      //           }, 1500);
+                // setTimeout(function(){
+                //     document.getElementById("player").setAttribute('movement-controls','speed',0.1);
+                // }, 1500);
 
       //           var posx = document.getElementById("player").getAttribute('position').x;
       //           var posz = document.getElementById("player").getAttribute('position').z;
