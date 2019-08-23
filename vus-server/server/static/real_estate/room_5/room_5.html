@@ -331,8 +331,8 @@
               var camera = document.querySelector("a-camera")
               var player = document.querySelector("#player")
               var angle = camera.getAttribute("rotation")
-              var x = .9 * Math.cos((angle.y-90) * Math.PI / 180)
-              var y = .9 * Math.sin((angle.y-90) * Math.PI / 180)
+              var x = 1.9 * Math.cos((angle.y-90) * Math.PI / 180)
+              var y = 1.9 * Math.sin((angle.y-90) * Math.PI / 180)
               var pos = player.getAttribute("position")
               pos.x -= y;
               pos.z -= x;
