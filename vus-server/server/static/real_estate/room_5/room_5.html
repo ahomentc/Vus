@@ -40,23 +40,23 @@
     </script>
 
     <script>
-      var photosDesktop = {
-        'master': [0.172, -2.55],
-        'living2': [5.362, -10.654],
-        'dining': [0.205, -15.310],
-        'room1': [-7.659, -1.668],
-        'room2': [-7.03, -7.5],
-        'guest': [-6.18, -11.5],
-        'bath_guest': [-8.2, -15.7],
-        'dining2': [0.65, -13.8],
-        'hall1': [-1.87, -10.14],
-        'hall2': [1.15, -11.03],
-        'bath_kids': [-6.8, -4.23],
-        'bath_master': [6.56, -3.73],
-        'hall3': [-2.72, -22.17],
-        'living1': [-6, -20.13],
-        'kitchen1': [1.48, -19.58],
-      };
+      // var photosDesktop = {
+      //   'master': [0.172, -2.55],
+      //   'living2': [5.362, -10.654],
+      //   'dining': [0.205, -15.310],
+      //   'room1': [-7.659, -1.668],
+      //   'room2': [-7.03, -7.5],
+      //   'guest': [-6.18, -11.5],
+      //   'bath_guest': [-8.2, -15.7],
+      //   'dining2': [0.65, -13.8],
+      //   'hall1': [-1.87, -10.14],
+      //   'hall2': [1.15, -11.03],
+      //   'bath_kids': [-6.8, -4.23],
+      //   'bath_master': [6.56, -3.73],
+      //   'hall3': [-2.72, -22.17],
+      //   'living1': [-6, -20.13],
+      //   'kitchen1': [1.48, -19.58],
+      // };
 
       var photosHeadset = {
         'master': [3, .5],
@@ -129,8 +129,13 @@
             
           },
           tick: function(){
-              var posx = document.querySelector("a-camera").getAttribute('position').x;
-              var posz = document.querySelector("a-camera").getAttribute('position').z; 
+              // player is always 0 0 on desktop. Desktop uses a-camera
+              var posx = document.querySelector("player").getAttribute('position').x;
+              var posz = document.querySelector("player").getAttribute('position').z; 
+              if(posx == 0 && posz == 0){
+                  posx = document.querySelector("a-camera").getAttribute('position').x;
+                  posz = document.querySelector("a-camera").getAttribute('position').z; 
+              }
               var distance = getClosestImageDist(posx,posz,photosHeadset);
               if(distance > .2 && pano_enabled){
                   // enter VR mode
