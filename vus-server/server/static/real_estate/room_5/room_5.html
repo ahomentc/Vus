@@ -348,6 +348,7 @@
       document.body.addEventListener('triggerdown', function (evt) {
           var posx = document.getElementById("player").getAttribute('position').x;
           var posz = document.getElementById("player").getAttribute('position').z;
+          alert(posx.toString() + " " + posz.toString());
           var closestImage = getClosestImage(posx,posz,photosHeadset);
 
           // enable VR mode
