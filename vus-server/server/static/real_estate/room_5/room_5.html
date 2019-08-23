@@ -130,8 +130,8 @@
           },
           tick: function(){
               // player is always 0 0 on desktop. Desktop uses a-camera
-              var posx = document.querySelector("player").getAttribute('position').x;
-              var posz = document.querySelector("player").getAttribute('position').z; 
+              var posx = document.getElementById("player").getAttribute('position').x;
+              var posz = document.getElementById("player").getAttribute('position').z; 
               if(posx == 0 && posz == 0){
                   posx = document.querySelector("a-camera").getAttribute('position').x;
                   posz = document.querySelector("a-camera").getAttribute('position').z; 
