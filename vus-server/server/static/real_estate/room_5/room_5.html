@@ -40,23 +40,6 @@
     </script>
 
     <script>
-      // var photosDesktop = {
-      //   'master': [0.172, -2.55],
-      //   'living2': [5.362, -10.654],
-      //   'dining': [0.205, -15.310],
-      //   'room1': [-7.659, -1.668],
-      //   'room2': [-7.03, -7.5],
-      //   'guest': [-6.18, -11.5],
-      //   'bath_guest': [-8.2, -15.7],
-      //   'dining2': [0.65, -13.8],
-      //   'hall1': [-1.87, -10.14],
-      //   'hall2': [1.15, -11.03],
-      //   'bath_kids': [-6.8, -4.23],
-      //   'bath_master': [6.56, -3.73],
-      //   'hall3': [-2.72, -22.17],
-      //   'living1': [-6, -20.13],
-      //   'kitchen1': [1.48, -19.58],
-      // };
 
       var photosHeadset = {
         'master': [3, .5],
@@ -256,8 +239,6 @@
       <!-- <a-entity io3d-furniture="id:10a54bcf-3b9c-4518-b7ea-81c4251cf5a4" position="-0.85 1 -5.4"></a-entity> -->
 
       <a-entity light="intensity:5;color:#222;type:ambient"></a-entity>
-      <!-- <a-entity light="intensity:0.19999999999999996;decay:0.9;color:#222" position="37.198 18.72 1.553"></a-entity> -->
-      <!-- <a-entity light="intensity:0.8300000000000001;type:hemisphere;groundColor:#ffdbc0;decay:0.9;color:#222" position="21.768 4.532 -9.798" rotation="0.42 0.64 3.06"></a-entity> -->
 
       <!-- Ground -->
       <!-- we've made the ground at height 2. Aweful but works for now -->
@@ -338,7 +319,7 @@
 
       document.body.addEventListener('enter-vr', function (evt) {
         var posx = document.getElementById("player").getAttribute('position').x;
-  	    var posy = document.getElementById("player").getAttribute('position').y - 1.1;
+  	    var posy = document.getElementById("player").getAttribute('position').y - 1.5;
   	    var posz = document.getElementById("player").getAttribute('position').z;
   	    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
   	    document.getElementById("player").setAttribute('position',pos);
@@ -347,113 +328,6 @@
       // Called by Networked-Aframe when connected to server
       function onConnect () {
         console.log("onConnect", new Date());
-      }
-
-      // get the x and z coordinates and rotation for each photo
-      document.body.addEventListener('triggerdown', function (evt) {
-          var posx = document.getElementById("player").getAttribute('position').x;
-          var posz = document.getElementById("player").getAttribute('position').z;
-          alert(posx.toString() + " " + posz.toString());
-          var closestImage = getClosestImage(posx,posz,photosHeadset);
-
-          // enable VR mode
-          if(pano_enabled){
-              document.getElementById("real_sky").setAttribute('visible', true);
-              document.getElementById("grid").setAttribute('visible', true);
-              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-              document.getElementById("apt_sky").setAttribute('visible', false);
-              document.getElementById("apt_sky").setAttribute('src', "#black"); 
-              // enable marker closest to user
-              document.getElementById(closestImage + "_bcn").setAttribute('visible', true);
-
-              pano_enabled = false;
-          }
-          else{
-              // enter 360 picture mode
-              document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));  
-              document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
-
-              document.getElementById("real_sky").setAttribute('visible', false);
-              document.getElementById("grid").setAttribute('visible', false);
-              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
-              document.getElementById("apt_sky").setAttribute('visible', true);
-
-              // disable the marker closest to user
-              document.getElementById(closestImage + "_bcn").setAttribute('visible', false);
-
-              pano_enabled = true;
-          }
-      });
-
-      document.body.addEventListener('axismove', function (evt) {
-          // enter vr mode
-          if(pano_enabled){
-              var posx = document.getElementById("player").getAttribute('position').x;
-              var posz = document.getElementById("player").getAttribute('position').z;
-              var closestImage = getClosestImage(posx,posz,photosHeadset);
-
-              document.getElementById("real_sky").setAttribute('visible', true);
-              document.getElementById("grid").setAttribute('visible', true);
-              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-              document.getElementById("apt_sky").setAttribute('visible', false);
-              document.getElementById("apt_sky").setAttribute('src', "#black"); 
-              pano_enabled = false;
-              // enable marker closest to user
-              document.getElementById(closestImage).setAttribute('visible', true);
-          }
-      });
-
-      document.body.onkeydown = function(e){
-          if(e.keyCode == 32){
-            var posx = document.querySelector("a-camera").getAttribute('position').x;
-            var posz = document.querySelector("a-camera").getAttribute('position').z;
-            var closestImage = getClosestImage(posx,posz,photosHeadset);
-
-              // enter VR mode
-              if(pano_enabled){
-                  document.getElementById("real_sky").setAttribute('visible', true);
-                  document.getElementById("grid").setAttribute('visible', true);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-                  document.getElementById("apt_sky").setAttribute('visible', false);
-                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
-
-                  // enable marker closest to user
-                  document.getElementById(closestImage + "_bcn").setAttribute('visible', true);
-
-                  pano_enabled = false;
-              }
-              else{
-                  // enter pano mode
-                  document.getElementById("apt_sky").setAttribute('src', "#" + closestImage);
-                  document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[closestImage] + ' 0');
-                  // disable the marker closest to user
-                  document.getElementById(closestImage + "_bcn").setAttribute('visible', false);
-
-                  document.getElementById("real_sky").setAttribute('visible', false);
-                  document.getElementById("grid").setAttribute('visible', false);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
-
-                  document.getElementById("apt_sky").setAttribute('visible', true);
-                  pano_enabled = true;
-              }
-          }
-          else if(e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 || e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68){
-              // exit pano mode on movement
-              if(pano_enabled){
-                  var posx = document.querySelector("a-camera").getAttribute('position').x;
-                  var posz = document.querySelector("a-camera").getAttribute('position').z;
-                  var closestImage = getClosestImage(posx,posz,photosHeadst);
-                  // enable the closest image back
-                  document.getElementById(closestImage + "_bcn").setAttribute('visible', true);
-
-                  document.getElementById("real_sky").setAttribute('visible', true);
-                  document.getElementById("grid").setAttribute('visible', true);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-                  document.getElementById("apt_sky").setAttribute('visible', false);
-                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
-                  pano_enabled = false;
-              }
-          }
       }
 
     </script>
