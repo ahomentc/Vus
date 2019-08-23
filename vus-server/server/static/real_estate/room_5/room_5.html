@@ -113,12 +113,8 @@
           },
           tick: function(){
               // player is always 0 0 on desktop. Desktop uses a-camera
-              var posx = document.getElementById("player").getAttribute('position').x;
-              var posz = document.getElementById("player").getAttribute('position').z; 
-              if(posx == 0 && posz == 0){
-                  posx = document.querySelector("a-camera").getAttribute('position').x;
-                  posz = document.querySelector("a-camera").getAttribute('position').z; 
-              }
+              var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
+              var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z; 
               var distance = getClosestImageDist(posx,posz,photosHeadset);
               if(distance > .3 && pano_enabled){
                   // enter VR mode
@@ -324,6 +320,29 @@
   	    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
   	    document.getElementById("player").setAttribute('position',pos);
       });
+
+      // if moving when in pano mode
+      document.body.addEventListener('axismove', function (evt) {
+            if(pano_enabled){
+                // disable movement for 1 to 2 seconds if in pano mode
+                document.getElementById("player").removeAttribute('movement-controls');
+                setTimeout(function(){
+                    document.getElementById("player").setAttribute('movement-controls','speed',0.1);
+                }, 1500);
+
+                var posx = document.getElementById("player").getAttribute('position').x;
+                var posz = document.getElementById("player").getAttribute('position').z;
+                var closestImage = getClosestImage(posx,posz,photosHeadset);
+                document.getElementById("real_sky").setAttribute('visible', true);
+                document.getElementById("grid").setAttribute('visible', true);
+                document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+                document.getElementById("apt_sky").setAttribute('visible', false);
+                document.getElementById("apt_sky").setAttribute('src', "#black"); 
+                pano_enabled = false;
+                // enable marker closest to user
+                document.getElementById(closestImage).setAttribute('visible', true);
+            }
+        });
 
       // Called by Networked-Aframe when connected to server
       function onConnect () {
