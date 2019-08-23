@@ -328,6 +328,7 @@
                 document.getElementById("player").removeAttribute('movement-controls');
                 setTimeout(function(){
                     document.getElementById("player").setAttribute('movement-controls','speed',0.1);
+                    pano_enabled = false;
                 }, 1500);
 
                 var posx = document.getElementById("player").getAttribute('position').x;
@@ -338,7 +339,7 @@
                 document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                 document.getElementById("apt_sky").setAttribute('visible', false);
                 document.getElementById("apt_sky").setAttribute('src', "#black"); 
-                pano_enabled = false;
+                
                 // enable marker closest to user
                 document.getElementById(closestImage).setAttribute('visible', true);
             }
