@@ -112,6 +112,8 @@
             const sceneEl = this.el.sceneEl;
             const canvasEl = sceneEl.canvas;
 
+            // for mobile, disable movement while inside sphere unless touch is held in place
+            // this is so that the user doesn't move when their scrolling around the 360 photo
             canvasEl.addEventListener('touchmove', function(){
                   document.getElementById("player").setAttribute("movement-controls", 'speed', 0)
 
@@ -329,13 +331,6 @@
   	    var posz = document.getElementById("player").getAttribute('position').z;
   	    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
   	    document.getElementById("player").setAttribute('position',pos);
-      });
-
-
-      // for mobile, disable movement while inside sphere unless touch is held in place
-      // this is so that the user doesn't move when their scrolling around the 360 photo
-      document.body.addEventListener("touchstart", function(){
-          alert("hi")
       });
 
       // Don't allow movement while leaving sphere, teleport out instead, and the enable.
