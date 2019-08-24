@@ -106,6 +106,9 @@
           }              
           return closestVal;
       }
+
+      function isMobile() { return ('ontouchstart' in document.documentElement); }
+
       var pano_enabled = false;
       AFRAME.registerComponent("enter_sphere", {
           init: function() {
@@ -128,36 +131,38 @@
             });
           },
           tick: function(){
-              // player is always 0 0 on desktop. Desktop uses a-camera
-              var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
-              var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z; 
-              var distance = getClosestImageDist(posx,posz,photosHeadset);
-              if(distance > .6 && pano_enabled){
-                  // enter VR mode
-                  document.getElementById("real_sky").setAttribute('visible', true);
-                  document.getElementById("grid").setAttribute('visible', true);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-                  document.getElementById("apt_sky").setAttribute('visible', false);
-                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
+              if(isMobile){
+                  // player is always 0 0 on desktop. Desktop uses a-camera
+                  var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
+                  var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z; 
+                  var distance = getClosestImageDist(posx,posz,photosHeadset);
+                  if(distance > .4 && pano_enabled){
+                      // enter VR mode
+                      document.getElementById("real_sky").setAttribute('visible', true);
+                      document.getElementById("grid").setAttribute('visible', true);
+                      document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+                      document.getElementById("apt_sky").setAttribute('visible', false);
+                      document.getElementById("apt_sky").setAttribute('src', "#black"); 
 
-                  // enable marker closest to user
-                  document.getElementById(closestImage + "_bcn").setAttribute('visible', true);
+                      // enable marker closest to user
+                      document.getElementById(closestImage + "_bcn").setAttribute('visible', true);
 
-                  pano_enabled = false;
-              }
-              else if (distance <= .6 && !pano_enabled){
-                  // enter pano mode
-                  document.getElementById("apt_sky").setAttribute('src', "#" + closestImage);
-                  document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[closestImage] + ' 0');
-                  // disable the marker closest to user
-                  document.getElementById(closestImage + "_bcn").setAttribute('visible', false);
+                      pano_enabled = false;
+                  }
+                  else if (distance <= .4 && !pano_enabled){
+                      // enter pano mode
+                      document.getElementById("apt_sky").setAttribute('src', "#" + closestImage);
+                      document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[closestImage] + ' 0');
+                      // disable the marker closest to user
+                      document.getElementById(closestImage + "_bcn").setAttribute('visible', false);
 
-                  document.getElementById("real_sky").setAttribute('visible', false);
-                  document.getElementById("grid").setAttribute('visible', false);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
+                      document.getElementById("real_sky").setAttribute('visible', false);
+                      document.getElementById("grid").setAttribute('visible', false);
+                      document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
 
-                  document.getElementById("apt_sky").setAttribute('visible', true);
-                  pano_enabled = true;
+                      document.getElementById("apt_sky").setAttribute('visible', true);
+                      pano_enabled = true;
+                  }
               }
           }
       })
@@ -230,7 +235,7 @@
         <!-- /Templates -->
       </a-assets>
 
-      <a-entity id="player" enter_sphere kinematic-body-hover movement-controls="speed: 0.1" position="0 1 0" rotation="0 0 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
+      <a-entity id="player" kinematic-body-hover movement-controls="speed: 0.1" position="0 1 0" rotation="0 0 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
         <a-camera id="camera" wasd-controls look-controls networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
@@ -337,29 +342,74 @@
   	    document.getElementById("player").setAttribute('position',pos);
       });
 
-      // Don't allow movement while leaving sphere, teleport out instead, and the enable.
-      // This is to increase the comfort of the user.
-      // document.body.addEventListener('axismove', function(evt)) {
-      //     if(pano_enabled){
-      //         // disable the movement
-      //         document.getElementById("player").setAttribute("movement-controls", 'speed', 0)
-
-      //         // move the player forwards out of the circle
-      //         var camera = document.querySelector("a-camera")
-      //         var player = document.querySelector("#player")
-      //         var angle = camera.getAttribute("rotation")
-      //         var x = 1.9 * Math.cos((angle.y-90) * Math.PI / 180)
-      //         var y = 1.9 * Math.sin((angle.y-90) * Math.PI / 180)
-      //         var pos = player.getAttribute("position")
-      //         pos.x -= y;
-      //         pos.z -= x;
-      //         player.setAttribute("position", pos);
-
-      //         setTimeout(function(){
-      //             document.getElementById("player").setAttribute("movement-controls", 'speed', 0.1)
-      //         }, 1500);
-      //     }
-      // }
+      document.body.addEventListener('triggerdown', function (evt) {
+          if(pano_enabled){
+              document.getElementById("real_sky").setAttribute('visible', true);
+              document.getElementById("grid").setAttribute('visible', true);
+              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('visible', false);
+              document.getElementById("spheres").setAttribute('visible', true);
+              pano_enabled = false;
+          }
+          else{
+              // getClosestImage
+              var posx = document.getElementById("player").getAttribute('position').x;
+              var posz = document.getElementById("player").getAttribute('position').z;
+              document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));  
+              document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
+              document.getElementById("real_sky").setAttribute('visible', false);
+              document.getElementById("grid").setAttribute('visible', false);
+              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
+              document.getElementById("apt_sky").setAttribute('visible', true);
+              document.getElementById("spheres").setAttribute('visible', false);
+              pano_enabled = true;
+          }
+      });
+      document.body.addEventListener('axismove', function (evt) {
+          if(pano_enabled){
+              document.getElementById("real_sky").setAttribute('visible', true);
+              document.getElementById("grid").setAttribute('visible', true);
+              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('visible', false);
+              document.getElementById("spheres").setAttribute('visible', true);
+              pano_enabled = false;
+          }
+      });
+      document.body.onkeydown = function(e){
+          if(e.keyCode == 32){
+              if(pano_enabled){
+                  document.getElementById("real_sky").setAttribute('visible', true);
+                  document.getElementById("grid").setAttribute('visible', true);
+                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+                  document.getElementById("apt_sky").setAttribute('visible', false);
+                  document.getElementById("spheres").setAttribute('visible', true);
+                  pano_enabled = false;
+              }
+              else{
+                  // getClosestImage
+                  var posx = document.querySelector("a-camera").getAttribute('position').x;
+                  var posz = document.querySelector("a-camera").getAttribute('position').z;
+                  document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));
+                  document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
+                  document.getElementById("real_sky").setAttribute('visible', false);
+                  document.getElementById("grid").setAttribute('visible', false);
+                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
+                  document.getElementById("apt_sky").setAttribute('visible', true);
+                  document.getElementById("spheres").setAttribute('visible', false);
+                  pano_enabled = true;
+              }
+          }
+          else if(e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 || e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68){
+              if(pano_enabled){
+                  document.getElementById("real_sky").setAttribute('visible', true);
+                  document.getElementById("grid").setAttribute('visible', true);
+                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+                  document.getElementById("apt_sky").setAttribute('visible', false);
+                  document.getElementById("spheres").setAttribute('visible', true);
+                  pano_enabled = false;
+              }
+          }
+      }
 
       // Called by Networked-Aframe when connected to server
       function onConnect () {
