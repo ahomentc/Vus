@@ -109,7 +109,12 @@
       var pano_enabled = false;
       AFRAME.registerComponent("enter_sphere", {
           init: function() {
-            
+            const sceneEl = this.el.sceneEl;
+            const canvasEl = sceneEl.canvas;
+
+            canvasEl.addEventListener('touchstart', function(){
+                alert("hi");
+            });
           },
           tick: function(){
               // player is always 0 0 on desktop. Desktop uses a-camera
