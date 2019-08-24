@@ -112,8 +112,13 @@
             const sceneEl = this.el.sceneEl;
             const canvasEl = sceneEl.canvas;
 
-            canvasEl.addEventListener('touchstart', function(){
-                alert("hi");
+            canvasEl.addEventListener('touchmove', function(){
+                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0)
+
+            });
+            canvasEl.addEventListener('touchend', function(){
+                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0.1)
+
             });
           },
           tick: function(){
