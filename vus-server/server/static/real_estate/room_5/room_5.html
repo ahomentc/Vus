@@ -115,11 +115,15 @@
             // for mobile, disable movement while inside sphere unless touch is held in place
             // this is so that the user doesn't move when their scrolling around the 360 photo
             canvasEl.addEventListener('touchmove', function(){
-                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0)
+              if(pano_enabled){
+                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0);
+              }
 
             });
             canvasEl.addEventListener('touchend', function(){
-                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0.1)
+              if(pano_enabled){
+                  document.getElementById("player").setAttribute("movement-controls", 'speed', 0.1);        
+              }
 
             });
           },
