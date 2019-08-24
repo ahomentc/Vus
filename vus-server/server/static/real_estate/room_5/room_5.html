@@ -107,13 +107,17 @@
           return closestVal;
       }
 
-      function isMobile() { return ('ontouchstart' in document.documentElement); }
+      var isMobile;
 
       var pano_enabled = false;
       AFRAME.registerComponent("enter_sphere", {
           init: function() {
             const sceneEl = this.el.sceneEl;
             const canvasEl = sceneEl.canvas;
+
+            canvasEl.addEventListener('touchstart', function(){
+              isMobile = true;
+            });
 
             // for mobile, disable movement while inside sphere unless touch is held in place
             // this is so that the user doesn't move when their scrolling around the 360 photo
