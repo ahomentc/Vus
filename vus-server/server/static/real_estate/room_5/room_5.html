@@ -321,7 +321,15 @@
   	    document.getElementById("player").setAttribute('position',pos);
       });
 
-      // also do for touch
+
+      // for mobile, disable movement while inside sphere unless touch is held in place
+      // this is so that the user doesn't move when their scrolling around the 360 photo
+      object.addEventListener("touchstart", function(){
+          alert("hi")
+      });
+
+      // Don't allow movement while leaving sphere, teleport out instead, and the enable.
+      // This is to increase the comfort of the user.
       document.body.addEventListener('axismove', function(evt)) {
           if(pano_enabled){
               // disable the movement
@@ -343,6 +351,7 @@
               }, 1500);
           }
       }
+
 
       // // if moving when in pano mode
       // document.body.addEventListener('axismove', function (evt) {
