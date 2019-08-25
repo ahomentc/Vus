@@ -235,7 +235,6 @@
           </a-entity>
         </template>
 
-
         <!-- /Templates -->
       </a-assets>
 
@@ -270,21 +269,21 @@
 
       <!-- https://stackoverflow.com/questions/41336889/adding-new-entities-on-the-fly-in-aframe -->
       <a-entity id='spheres' position="0 0 0">
-        <a-sphere id='master_bcn' position="3.109 2.7 0.567" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id='living2_bcn' position="10  2.7 6" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id='dining_bcn' position="16.478 2.7 -0.984" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id='room1_bcn' position="1.3 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="room2_bcn" position="7.571 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="guest_bcn" position="11.661 2.7 -6.143" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="bath_guest_bcn" position="15.712 2.7 -8.376" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="dining2_bcn" position="13.809 2.7 0.762" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="hall2_bcn" position="10.772 2.7 0.978" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="hall1_bcn" position="10.08 2.7 -1.903" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="bath_kids_bcn" position="4.175 2.7 -6.708" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="bath_master_bcn" position="3.695 2.7 6.679" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="hall3_bcn" position="21.972 2.7 -2.643" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="living1_bcn" position="20.161 2.7 -6.055" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
-        <a-sphere id="kitchen1_bcn" position="19.56 2.7 0.994" material="color: lightblue; transparent: true; opacity: 0.5" radius=".4215"></a-sphere>
+        <a-sphere id='master_bcn' position="3.109 2.7 0.567" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id='living2_bcn' position="10  2.7 6" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id='dining_bcn' position="16.478 2.7 -0.984" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id='room1_bcn' position="1.3 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="room2_bcn" position="7.571 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="guest_bcn" position="11.661 2.7 -6.143" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="bath_guest_bcn" position="15.712 2.7 -8.376" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="dining2_bcn" position="13.809 2.7 0.762" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="hall2_bcn" position="10.772 2.7 0.978" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="hall1_bcn" position="10.08 2.7 -1.903" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="bath_kids_bcn" position="4.175 2.7 -6.708" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="bath_master_bcn" position="3.695 2.7 6.679" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="hall3_bcn" position="21.972 2.7 -2.643" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="living1_bcn" position="20.161 2.7 -6.055" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id="kitchen1_bcn" position="19.56 2.7 0.994" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
       </a-entity>
 
     </a-scene>
@@ -353,6 +352,7 @@
               document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
               document.getElementById("apt_sky").setAttribute('visible', false);
               document.getElementById("spheres").setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('src', "#black"); 
               pano_enabled = false;
           }
           else{
@@ -376,6 +376,7 @@
               document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
               document.getElementById("apt_sky").setAttribute('visible', false);
               document.getElementById("spheres").setAttribute('visible', true);
+              document.getElementById("apt_sky").setAttribute('src', "#black"); 
               pano_enabled = false;
           }
       });
@@ -387,6 +388,7 @@
                   document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                   document.getElementById("apt_sky").setAttribute('visible', false);
                   document.getElementById("spheres").setAttribute('visible', true);
+                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
                   pano_enabled = false;
               }
               else{
@@ -410,6 +412,7 @@
                   document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                   document.getElementById("apt_sky").setAttribute('visible', false);
                   document.getElementById("spheres").setAttribute('visible', true);
+                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
                   pano_enabled = false;
               }
           }
