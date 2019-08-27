@@ -198,23 +198,10 @@
                       // enable marker closest to user
                       document.getElementById(closestImage + "_bcn").setAttribute('visible', true);
 
-                      // move the user to the coordinates of the closest image
-                      var new_xz_coords = getClosestImageInFrontCoords(posx,posz,photosHeadset);
-                      var pos = document.getElementById("player").getAttribute("position")
-                      pos.x = new_xz_coords[0];
-                      pos.z = new_xz_coords[1];
-                      player.setAttribute("position", pos);  
-
-                      // set a-camera to 0
-                      var posCam = document.querySelector("a-camera").getAttribute('position');
-                      posCam.x = 0;
-                      posCam.z = 0;
-                      document.querySelector("a-camera").setAttribute('position',posCam);
-
                       var pos = document.getElementById("player").getAttribute('position');
                       pos.x = posx;
                       pos.z = posz;
-                      document.getElementById("apt_sky").setAttribute('position', document.querySelector("a-camera").getAttribute('position'));
+                      document.getElementById("apt_sky").setAttribute('position', pos);
 
                       pano_enabled = false;
                   }
