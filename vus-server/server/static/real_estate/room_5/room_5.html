@@ -16,7 +16,7 @@
     <script src="../js/touch-controls.js"></script>
     <script src="../js/trackpad-controls.js"></script>
     <script src='../js/kinematic-body.js'></script>
-
+    <script src="//unpkg.com/aframe-animation-component@4.1.2/dist/aframe-animation-component.min.js"></script>
     <script src="https://dist.3d.io/3dio-js/1.1.x/3dio.min.js"></script>
 
     <script>
@@ -106,6 +106,48 @@
           }              
           return closestVal;
       }
+
+	// returns an array holding x,z or the closest picture
+	function getClosestImageCoords(x,z,photos){
+		closestVal = 100000;
+		closestCoords = [];
+		for(var key in photos){
+			var x_photo = photos[key][0];
+			var z_photo = photos[key][1];
+			var distance = Math.sqrt((Math.pow(x-x_photo,2))+(Math.pow(z-z_photo,2)));
+			if(distance < closestVal){
+				closestVal = distance;
+				closestCoords = photos[key];
+			}
+		}
+		return closestCoords
+	}
+
+      	function getClosetImageInFront(x,z,photos){
+		// get a point in front of user.
+  		var angle = camera.getAttribute("rotation")
+               	var x = 5 * Math.cos((angle.y-90) * Math.PI / 180)
+               	var y = 5 * Math.sin((angle.y-90) * Math.PI / 180)
+               	var pos = player.getAttribute("position")
+               	var new_x = pos.x -= y;
+               	var new_z = pos.z -= x;
+               	
+		// now find the closest picture to that point
+		return getClosestImage(new_x,new_z,photos);
+      	}
+
+	function getClosestImageInFrontCoords(x,z,photos){
+		 // get a point in front of user.
+                var angle = camera.getAttribute("rotation")
+                var x = 5 * Math.cos((angle.y-90) * Math.PI / 180)
+                var y = 5 * Math.sin((angle.y-90) * Math.PI / 180)
+                var pos = player.getAttribute("position")
+                var new_x = pos.x -= y;
+                var new_z = pos.z -= x;
+                
+                // now find the closest picture to that point
+                return getClosestImageCoords(new_x,new_z,photos);
+        }
 
       var isMobile;
 
@@ -239,11 +281,13 @@
       </a-assets>
 
       <a-entity id="player" enter_sphere kinematic-body-hover movement-controls="speed: 0.1" position="0 1 0" rotation="0 0 0"  networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3">
-        <a-camera id="camera" wasd-controls look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+        <a-camera id="camera" wasd-controls="speed: 0.1" look-controls networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-color
               visible="false"
             ></a-sphere>
+            <a-sky id='transition_sphere' src="#black" radius=".1"  visible='false' animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 500;"
+         animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500;"></a-sky>
         </a-camera>
 
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity> -->
@@ -265,25 +309,25 @@
       <a-grid static-body material="visible:false;"></a-grid>
 
       <a-sky id='real_sky' src="#sky" rotation="0 -90 0"></a-sky>    
-      <a-sky id='apt_sky' rotation='0 -90 0' visible='false'></a-sky>     
+      <a-sky id='apt_sky' rotation='0 -90 0' visible='false' radius='15'></a-sky>     
 
       <!-- https://stackoverflow.com/questions/41336889/adding-new-entities-on-the-fly-in-aframe -->
       <a-entity id='spheres' position="0 0 0">
-        <a-sphere id='master_bcn' position="3.109 2.7 0.567" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id='living2_bcn' position="10  2.7 6" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id='dining_bcn' position="16.478 2.7 -0.984" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id='room1_bcn' position="1.3 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="room2_bcn" position="7.571 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="guest_bcn" position="11.661 2.7 -6.143" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="bath_guest_bcn" position="15.712 2.7 -8.376" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="dining2_bcn" position="13.809 2.7 0.762" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="hall2_bcn" position="10.772 2.7 0.978" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="hall1_bcn" position="10.08 2.7 -1.903" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="bath_kids_bcn" position="4.175 2.7 -6.708" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="bath_master_bcn" position="3.695 2.7 6.679" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="hall3_bcn" position="21.972 2.7 -2.643" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="living1_bcn" position="20.161 2.7 -6.055" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
-        <a-sphere id="kitchen1_bcn" position="19.56 2.7 0.994" material="color: lightblue; transparent: true; opacity: 0.5" radius=".215"></a-sphere>
+        <a-sphere id='master_bcn' position="3.109 2.7 0.567" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id='living2_bcn' position="10  2.7 6" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id='dining_bcn' position="16.478 2.7 -0.984" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id='room1_bcn' position="1.3 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="room2_bcn" position="7.571 2.7 -7" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="guest_bcn" position="11.661 2.7 -6.143" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="bath_guest_bcn" position="15.712 2.7 -8.376" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="dining2_bcn" position="13.809 2.7 0.762" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="hall2_bcn" position="10.772 2.7 0.978" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="hall1_bcn" position="10.08 2.7 -1.903" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="bath_kids_bcn" position="4.175 2.7 -6.708" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="bath_master_bcn" position="3.695 2.7 6.679" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="hall3_bcn" position="21.972 2.7 -2.643" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="living1_bcn" position="20.161 2.7 -6.055" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
+        <a-sphere id="kitchen1_bcn" position="19.56 2.7 0.994" material="color: lightblue; transparent: true; opacity: 0.3" radius=".215"></a-sphere>
       </a-entity>
 
     </a-scene>
@@ -345,76 +389,142 @@
   	    document.getElementById("player").setAttribute('position',pos);
       });
 
+      function transition(){
+	      document.getElementById("transition_sphere").setAttribute('visible', true);
+              document.getElementById("transition_sphere").emit("fadein");
+              setTimeout(function(){
+                    document.getElementById("transition_sphere").emit("fadeout");
+              },500);
+              setTimeout(function(){
+                    document.getElementById("transition_sphere").setAttribute('visible', false);
+              },1000);
+      }
+
       document.body.addEventListener('triggerdown', function (evt) {
           if(pano_enabled){
-              document.getElementById("real_sky").setAttribute('visible', true);
-              document.getElementById("grid").setAttribute('visible', true);
-              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-              document.getElementById("apt_sky").setAttribute('visible', false);
-              document.getElementById("spheres").setAttribute('visible', true);
-              document.getElementById("apt_sky").setAttribute('src', "#black"); 
-              pano_enabled = false;
-          }
-          else{
-              // getClosestImage
-              var posx = document.getElementById("player").getAttribute('position').x;
-              var posz = document.getElementById("player").getAttribute('position').z;
-              document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));  
-              document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
-              document.getElementById("real_sky").setAttribute('visible', false);
-              document.getElementById("grid").setAttribute('visible', false);
-              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
-              document.getElementById("apt_sky").setAttribute('visible', true);
-              document.getElementById("spheres").setAttribute('visible', false);
-              pano_enabled = true;
-          }
-      });
-      document.body.addEventListener('axismove', function (evt) {
-          if(pano_enabled){
-              document.getElementById("real_sky").setAttribute('visible', true);
-              document.getElementById("grid").setAttribute('visible', true);
-              document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-              document.getElementById("apt_sky").setAttribute('visible', false);
-              document.getElementById("spheres").setAttribute('visible', true);
-              document.getElementById("apt_sky").setAttribute('src', "#black"); 
-              pano_enabled = false;
-          }
-      });
-      document.body.onkeydown = function(e){
-          if(e.keyCode == 32){
-              if(pano_enabled){
-                  document.getElementById("real_sky").setAttribute('visible', true);
+	      transition();	
+              setTimeout(function(){
+	          document.getElementById("real_sky").setAttribute('visible', true);
                   document.getElementById("grid").setAttribute('visible', true);
                   document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                   document.getElementById("apt_sky").setAttribute('visible', false);
                   document.getElementById("spheres").setAttribute('visible', true);
-                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
+	      },600);
+              pano_enabled = false;
+          }
+          else{
+	      transition();
+              document.getElementById("spheres").setAttribute('visible', false);
+	      document.getElementById("spheres").setAttribute('visible', false);
+              var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
+              var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
+              var pos = document.getElementById("player").getAttribute('position');
+	      pos.x = posx;
+	      pos.z = posz;
+	      document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));  
+              document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
+              setTimeout(function(){  
+              		document.getElementById("real_sky").setAttribute('visible', false);
+              		document.getElementById("grid").setAttribute('visible', false);
+              		document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
+              		document.getElementById("apt_sky").setAttribute('visible', true);
+			document.getElementById("apt_sky").setAttribute('position', pos);
+	      },600);
+              pano_enabled = true;
+          }
+      });
+
+
+      // go to closest 360 picture in front of user	
+      document.body.addEventListener('axismove', function (evt) {
+          if(pano_enabled){
+              transition();
+              var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
+              var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
+
+
+		setTimeout(function(){		
+	      		// set the 360 image as the one in front of user
+              		document.getElementById("apt_sky").setAttribute('src', "#" + getClosetImageInFront(posx,posz,photosHeadset));
+              		document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosetImageInFront(posx,posz,photosHeadset)] + ' 0');
+		
+
+
+              		// move the user to the coordinates of the closest image
+	      		var new_xz_coords = getClosestImageInFrontCoords(posx,posz,photosHeadset);
+	      		var pos = document.getElementById("player").getAttribute("position")
+              		pos.x = new_xz_coords[0];
+              		pos.z = new_xz_coords[1];
+              		player.setAttribute("position", pos);  
+
+	     		// set a-camera to 0
+	     		var posCam = document.querySelector("a-camera").getAttribute('position');
+	     		posCam.x = 0;
+	     		posCam.z = 0;
+	     		document.querySelector("a-camera").setAttribute('position',posCam);
+
+	      		var pos = document.getElementById("player").getAttribute('position');
+              		pos.x = posx;
+              		pos.z = posz;
+	      		document.getElementById("apt_sky").setAttribute('position', document.querySelector("a-camera").getAttribute('position'));
+
+		});
+	/*
+		transition();  
+                setTimeout(function(){        
+                        document.getElementById("spheres").setAttribute('visible', true);
+                        document.getElementById("grid").setAttribute('visible', true);
+                        document.getElementById("real_sky").setAttribute('visible', true);
+                        document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+                        document.getElementById("apt_sky").setAttribute('visible', false);
+                  },600);
                   pano_enabled = false;
+*/
+          }
+      });
+
+      document.body.onkeydown = function(e){
+          if(e.keyCode == 32){
+              if(pano_enabled){
+		  transition();
+		  setTimeout(function(){	
+			document.getElementById("spheres").setAttribute('visible', true);
+			document.getElementById("grid").setAttribute('visible', true);
+			document.getElementById("real_sky").setAttribute('visible', true);
+	    		document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+			document.getElementById("apt_sky").setAttribute('visible', false);
+		  },600);
+		  pano_enabled = false;
               }
               else{
-                  // getClosestImage
-                  var posx = document.querySelector("a-camera").getAttribute('position').x;
+		  transition();
+                  document.getElementById("spheres").setAttribute('visible', false);
+		  var posx = document.querySelector("a-camera").getAttribute('position').x;
                   var posz = document.querySelector("a-camera").getAttribute('position').z;
                   document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));
                   document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
-                  document.getElementById("real_sky").setAttribute('visible', false);
-                  document.getElementById("grid").setAttribute('visible', false);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
-                  document.getElementById("apt_sky").setAttribute('visible', true);
-                  document.getElementById("spheres").setAttribute('visible', false);
+		  setTimeout(function(){   
+                  	document.getElementById("real_sky").setAttribute('visible', false);
+                  	document.getElementById("grid").setAttribute('visible', false);
+                  	document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
+                  	document.getElementById("apt_sky").setAttribute('visible', true);
+			document.getElementById("apt_sky").setAttribute('position', document.querySelector("a-camera").getAttribute('position'));
+		  },600);
                   pano_enabled = true;
               }
           }
           else if(e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 || e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68){
               if(pano_enabled){
-                  document.getElementById("real_sky").setAttribute('visible', true);
-                  document.getElementById("grid").setAttribute('visible', true);
-                  document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-                  document.getElementById("apt_sky").setAttribute('visible', false);
-                  document.getElementById("spheres").setAttribute('visible', true);
-                  document.getElementById("apt_sky").setAttribute('src', "#black"); 
+                transition();  
+		setTimeout(function(){        
+                        document.getElementById("spheres").setAttribute('visible', true);
+                        document.getElementById("grid").setAttribute('visible', true);
+                        document.getElementById("real_sky").setAttribute('visible', true);
+                        document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+                        document.getElementById("apt_sky").setAttribute('visible', false);
+                  },600);
                   pano_enabled = false;
-              }
+	       }
           }
       }
 
