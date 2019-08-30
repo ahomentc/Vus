@@ -67,6 +67,23 @@
             });
         }
       });
+
+      AFRAME.components['laser-controls'].Component.prototype.config['oculus-touch-controls'].raycaster.direction.y = 0;
+        document.addEventListener("DOMContentLoaded", function () {
+          document.querySelector("a-scene")
+            .addEventListener("loaded", function fixModelPoses() {
+              Array.from(document.querySelectorAll('[oculus-touch-controls]'))
+                .filter(el => el.components['oculus-touch-controls'].controllerPresent)
+                .forEach(el => {
+                  el.addEventListener('model-loaded', () => {
+                    // FIX TWO: align model with raycaster (and reality)
+                    var mesh = el.getObject3D('mesh');
+                    mesh.rotateX(Math.PI / 4);
+                    mesh.translateY(0.06);
+                  });
+                });
+          });
+        });
     </script>
 
 
