@@ -67,6 +67,12 @@
                     }
                 },600)
             });
+            this.el.addEventListener('mouseenter', function(evt){
+                this.setAttribute("color","green");
+            })
+            this.el.addEventListener('mouseleave', function(evt){
+                this.setAttribute("color", "lightblue");
+            })
         }
       });
 
