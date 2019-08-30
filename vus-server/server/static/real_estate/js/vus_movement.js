@@ -319,7 +319,7 @@ AFRAME.registerComponent("enter_sphere", {
 // ----- Headset Controls -----
 // ----------------------------
 document.body.addEventListener('triggerdown', function (evt) {
-    isHeadset = true;
+      isHeadset = true;
       if(pano_enabled){
             transition();   
             setTimeout(function(){
@@ -352,7 +352,10 @@ document.body.addEventListener('triggerdown', function (evt) {
 
             // move the user to the pano location
             var pos = document.getElementById("player").getAttribute('position');
-            document.querySelector("a-camera").setAttribute('position', '0 1.6 0');
+            var pos_cam = document.querySelector("a-camera").getAttribute('position');
+            pos_cam.x = 0;
+            pos_cam.z = 0;
+            document.querySelector("a-camera").setAttribute('position', pos_cam);
             coords_pics = getClosestImageCoords(posx,posz,photosHeadset);
             pos.x = coords_pics[0]
             pos.z = coords_pics[1]
