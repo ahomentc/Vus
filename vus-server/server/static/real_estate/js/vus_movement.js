@@ -321,6 +321,7 @@ AFRAME.registerComponent("enter_sphere", {
 // ----------------------------
 // was triggerdown
 document.body.addEventListener('abuttondown', function (evt) {
+      isHeadset = true;
       if(pano_enabled){
             transition();   
             setTimeout(function(){
