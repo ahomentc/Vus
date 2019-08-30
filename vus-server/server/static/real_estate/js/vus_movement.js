@@ -318,7 +318,8 @@ AFRAME.registerComponent("enter_sphere", {
 // ----------------------------
 // ----- Headset Controls -----
 // ----------------------------
-document.body.addEventListener('triggerdown', function (evt) {
+// was triggerdown
+document.body.addEventListener('abuttondown', function (evt) {
       isHeadset = true;
       if(pano_enabled){
             transition();   
