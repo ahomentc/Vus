@@ -68,6 +68,7 @@
         }
       });
 
+      // fixes the angle of the controller
       AFRAME.components['laser-controls'].Component.prototype.config['oculus-touch-controls'].raycaster.direction.y = 0;
         document.addEventListener("DOMContentLoaded", function () {
           document.querySelector("a-scene")
@@ -120,6 +121,11 @@
             <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
             <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
 
+            <a-asset-item id="left-controller-obj" src="assets/controllers/left.obj"></a-asset-item>
+            <a-asset-item id="left-controller-mtl" src="assets/controllers/left.mtl"></a-asset-item>
+            <a-asset-item id="right-controller-obj" src="assets/controllers/right.obj"></a-asset-item>
+            <a-asset-item id="right-controller-mtl" src="assets/controllers/right.mtl"></a-asset-item>
+
             <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
             </a-entity>
           </a-entity>
@@ -147,8 +153,20 @@
 
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity> -->
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity> -->
-        <a-entity rotation="-7.105 74.714 0" position="0 1.4 0" oculus-touch-controls="hand: left" networked="template:#hand-template;" ></a-entity>
-        <a-entity rotation="-7.105 74.714 0" position="0 1.4 0" oculus-touch-controls="hand: right" laser-controls="hand: right" networked="template:#hand-template;"></a-entity>
+        <a-entity if-no-vr-headset="visible: false" 
+                  rotation="-7.105 74.714 0" 
+                  position="0 1.4 0" 
+                  hand-controls="left" 
+                  obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"
+                  networked="template:#hand-template;" ></a-entity>
+
+        <a-entity if-no-vr-headset="visible: false" 
+                  rotation="-7.105 74.714 0" 
+                  position="0 1.4 0" 
+                  hand-controls="right" 
+                  laser-controls="hand: right" 
+                  obj-model="obj: #right-controller-obj; mtl: #right-controller-mtl"
+                  networked="template:#hand-template;"></a-entity>
       </a-entity>
 
       <!-- Use the right controller to raise up and down in altitude -->
