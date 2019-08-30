@@ -48,10 +48,22 @@
                     // teleport user to sphere on click [Check if VR device and make it work for that too]
                     if(isHeadset){
                         var pos = document.getElementById("player").getAttribute('position');
+
                         var pos_cam = document.querySelector("a-camera").getAttribute('position');
                         pos_cam.x = 0;
                         pos_cam.z = 0;
                         document.querySelector("a-camera").setAttribute('position', pos_cam);
+
+                        var pos_left_hand = document.getElementById("left_hand").getAttribute('position');
+                        pos_left_hand.x = 0;
+                        pos_left_hand.z = 0;
+                        document.getElementById("left_hand").setAttribute('position', pos_left_hand);
+
+                        var pos_right_hand = document.getElementById("right_hand").getAttribute('position');
+                        pos_right_hand.x = 0;
+                        pos_right_hand.z = 0;
+                        document.getElementById("left_hand").setAttribute('position', pos_right_hand);
+
                         coords_pics = getClosestImageCoords(posx,posz,photosHeadset);
                         pos.x = evt.detail.intersection.point.x
                         pos.z = evt.detail.intersection.point.z
@@ -134,7 +146,8 @@
         <!-- Hand -->
         <template id="hand-template">
           <a-entity>
-            <a-box position="0 0 .08" scale="0.07 0.01 0.07"></a-box>
+            <a-entity obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"></a-entity>
+            </a-entity>
           </a-entity>
         </template>
 
@@ -153,14 +166,16 @@
 
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity> -->
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity> -->
-        <a-entity if-no-vr-headset="visible: false" 
+        <a-entity id="left_hand"
+                  if-no-vr-headset="visible: false" 
                   rotation="-7.105 74.714 0" 
                   position="0 1.4 0" 
                   hand-controls="left" 
                   obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"
                   networked="template:#hand-template;" ></a-entity>
 
-        <a-entity if-no-vr-headset="visible: false" 
+        <a-entity id="right_hand"
+                  if-no-vr-headset="visible: false" 
                   rotation="-7.105 74.714 0" 
                   position="0 1.4 0" 
                   hand-controls="right" 
