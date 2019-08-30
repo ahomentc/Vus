@@ -224,6 +224,7 @@ function getClosestImageInFront(x,z,photos){
 
 // Adjust the players position when enter VR because aframe is weird here
 document.body.addEventListener('enter-vr', function (evt) {
+    isHeadset = true;
     var posx = document.getElementById("player").getAttribute('position').x;
     var posy = document.getElementById("player").getAttribute('position').y - 1.5;
     var posz = document.getElementById("player").getAttribute('position').z;
@@ -320,7 +321,6 @@ AFRAME.registerComponent("enter_sphere", {
 // ----------------------------
 // was triggerdown
 document.body.addEventListener('abuttondown', function (evt) {
-      isHeadset = true;
       if(pano_enabled){
             transition();   
             setTimeout(function(){
