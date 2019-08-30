@@ -368,35 +368,35 @@ document.body.addEventListener('triggerdown', function (evt) {
 document.body.addEventListener('axismove', function (evt) {
   if(pano_enabled){
         transition();
-        var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
-        var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
+        // var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
+        // var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
 
-        setTimeout(function(){        
-            // set the 360 image as the one in front of user
-            document.getElementById("apt_sky").setAttribute('src', "#" + getClosetImageInFront(posx,posz,photosHeadset));
-            // document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosetImageInFront(posx,posz,photosHeadset)] + ' 0');
-            document.getElementById("apt_sky").setAttribute('rotation', '0 90 0');
+        // setTimeout(function(){        
+        //     // set the 360 image as the one in front of user
+        //     document.getElementById("apt_sky").setAttribute('src', "#" + getClosetImageInFront(posx,posz,photosHeadset));
+        //     // document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosetImageInFront(posx,posz,photosHeadset)] + ' 0');
+        //     document.getElementById("apt_sky").setAttribute('rotation', '0 90 0');
 
-            // move the user to the coordinates of the closest image
-            var new_xz_coords = getClosestImageInFrontCoords(posx,posz,photosHeadset);
-            var pos = document.getElementById("player").getAttribute("position")
-            pos.x = new_xz_coords[0];
-            pos.z = new_xz_coords[1];
-            player.setAttribute("position", pos);  
+        //     // move the user to the coordinates of the closest image
+        //     var new_xz_coords = getClosestImageInFrontCoords(posx,posz,photosHeadset);
+        //     var pos = document.getElementById("player").getAttribute("position")
+        //     pos.x = new_xz_coords[0];
+        //     pos.z = new_xz_coords[1];
+        //     player.setAttribute("position", pos);  
 
-            // set a-camera to 0
-            var posCam = document.querySelector("a-camera").getAttribute('position');
-            posCam.x = 0;
-            posCam.z = 0;
-            document.querySelector("a-camera").setAttribute('position',posCam);
+        //     // set a-camera to 0
+        //     var posCam = document.querySelector("a-camera").getAttribute('position');
+        //     posCam.x = 0;
+        //     posCam.z = 0;
+        //     document.querySelector("a-camera").setAttribute('position',posCam);
 
-            var pos = document.getElementById("player").getAttribute('position');
-            pos.x = posx;
-            pos.z = posz;
-            document.getElementById("apt_sky").setAttribute('position', document.querySelector("a-camera").getAttribute('position'));
+        //     var pos = document.getElementById("player").getAttribute('position');
+        //     pos.x = posx;
+        //     pos.z = posz;
+        //     document.getElementById("apt_sky").setAttribute('position', document.querySelector("a-camera").getAttribute('position'));
 
-        },600);
-/*
+        // },600);
+
         transition();  
         setTimeout(function(){        
             document.getElementById("vrbeacons").setAttribute('visible', true);
@@ -406,7 +406,7 @@ document.body.addEventListener('axismove', function (evt) {
             document.getElementById("apt_sky").setAttribute('visible', false);
         },600);
         pano_enabled = false;
-*/
+
   }
 });
 
