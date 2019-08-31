@@ -41,18 +41,18 @@
               angle = 360 + angle;
           }
           if(angle.y > 120 && angle.y < 240 && !inversed){
-              document.getElementById("nost").setAttribute('visible', 'true')
-              document.getElementById("stl").setAttribute('visible', 'false')
-              document.getElementById("str").setAttribute('visible', 'false')
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute("src", "#right")
               document.getElementById("str").setAttribute("src", "#left")
               inversed = true;
               stereo_enabled = true;
           }
           else if(angle.y < 60 || angle.y > 330 && inversed){
-              document.getElementById("nost").setAttribute('visible', 'true')
-              document.getElementById("stl").setAttribute('visible', 'false')
-              document.getElementById("str").setAttribute('visible', 'false')
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute("src", "#left")
               document.getElementById("str").setAttribute("src", "#right")
               inversed = false;    
