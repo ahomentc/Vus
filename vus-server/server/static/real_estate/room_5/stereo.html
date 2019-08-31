@@ -14,10 +14,10 @@
       <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
       and it it's active, only render those entities in the 'left' eye -->
 
-      <a-camera position="0 0 0" cursor-visible="false" stereocam="eye:left;"></a-camera>
+      <a-camera position="0 0 0" stereocam="eye:left;"></a-camera>
 
-      <a-sky src="#left" rotation='0 -90 0' stereo="eye:left"></a-sky> 
-      <a-sky src="#right" rotation='0 -90 0' stereo="eye:right"></a-sky> 
+      <a-sky src="#left" rotation='0 -90 0'></a-sky> 
+      <!-- <a-sky src="#right" rotation='0 -90 0' stereo="eye:right"></a-sky>  -->
 
 
     </a-scene>
