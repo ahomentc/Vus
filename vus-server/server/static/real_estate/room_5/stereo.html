@@ -10,9 +10,9 @@
   <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
   <script>
-  AFRAME.registerComponent("invert_stereo_correctly", {
+    var inversed = false;
+    AFRAME.registerComponent("invert_stereo_correctly", {
       init: function() {
-        var inversed = false;
       },
       tick: function() {
           var camera = document.querySelector("a-camera")
