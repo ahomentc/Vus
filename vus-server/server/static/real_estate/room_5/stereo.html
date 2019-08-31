@@ -10,24 +10,7 @@
   <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
   <script>
-
     var inversed = false;
-    stereo_enabled = false;
-    document.body.addEventListener('abuttondown', function (evt) {
-        if(!stereo_enabled){
-            document.getElementById("nost").setAttribute('visible', 'false')
-            document.getElementById("stl").setAttribute('visible', 'true')
-            document.getElementById("str").setAttribute('visible', 'true')
-            stereo_enabled = true;
-        }
-        else{
-            document.getElementById("nost").setAttribute('visible', 'true')
-            document.getElementById("stl").setAttribute('visible', 'false')
-            document.getElementById("str").setAttribute('visible', 'false')
-            stereo_enabled = false;
-        }
-    });
-
     AFRAME.registerComponent("invert_stereo_correctly", {
       init: function() {
       },
@@ -47,7 +30,6 @@
               document.getElementById("stl").setAttribute("src", "#right")
               document.getElementById("str").setAttribute("src", "#left")
               inversed = true;
-              stereo_enabled = true;
           }
           else if(angle.y < 60 || angle.y > 330 && inversed){
               document.getElementById("nost").setAttribute('visible', 'false')
@@ -56,14 +38,12 @@
               document.getElementById("stl").setAttribute("src", "#left")
               document.getElementById("str").setAttribute("src", "#right")
               inversed = false;    
-              stereo_enabled = true;
           }
           // make non stereo
-          else if(stereo_enabled){
+          else if((angle.y >= 60 && angle.y <= 120) || (angle.y >= 240 && angle.y <= 330)){
               document.getElementById("nost").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute('visible', 'false')
               document.getElementById("str").setAttribute('visible', 'false')
-              stereo_enabled = false;
           }
           // if x angle less than 65, then switch to non stereo
       }
@@ -90,6 +70,25 @@
       <a-sky id="nost" src="#left" rotation='0 -90 0'></a-sky> 
 
     </a-scene>
+
+<script>
+st_enabled = false;
+document.body.addEventListener('abuttondown', function (evt) {
+    if(!st_enabled){
+        document.getElementById("nost").setAttribute('visible', 'false')
+        document.getElementById("stl").setAttribute('visible', 'true')
+        document.getElementById("str").setAttribute('visible', 'true')
+        st_enabled = true;
+    }
+    else{
+        document.getElementById("nost").setAttribute('visible', 'true')
+        document.getElementById("stl").setAttribute('visible', 'false')
+        document.getElementById("str").setAttribute('visible', 'false')
+        st_enabled = false;
+    }
+});
+
+</script>
 
  </body>
  </html>
