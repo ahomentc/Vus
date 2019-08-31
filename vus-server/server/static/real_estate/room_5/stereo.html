@@ -10,7 +10,7 @@
   <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
   <script>
-  AFRAME.registerComponent("forward_space", {
+  AFRAME.registerComponent("invert_stereo_correctly", {
       init: function() {
         var inversed = false;
       },
@@ -43,7 +43,7 @@
       <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
       and it it's active, only render those entities in the 'left' eye -->
 
-      <a-camera position="0 0 0" stereocam="eye:left;"></a-camera>
+      <a-camera invert_stereo_correctly position="0 0 0" stereocam="eye:left;"></a-camera>
       <a-entity id="left_hand" hand-controls="left"></a-entity>
       <a-entity id="right_hand" hand-controls="right"></a-entity>
 
