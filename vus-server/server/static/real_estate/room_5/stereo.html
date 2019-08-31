@@ -18,7 +18,12 @@
           var camera = document.querySelector("a-camera")
           var angle = camera.getAttribute("rotation")
           // if y angle over 180, then might need to switch the eyes. For now... But later make sides be non-stereo.
-          if(Math.abs(angle.y) > 120 && !inversed){
+
+          // convert all negative numbers to positive
+          if (angle < 0){
+              angle = 360 + angle;
+          }
+          if(angle.y > 120 && angle.y < 240 && !inversed){
               document.getElementById("nost").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute('visible', 'false')
               document.getElementById("str").setAttribute('visible', 'false')
@@ -26,7 +31,7 @@
               document.getElementById("str").setAttribute("src", "#left")
               inversed = true;
           }
-          else if(Math.abs(angle.y) < 60 && inversed){
+          else if(angle.y < 60 || angle.y > 330 && inversed){
               document.getElementById("nost").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute('visible', 'false')
               document.getElementById("str").setAttribute('visible', 'false')
@@ -35,7 +40,7 @@
               inversed = false;    
           }
           // make non stereo
-          else if(Math.abs(angle.y) > 60 && Math.abs(angle.y) < 120){
+          else if((angle.y >= 60 && angle.y <= 120) || (angle.y > =240 && angle.y <= 330)){
               document.getElementById("nost").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute('visible', 'false')
               document.getElementById("str").setAttribute('visible', 'false')
