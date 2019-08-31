@@ -3,6 +3,15 @@
   <title>My A-Frame Scene</title>
   <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
   <script src="aframe-stereo-component.js.min.js"></script>
+  <script src='../js/kinematic-body.js'></script>
+  <script src="../js/movement-controls.js"></script>
+  <script src="../js/touch-controls.js"></script>
+  <script src="../js/trackpad-controls.js"></script>
+  <script src='../js/kinematic-body.js'></script>
+  <script src="//unpkg.com/aframe-animation-component@4.1.2/dist/aframe-animation-component.min.js"></script>
+  <script src="https://dist.3d.io/3dio-js/1.1.x/3dio.min.js"></script>
+  <script src="../js/vus_movement.js"></script>
+  <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 </head>
 <body>
     <a-scene>
@@ -15,11 +24,22 @@
       and it it's active, only render those entities in the 'left' eye -->
 
       <a-camera position="0 0 0" stereocam="eye:left;"></a-camera>
+      <a-entity id="left_hand" hand-controls="left"></a-entity>
+      <a-entity id="right_hand" hand-controls="right"></a-entity>
 
-      <a-sky src="#left" rotation='0 -90 0' stereo="eye:left"></a-sky> 
-      <a-sky src="#right" rotation='0 -90 0' stereo="eye:right"></a-sky> 
+      <a-sky id="stl" src="#left" rotation='0 -90 0' stereo="eye:left" visible='false'></a-sky> 
+      <a-sky id="str" src="#right" rotation='0 -90 0' stereo="eye:right" visible='false'></a-sky> 
+
+      <a-sky id="nost" src="#left" rotation='0 -90 0' stereo="eye:right"></a-sky> 
 
     </a-scene>
+
+<script>
+document.body.addEventListener('abuttondown', function (evt) {
+    alert("hi")
+});
+
+</script>
 
  </body>
  </html>
