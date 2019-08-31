@@ -8,12 +8,24 @@
   <script src="../js/touch-controls.js"></script>
   <script src="../js/trackpad-controls.js"></script>
   <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
+
+  <script>
+  AFRAME.registerComponent("forward_space", {
+      init: function() {},
+      tick: function() {
+          var camera = document.querySelector("a-camera")
+          var angle = camera.getAttribute("rotation")
+          // if y angle over 180, then might need to switch the eyes
+          // if x angle less than 65, then switch to non stereo
+      }
+  });
+  </script>
 </head>
 <body>
     <a-scene>
         <a-assets>
-          <img id="left" src="assets/left.jpg" />
-          <img id="right" src="assets/right.jpg" />
+          <img id="left" src="assets/right.jpg" />
+          <img id="right" src="assets/left.jpg" />
         </a-assets>
 
       <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
@@ -46,6 +58,8 @@ document.body.addEventListener('abuttondown', function (evt) {
         st_enabled = false;
     }
 });
+
+var angle = document.querySelector("a-camera").getAttribute("rotation") 
 
 </script>
 
