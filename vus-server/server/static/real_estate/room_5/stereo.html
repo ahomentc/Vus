@@ -20,11 +20,12 @@
           // if y angle over 180, then might need to switch the eyes. For now... But later make sides be non-stereo.
 
           // convert all negative numbers to positive
-          angle = angle+90
-          if (angle < 0){
-              angle = 360 + angle;
+          y_angle = angle.y
+          if (y_angle < 0){
+              y_angle = 360 + y_angle;
           }
-          if(angle.y > 120 && angle.y < 240 && !inversed){
+          console.log(y_angle)
+          if(y_angle > 120 && y_angle < 240 && !inversed){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
@@ -32,7 +33,7 @@
               document.getElementById("str").setAttribute("src", "#left")
               inversed = true;
           }
-          else if(angle.y < 60 || angle.y > 330 && inversed){
+          else if(y_angle < 60 || y_angle > 330 && inversed){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
@@ -41,7 +42,7 @@
               inversed = false;    
           }
           // make non stereo
-          else if((angle.y >= 60 && angle.y <= 120) || (angle.y >= 240 && angle.y <= 330)){
+          else if((y_angle >= 60 && y_angle <= 120) || (y_angle >= 240 && y_angle <= 330)){
               document.getElementById("nost").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute('visible', 'false')
               document.getElementById("str").setAttribute('visible', 'false')
