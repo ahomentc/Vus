@@ -35,10 +35,18 @@
     </a-scene>
 
 <script>
+st_enabled = false;
 document.body.addEventListener('abuttondown', function (evt) {
-    document.getElementById("nost").setAttribute('visible', 'false')
-    document.getElementById("stl").setAttribute('visible', 'true')
-    document.getElementById("str").setAttribute('visible', 'true')
+    if(!st_enabled){
+        document.getElementById("nost").setAttribute('visible', 'false')
+        document.getElementById("stl").setAttribute('visible', 'true')
+        document.getElementById("str").setAttribute('visible', 'true')
+    }
+    else{
+        document.getElementById("nost").setAttribute('visible', 'true')
+        document.getElementById("stl").setAttribute('visible', 'false')
+        document.getElementById("str").setAttribute('visible', 'false')
+    }
 });
 
 </script>
