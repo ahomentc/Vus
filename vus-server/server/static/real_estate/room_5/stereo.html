@@ -1,0 +1,26 @@
+<html>
+<head>
+  <title>My A-Frame Scene</title>
+  <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+  <script src="aframe-stereo-component.js.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <a-assets>
+          <img id="left" src="assets/left.jpg" />
+          <img id="right" src="assets/right.jpg" />
+        </a-assets>
+
+      <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
+      and it it's active, only render those entities in the 'left' eye -->
+
+      <a-camera position="0 0 0" cursor-visible="false" stereocam="eye:left;"></a-camera>
+
+      <a-sky src="#left" rotation='0 -90 0' stereo="eye:left"></a-sky> 
+      <a-sky src="#right" rotation='0 -90 0' stereo="eye:right"></a-sky> 
+
+
+    </a-scene>
+
+ </body>
+ </html>
