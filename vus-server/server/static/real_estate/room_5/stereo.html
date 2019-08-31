@@ -11,11 +11,23 @@
 
   <script>
   AFRAME.registerComponent("forward_space", {
-      init: function() {},
+      init: function() {
+        var inversed = false;
+      },
       tick: function() {
           var camera = document.querySelector("a-camera")
           var angle = camera.getAttribute("rotation")
-          // if y angle over 180, then might need to switch the eyes
+          // if y angle over 180, then might need to switch the eyes. For now... But later make sides be non-stereo.
+          if(angle.y > 180 && !inversed){
+              document.getElementById("stl").setAttribute("src", "#right")
+              document.getElementById("str").setAttribute("src", "#left")
+              inversed = true;
+          }
+          else if(angle.y < 180 && inversed){
+              document.getElementById("stl").setAttribute("src", "#left")
+              document.getElementById("str").setAttribute("src", "#right")
+              inversed = false;    
+          }
           // if x angle less than 65, then switch to non stereo
       }
   });
@@ -24,8 +36,8 @@
 <body>
     <a-scene>
         <a-assets>
-          <img id="left" src="assets/right.jpg" />
-          <img id="right" src="assets/left.jpg" />
+          <img id="left" src="assets/left.jpg" />
+          <img id="right" src="assets/right.jpg" />
         </a-assets>
 
       <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
