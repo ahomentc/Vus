@@ -41,11 +41,13 @@ document.body.addEventListener('abuttondown', function (evt) {
         document.getElementById("nost").setAttribute('visible', 'false')
         document.getElementById("stl").setAttribute('visible', 'true')
         document.getElementById("str").setAttribute('visible', 'true')
+        st_enabled = true;
     }
     else{
         document.getElementById("nost").setAttribute('visible', 'true')
         document.getElementById("stl").setAttribute('visible', 'false')
         document.getElementById("str").setAttribute('visible', 'false')
+        st_enabled = false;
     }
 });
 
