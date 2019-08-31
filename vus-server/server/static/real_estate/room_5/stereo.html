@@ -25,7 +25,7 @@
               y_angle = 360 + y_angle;
           }
           console.log(y_angle)
-          if(y_angle > 110 && y_angle < 230 && !inversed){
+          if(y_angle > 120 && y_angle < 240 && !inversed){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
@@ -33,7 +33,7 @@
               document.getElementById("str").setAttribute("src", "#left")
               inversed = true;
           }
-          else if(y_angle < 70 || y_angle > 320 && inversed){
+          else if(y_angle < 60 || y_angle > 330 && inversed){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
@@ -42,7 +42,7 @@
               inversed = false;    
           }
           // make non stereo
-          else if((y_angle >= 70 && y_angle <= 110) || (y_angle >= 240 && y_angle <= 320)){
+          else if((y_angle >= 60 && y_angle <= 120) || (y_angle >= 240 && y_angle <= 330)){
               document.getElementById("nost").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute('visible', 'false')
               document.getElementById("str").setAttribute('visible', 'false')
