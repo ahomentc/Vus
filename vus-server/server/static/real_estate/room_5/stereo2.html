@@ -11,23 +11,23 @@
 
   <script>
     st_enabled = true;
-    document.body.addEventListener('triggerdown', function (evt) {
-        if(!st_enabled){
-            document.getElementById("nost").setAttribute('visible', 'false')
-            document.getElementById("stl").setAttribute('visible', 'true')
-            document.getElementById("str").setAttribute('visible', 'true')
-            st_enabled = true;
-        }
-        else{
-            document.getElementById("nost").setAttribute('visible', 'true')
-            document.getElementById("stl").setAttribute('visible', 'false')
-            document.getElementById("str").setAttribute('visible', 'false')
-            st_enabled = false;
-        }
-    });
 
-    AFRAME.registerComponent("invert_stereo_correctly", {
+    AFRAME.registerComponent("stereo_extras", {
       init: function() {
+            document.body.addEventListener('triggerdown', function (evt) {
+            if(!st_enabled){
+                document.getElementById("nost").setAttribute('visible', 'false')
+                document.getElementById("stl").setAttribute('visible', 'true')
+                document.getElementById("str").setAttribute('visible', 'true')
+                st_enabled = true;
+            }
+            else{
+                document.getElementById("nost").setAttribute('visible', 'true')
+                document.getElementById("stl").setAttribute('visible', 'false')
+                document.getElementById("str").setAttribute('visible', 'false')
+                st_enabled = false;
+            }
+        });
       },
       tick: function() {
           var camera = document.querySelector("a-camera")
@@ -75,7 +75,7 @@
       <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
       and it it's active, only render those entities in the 'left' eye -->
 
-      <a-camera invert_stereo_correctly position="0 0 0" stereocam="eye:left;"></a-camera>
+      <a-camera stereo_extras position="0 0 0" stereocam="eye:left;"></a-camera>
       <a-entity id="left_hand" hand-controls="left"></a-entity>
       <a-entity id="right_hand" hand-controls="right"></a-entity>
 
