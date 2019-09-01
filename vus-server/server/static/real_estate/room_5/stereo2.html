@@ -10,6 +10,22 @@
   <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
   <script>
+    st_enabled = true;
+    document.body.addEventListener('triggerdown', function (evt) {
+        if(!st_enabled){
+            document.getElementById("nost").setAttribute('visible', 'false')
+            document.getElementById("stl").setAttribute('visible', 'true')
+            document.getElementById("str").setAttribute('visible', 'true')
+            st_enabled = true;
+        }
+        else{
+            document.getElementById("nost").setAttribute('visible', 'true')
+            document.getElementById("stl").setAttribute('visible', 'false')
+            document.getElementById("str").setAttribute('visible', 'false')
+            st_enabled = false;
+        }
+    });
+
     AFRAME.registerComponent("invert_stereo_correctly", {
       init: function() {
       },
@@ -23,22 +39,21 @@
           if (y_angle < 0){
               y_angle = 360 + y_angle;
           }
-          console.log(y_angle)
-          if(y_angle < 72 || y_angle > 333){
+          if(y_angle < 72 || y_angle > 333 && st_enabled){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute("src", "#cam3")
               document.getElementById("str").setAttribute("src", "#cam2") 
           }
-          else if(y_angle > 72 && y_angle < 200){
+          else if(y_angle > 72 && y_angle < 200 && st_enabled){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute("src", "#cam1")
               document.getElementById("str").setAttribute("src", "#cam3") 
           }
-          else if(y_angle > 200 && y_angle < 333){
+          else if(y_angle > 200 && y_angle < 333 && st_enabled){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
@@ -70,25 +85,6 @@
       <a-sky id="nost" src="#left" rotation='0 -90 0'></a-sky> 
 
     </a-scene>
-
-<script>
-st_enabled = false;
-document.body.addEventListener('abuttondown', function (evt) {
-    if(!st_enabled){
-        document.getElementById("nost").setAttribute('visible', 'false')
-        document.getElementById("stl").setAttribute('visible', 'true')
-        document.getElementById("str").setAttribute('visible', 'true')
-        st_enabled = true;
-    }
-    else{
-        document.getElementById("nost").setAttribute('visible', 'true')
-        document.getElementById("stl").setAttribute('visible', 'false')
-        document.getElementById("str").setAttribute('visible', 'false')
-        st_enabled = false;
-    }
-});
-
-</script>
 
  </body>
  </html>
