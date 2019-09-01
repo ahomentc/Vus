@@ -39,7 +39,7 @@
           if (y_angle < 0){
               y_angle = 360 + y_angle;
           }
-          if(y_angle < 72 || y_angle > 333 && st_enabled){
+          if((y_angle < 72 || y_angle > 333) && st_enabled){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
