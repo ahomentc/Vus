@@ -14,7 +14,7 @@
 
     AFRAME.registerComponent("stereo_extras", {
       init: function() {
-            document.body.addEventListener('triggerdown', function (evt) {
+        document.body.addEventListener('triggerdown', function (evt) {
             if(!st_enabled){
                 document.getElementById("nost").setAttribute('visible', 'false')
                 document.getElementById("stl").setAttribute('visible', 'true')
@@ -79,10 +79,10 @@
       <a-entity id="left_hand" hand-controls="left"></a-entity>
       <a-entity id="right_hand" hand-controls="right"></a-entity>
 
-      <a-sky id="stl" src="#left" rotation='0 -90 0' stereo="eye:left" visible='false'></a-sky> 
-      <a-sky id="str" src="#right" rotation='0 -90 0' stereo="eye:right" visible='false'></a-sky> 
+      <a-sky id="stl" src="#cam3" rotation='0 -90 0' stereo="eye:left" visible='false'></a-sky> 
+      <a-sky id="str" src="#cam2" rotation='0 -90 0' stereo="eye:right" visible='false'></a-sky> 
 
-      <a-sky id="nost" src="#left" rotation='0 -90 0'></a-sky> 
+      <a-sky id="nost" src="#cam1" rotation='0 -90 0'></a-sky> 
 
     </a-scene>
 
