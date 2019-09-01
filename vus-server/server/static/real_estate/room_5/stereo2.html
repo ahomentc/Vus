@@ -10,7 +10,6 @@
   <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
   <script>
-    var inversed = false;
     AFRAME.registerComponent("invert_stereo_correctly", {
       init: function() {
       },
@@ -24,29 +23,28 @@
           if (y_angle < 0){
               y_angle = 360 + y_angle;
           }
-          if(y_angle > 120 && y_angle < 240 && !inversed){
+          console.log(y_angle)
+          if(y_angle < 72 || y_angle > 333){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
-              document.getElementById("stl").setAttribute("src", "#right")
-              document.getElementById("str").setAttribute("src", "#left")
-              inversed = true;
+              document.getElementById("stl").setAttribute("src", "#cam3")
+              document.getElementById("str").setAttribute("src", "#cam2") 
           }
-          else if(y_angle < 60 || y_angle > 330 && inversed){
+          else if(y_angle > 72 && y_angle < 200){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
-              document.getElementById("stl").setAttribute("src", "#left")
-              document.getElementById("str").setAttribute("src", "#right")
-              inversed = false;    
+              document.getElementById("stl").setAttribute("src", "#cam1")
+              document.getElementById("str").setAttribute("src", "#cam3") 
           }
-          // make non stereo
-          else if((y_angle >= 60 && y_angle <= 120) || (y_angle >= 240 && y_angle <= 330)){
-              document.getElementById("nost").setAttribute('visible', 'true')
-              document.getElementById("stl").setAttribute('visible', 'false')
-              document.getElementById("str").setAttribute('visible', 'false')
-          }
-          // if x angle less than 65, then switch to non stereo
+          else if(y_angle > 200 && y_angle < 333){
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
+              document.getElementById("stl").setAttribute("src", "#cam2")
+              document.getElementById("str").setAttribute("src", "#cam1") 
+          } 
       }
   });
   </script>
@@ -54,8 +52,9 @@
 <body>
     <a-scene>
         <a-assets>
-          <img id="left" src="assets/left.jpg" />
-          <img id="right" src="assets/right.jpg" />
+          <img id="cam1" src="assets/1.jpg" />
+          <img id="cam2" src="assets/2.jpg" />
+          <img id="cam3" src="assets/3.jpg" />
         </a-assets>
 
       <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
