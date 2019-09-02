@@ -492,9 +492,17 @@ function disableBeaconsWithRay(){
 }
 
 function disableFarBeacons(){
-    var beacons = document.querySelectorAll("a-sphere")
-    var posx = document.querySelector("a-camera").getAttribute('position').x;
-    var posz = document.querySelector("a-camera").getAttribute('position').z;
+    var beacons = document.querySelectorAll("a-sphere");
+    var posx;
+    var posz;
+    if(isHeadset){
+        posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
+        posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
+    }
+    else{
+        posx = document.querySelector("a-camera").getAttribute('position').x;
+        posz = document.querySelector("a-camera").getAttribute('position').z;
+    }
     beacons.forEach(function(sphere) {
         var bcn_pos_x = sphere.getAttribute("position").x
         var bcn_pos_z = sphere.getAttribute("position").z
