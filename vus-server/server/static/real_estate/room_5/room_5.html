@@ -53,7 +53,9 @@
                         document.querySelector("a-camera").setAttribute('position',pos)
                         document.getElementById("apt_sky").setAttribute('position', pos);
                     }
-                    disableFarBeacons();
+                    if(pano_enabled){
+                        disableFarBeacons();
+                    }
                 },600)
             });
             this.el.addEventListener('mouseenter', function(evt){
