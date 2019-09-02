@@ -350,7 +350,6 @@ document.body.addEventListener('abuttondown', function (evt) {
         // document.getElementById("vrbeacons").setAttribute('visible', false);
         var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
         var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
-        var pos = document.getElementById("player").getAttribute('position');
         pos.x = posx;
         pos.z = posz;
         document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));  
