@@ -32,7 +32,6 @@
                     // teleport user to sphere on click [Check if VR device and make it work for that too]
                     if(isHeadset){
                         var pos = document.getElementById("player").getAttribute('position');
-                        var oldpos = pos.x
 
                         var pos_cam = document.querySelector("a-camera").getAttribute('position');
                         pos_cam.x = 0;
@@ -41,7 +40,7 @@
 
                         pos.x = evt.detail.intersection.point.x
                         pos.z = evt.detail.intersection.point.z
-                        alert(oldpos.toString() + " " + pos.x.toString())
+
                         document.getElementById("player").setAttribute('position',pos);
                         document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(pos.x,pos.z,photosHeadset));
                         document.getElementById("apt_sky").setAttribute('position', pos);
