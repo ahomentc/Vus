@@ -21,72 +21,6 @@
     <script src="../js/vus_movement.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
-    <script>
-
-      AFRAME.registerComponent('bcn_teleport', {
-        init: function () {
-            this.el.addEventListener('click', function (evt) {
-                transition();
-                enableAllBeacons()
-                setTimeout(function(){
-                    // teleport user to sphere on click [Check if VR device and make it work for that too]
-                    if(isHeadset){
-                        var pos = document.getElementById("player").getAttribute('position');
-
-                        var pos_cam = document.querySelector("a-camera").getAttribute('position');
-                        pos_cam.x = 0;
-                        pos_cam.z = 0;
-                        document.querySelector("a-camera").setAttribute('position', pos_cam);
-
-                        pos.x = evt.detail.intersection.point.x
-                        pos.z = evt.detail.intersection.point.z
-
-                        document.getElementById("player").setAttribute('position',pos);
-                        document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(pos.x,pos.z,photosHeadset));
-                        document.getElementById("apt_sky").setAttribute('position', pos);
-                    }
-                    else{
-                        var pos = document.querySelector("a-camera").getAttribute('position');
-                        pos.x = evt.detail.intersection.point.x
-                        pos.z = evt.detail.intersection.point.z
-                        document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(pos.x,pos.z,photosHeadset));
-                        document.querySelector("a-camera").setAttribute('position',pos)
-                        document.getElementById("apt_sky").setAttribute('position', pos);
-                    }
-                    if(pano_enabled){
-                        disableFarBeacons();
-                    }
-                },600)
-            });
-            this.el.addEventListener('mouseenter', function(evt){
-                this.setAttribute("color","green");
-            })
-            this.el.addEventListener('mouseleave', function(evt){
-                this.setAttribute("color", "lightblue");
-            })
-        }
-      });
-
-      // fixes the angle of the controller
-      AFRAME.components['laser-controls'].Component.prototype.config['oculus-touch-controls'].raycaster.direction.y = 0;
-        document.addEventListener("DOMContentLoaded", function () {
-          document.querySelector("a-scene")
-            .addEventListener("loaded", function fixModelPoses() {
-              Array.from(document.querySelectorAll('[oculus-touch-controls]'))
-                .filter(el => el.components['oculus-touch-controls'].controllerPresent)
-                .forEach(el => {
-                  el.addEventListener('model-loaded', () => {
-                    // FIX TWO: align model with raycaster (and reality)
-                    var mesh = el.getObject3D('mesh');
-                    mesh.rotateX(Math.PI / 4);
-                    mesh.translateY(0.06);
-                  });
-                });
-          });
-        });
-    </script>
-
-
   </head>
 
   <body>
@@ -207,13 +141,19 @@
 
     <script>
 
+      function changeBcnColor(bcn_id){
+          document.getElementById(bcn_id + "_bcn").setAttribute('material', 'color: lightblue; transparent: true; opacity: 0.8');  
+      }
+
       // add all images
       for(var i=1; i<77; i++){
-          var image = document.createElement('img');
-          image.setAttribute('id', i.toString());
-          image.setAttribute('src', 'assets/360_pics/' + i.toString() + ".JPG");
+          var image360 = document.createElement('img');
+          image360.setAttribute('id', i.toString());
+          image360.setAttribute('src', 'assets/360_pics/' + i.toString() + ".JPG");
+          image360.setAttribute('onload', "changeBcnColor('" + i.toString() + "')");
+
           var parent = document.querySelector("a-assets")
-          parent.appendChild(image);
+          parent.appendChild(image360);
       }      
 
     </script>
