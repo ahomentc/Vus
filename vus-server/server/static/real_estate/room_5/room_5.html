@@ -22,28 +22,12 @@
     <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
 
     <script>
-      AFRAME.registerComponent("forward_space", {
-        init: function() {
-          var camera = document.querySelector("a-camera")
-          var player = document.querySelector("#player")
-          window.addEventListener("keydown", (e) => {
-            if (e.code === "Space") {
-               var angle = camera.getAttribute("rotation")
-               var x = .3 * Math.cos((angle.y-90) * Math.PI / 180)
-               var y = .3 * Math.sin((angle.y-90) * Math.PI / 180)
-               var pos = player.getAttribute("position")
-               pos.x -= y;
-               pos.z -= x;
-               player.setAttribute("position", pos);
-             }
-           })
-         }
-        });
 
       AFRAME.registerComponent('bcn_teleport', {
         init: function () {
             this.el.addEventListener('click', function (evt) {
                 transition();
+                enableAllBeacons()
                 setTimeout(function(){
                     // teleport user to sphere on click [Check if VR device and make it work for that too]
                     if(isHeadset){
@@ -58,13 +42,18 @@
                         pos.x = evt.detail.intersection.point.x
                         pos.z = evt.detail.intersection.point.z
                         document.getElementById("player").setAttribute('position',pos);
+
+                        document.getElementById("apt_sky").setAttribute('position', pos);
                     }
                     else{
                         var pos = document.querySelector("a-camera").getAttribute('position');
                         pos.x = evt.detail.intersection.point.x
                         pos.z = evt.detail.intersection.point.z
+                        document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(pos.x,pos.z,photosHeadset));
                         document.querySelector("a-camera").setAttribute('position',pos)
+                        document.getElementById("apt_sky").setAttribute('position', pos);
                     }
+                    disableFarBeacons();
                 },600)
             });
             this.el.addEventListener('mouseenter', function(evt){
@@ -101,7 +90,7 @@
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
-    <a-scene antialias="true" physics="gravity:0;"  networked-scene="
+    <a-scene antialias="true" physics="gravity:0;" beacons networked-scene="
       room: dev;
       debug: true;
       adapter: wseasyrtc;
@@ -189,12 +178,8 @@
       <a-grid static-body material="visible:false;"></a-grid>
 
       <a-sky id='real_sky' src="#sky" rotation="0 -90 0"></a-sky>    
-      <a-sky id='apt_sky' rotation='0 -90 0' visible='false' radius='25'></a-sky>     
+      <a-sky id='apt_sky' rotation='0 -90 0' visible='false' radius='25'></a-sky>  
 
-      <!-- https://stackoverflow.com/questions/41336889/adding-new-entities-on-the-fly-in-aframe -->
-      <a-entity id='photobeacons' position="0 0 0" visible='false'>
-        <!-- spheres inserted here -->
-      </a-entity>
       <a-entity id='vrbeacons' position="0 0 0">
         <!-- circles inserted here -->
       </a-entity>
@@ -219,51 +204,6 @@
     </script>
 
     <script>
-      // add beacons for all images
-      // photobeacons
-      // for(var i=1; i<77; i++){
-      //     var circle = document.createElement('a-circle');
-      //     circle.setAttribute('id', i.toString());
-      //     circle.setAttribute('position', photosHeadset[i.toString()][0] + ' 1.5 ' + photosHeadset[i.toString()][1]);
-      //     circle.setAttribute('material', 'color: lightblue; transparent: true; opacity: 0.7');
-      //     circle.setAttribute('radius', '.215');
-      //     circle.setAttribute('rotation', "-90 0 0")
-      //     var parent = document.getElementById("vrbeacons")
-      //     parent.appendChild(circle);
-      // }
-
-      for(var i=1; i<77; i++){
-          var sphere = document.createElement('a-sphere');
-          var posx = photosHeadset[i.toString()][0];
-          var posz= photosHeadset[i.toString()][1];
-          sphere.setAttribute('id', i.toString());
-          sphere.setAttribute('position', posx + ' 1.5 ' + posz);
-          sphere.setAttribute('material', 'color: lightblue; transparent: true; opacity: 0.6');
-          sphere.setAttribute('radius', '.15');
-          sphere.setAttribute('bcn_teleport','');
-
-          // teleport user to sphere on click [Check if VR device and make it work for that too]
-          // sphere.addEventListener("click", (e)=>{
-          //     var pos = document.querySelector("a-camera").getAttribute('position');
-          //     pos.x = posx
-          //     pos.z = posz
-          //     document.querySelector("a-camera").setAttribute('position',pos)
-          // });
-
-          var parent = document.getElementById("vrbeacons")
-          parent.appendChild(sphere);
-          // alert(posx.toString() + " " + posz.toString())
-      }
-
-      for(var i=1; i<77; i++){
-          var sphere = document.createElement('a-sphere');
-          sphere.setAttribute('id', i.toString());
-          sphere.setAttribute('position', photosHeadset[i.toString()][0] + ' 2.7 ' + photosHeadset[i.toString()][1]);
-          sphere.setAttribute('material', 'color: lightblue; transparent: true; opacity: 0.3');
-          sphere.setAttribute('radius', '.215');
-          var parent = document.getElementById("photobeacons")
-          parent.appendChild(sphere);
-      }
 
       // add all images
       for(var i=1; i<77; i++){

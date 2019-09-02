@@ -329,14 +329,13 @@ document.body.addEventListener('abuttondown', function (evt) {
                 document.getElementById("grid").setAttribute('visible', true);
                 document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                 document.getElementById("apt_sky").setAttribute('visible', false);
-                document.getElementById("vrbeacons").setAttribute('visible', true);
+                // document.getElementById("vrbeacons").setAttribute('visible', true);
             },600);
             pano_enabled = false;
       }
       else{
         transition();
-        document.getElementById("vrbeacons").setAttribute('visible', false);
-        document.getElementById("vrbeacons").setAttribute('visible', false);
+        // document.getElementById("vrbeacons").setAttribute('visible', false);
         var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
         var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
         var pos = document.getElementById("player").getAttribute('position');
@@ -372,7 +371,9 @@ document.body.addEventListener('abuttondown', function (evt) {
 // go to closest 360 picture in front of user 
 document.body.addEventListener('axismove', function (evt) {
   if(pano_enabled){
-        transition();
+        // transition();
+
+
         // var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
         // var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
 
@@ -402,53 +403,143 @@ document.body.addEventListener('axismove', function (evt) {
 
         // },600);
 
-        transition();  
-        setTimeout(function(){        
-            document.getElementById("vrbeacons").setAttribute('visible', true);
-            document.getElementById("grid").setAttribute('visible', true);
-            document.getElementById("real_sky").setAttribute('visible', true);
-            document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-            document.getElementById("apt_sky").setAttribute('visible', false);
-        },600);
-        pano_enabled = false;
+        // ----------
+        // exit 360 mode and enter vr mode
+        // transition();  
+        // setTimeout(function(){        
+        //     // document.getElementById("vrbeacons").setAttribute('visible', true);
+        //     document.getElementById("grid").setAttribute('visible', true);
+        //     document.getElementById("real_sky").setAttribute('visible', true);
+        //     document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+        //     document.getElementById("apt_sky").setAttribute('visible', false);
+        // },600);
+        // pano_enabled = false;
 
   }
+});
+
+
+AFRAME.registerComponent('collider-check', {
+    dependencies: ['raycaster'],
+    schema: {
+        // store the name of the beacon its targeting to in an init variable
+        beacon: {type: 'string'}
+    },
+    init: function () {
+        var beacon_id = this.data.beacon;
+        this.el.addEventListener('raycaster-intersection', function () {
+            // document.getElementById("1").setAttribute('visible', false);
+            // alert(document.getElementById("1").getAttribute('position').x)
+        });
+    }
+});
+
+AFRAME.registerComponent('beacons', {
+    init: function () {
+        for(var i=1; i<77; i++){
+            var sphere = document.createElement('a-sphere');
+            var posx = photosHeadset[i.toString()][0];
+            var posz= photosHeadset[i.toString()][1];
+            sphere.setAttribute('id', i.toString());
+            sphere.setAttribute('position', posx + ' 1.5 ' + posz);
+            sphere.setAttribute('material', 'color: lightblue; transparent: true; opacity: 0.6');
+            sphere.setAttribute('radius', '.15');
+            sphere.setAttribute('bcn_teleport','');
+
+            var parent = document.getElementById("vrbeacons")
+            parent.appendChild(sphere);
+            // alert(posx.toString() + " " + posz.toString())
+        }
+    }
 });
 
 // ----------------------------
 // ----- Desktop Controls -----
 // ----------------------------
+
+function disableBeaconsWithRay(){
+    var vrbeacons = document.querySelectorAll("a-sphere")
+    count = 0
+    vrbeacons.forEach(function(sphere) {
+        count++;
+        if (count > 1 && count<100){
+            var bcn_pos_x = sphere.getAttribute("position").x
+            var bcn_pos_z = sphere.getAttribute("position").z
+            var distance = Math.sqrt((Math.pow(pos.x-bcn_pos_x,2))+(Math.pow(pos.z-bcn_pos_z,2)));
+            var ray = document.createElement('a-entity');
+            ray.setAttribute('raycaster', {
+                objects: '.io3d-scene',
+                far: distance,
+                // showLine: true
+            });
+            // ray.setAttribute('line', {color: 'orange'});
+            ray.setAttribute('position', { x: pos.x, y: 1.5, z: pos.z });
+            ray.setAttribute('collider-check', {beacon: sphere.getAttribute("id")});
+
+            angle = (Math.atan((bcn_pos_x-pos.x)/(bcn_pos_z-pos.z)) * 180 / Math.PI)
+            if(bcn_pos_z > 0){
+                angle = angle + 180;
+            }
+            if(pos.z > 0){
+                angle = angle + 180;
+            }
+            ray.setAttribute('rotation', { x: 0, y: angle, z: 0 });
+
+            var parent = document.getElementById("player")
+            parent.appendChild(ray);
+        }
+    });
+}
+
+function disableFarBeacons(){
+    var beacons = document.querySelectorAll("a-sphere")
+    var posx = document.querySelector("a-camera").getAttribute('position').x;
+    var posz = document.querySelector("a-camera").getAttribute('position').z;
+    beacons.forEach(function(sphere) {
+        var bcn_pos_x = sphere.getAttribute("position").x
+        var bcn_pos_z = sphere.getAttribute("position").z
+        var distance = Math.sqrt((Math.pow(posx-bcn_pos_x,2))+(Math.pow(posz-bcn_pos_z,2)));
+        if (distance > 4){
+            sphere.setAttribute("visible",false);
+        }
+    })
+}
+
+function enableAllBeacons(){
+    var beacons = document.querySelectorAll("a-sphere")
+    beacons.forEach(function(sphere) {
+        sphere.setAttribute("visible",true);
+    })
+}
+
 document.body.onkeydown = function(e){
     if(e.keyCode == 32){
+        // enable VR mode
         if(pano_enabled){
             transition();
             setTimeout(function(){    
                 // enable the vrbeacons
-                var vrbeacons = document.querySelectorAll("a-sphere")
-                vrbeacons.forEach(function(sphere) {
-                    sphere.setAttribute('visible',true);
-                });
+                // var vrbeacons = document.querySelectorAll("a-sphere")
+                // vrbeacons.forEach(function(sphere) {
+                //     sphere.setAttribute('visible',true);
+                // });
 
                 document.getElementById("grid").setAttribute('visible', true);
                 document.getElementById("real_sky").setAttribute('visible', true);
                 document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                 document.getElementById("apt_sky").setAttribute('visible', false);
-                document.getElementById("vrbeacons").setAttribute('visible', true);
-                document.getElementById("photobeacons").setAttribute('visible', false);
+                enableAllBeacons();
+                // document.getElementById("vrbeacons").setAttribute('visible', true);
+                // document.getElementById("photobeacons").setAttribute('visible', false);
             },600);
             pano_enabled = false;
         }
+        // enable 360 picture mode
         else{
             transition();
-
-            // disable the vrbeacons
-            var vrbeacons = document.querySelectorAll("a-sphere")
-            vrbeacons.forEach(function(sphere) {
-                sphere.setAttribute('visible',false);
-            });
-
             var posx = document.querySelector("a-camera").getAttribute('position').x;
             var posz = document.querySelector("a-camera").getAttribute('position').z;
+
             document.getElementById("apt_sky").setAttribute('src', "#" + getClosestImage(posx,posz,photosHeadset));
             // document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[getClosestImage(posx,posz,photosHeadset)] + ' 0');
             document.getElementById("apt_sky").setAttribute('rotation', '0 90 0');
@@ -458,8 +549,10 @@ document.body.onkeydown = function(e){
                 document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
                 document.getElementById("apt_sky").setAttribute('visible', true);
                 document.getElementById("apt_sky").setAttribute('position', document.querySelector("a-camera").getAttribute('position'));
-                document.getElementById("vrbeacons").setAttribute('visible', false);
-                document.getElementById("photobeacons").setAttribute('visible', true);
+                // document.getElementById("vrbeacons").setAttribute('visible', false);
+                // document.getElementById("photobeacons").setAttribute('visible', true);
+
+                // alert(document.getElementById("1").getAttribute("radius"))
 
                 // move the user to the pano location
                 var pos = document.querySelector("a-camera").getAttribute("position");
@@ -467,6 +560,11 @@ document.body.onkeydown = function(e){
                 pos.x = coords_pics[0]
                 pos.z = coords_pics[1]
                 document.querySelector("a-camera").setAttribute('position',pos);
+
+                // disableBeaconsWithRay();
+                disableFarBeacons();
+
+
             },600);
             pano_enabled = true;
         }
@@ -479,6 +577,8 @@ document.body.onkeydown = function(e){
             isMoving = true;
             transition();  
             // pause the effect of all further key presses after the first one, excpet for movement
+
+            enableAllBeacons()
             
             setTimeout(function(){        
                 closestImageInFront = getClosestImageInFront(posx,posz,photosHeadset);
@@ -494,8 +594,8 @@ document.body.onkeydown = function(e){
                     document.getElementById("real_sky").setAttribute('visible', true);
                     document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                     document.getElementById("apt_sky").setAttribute('visible', false);
-                    document.getElementById("vrbeacons").setAttribute('visible', true);
-                    document.getElementById("photobeacons").setAttribute('visible', false);
+                    // document.getElementById("vrbeacons").setAttribute('visible', true);
+                    // document.getElementById("photobeacons").setAttribute('visible', false);
                     pano_enabled = false;
                 }
                 else{
@@ -513,6 +613,8 @@ document.body.onkeydown = function(e){
                     // move the 360 sphere to the user location
                     document.getElementById("apt_sky").setAttribute('position', pos);
                 }
+
+                disableFarBeacons();
 
             },600);
 
