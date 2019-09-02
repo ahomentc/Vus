@@ -543,10 +543,10 @@ document.body.addEventListener('abuttondown', function (evt) {
         var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
         var closestImage = getClosestImage(posx,posz,photosHeadset)
 
-        // don't enter the image if it's not loaded yet
-        if(!document.getElementById(closestImage).complete){
-            return;
-        }
+        // // don't enter the image if it's not loaded yet
+        // if(!document.getElementById(closestImage).complete){
+        //     return;
+        // }
 
         transition();
         pos.x = posx;
@@ -724,6 +724,7 @@ document.body.onkeydown = function(e){
                     document.getElementById("apt_sky").setAttribute('visible', false);
                     // document.getElementById("vrbeacons").setAttribute('visible', true);
                     // document.getElementById("photobeacons").setAttribute('visible', false);
+                    enableAllBeacons();
                     pano_enabled = false;
                 }
                 else{
