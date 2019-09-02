@@ -235,14 +235,14 @@ document.body.addEventListener('enter-vr', function (evt) {
     document.getElementById("apt_sky").removeAttribute("radius")
 });
 
-document.body.addEventListener('exit-vr', function (evt) {
-    isHeadset = false;
-    var posx = document.getElementById("player").getAttribute('position').x;
-    var posy = document.getElementById("player").getAttribute('position').y + 1.5;
-    var posz = document.getElementById("player").getAttribute('position').z;
-    var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
-    document.getElementById("player").setAttribute('position',pos);
-});
+// document.body.addEventListener('exit-vr', function (evt) {
+//     isHeadset = false;
+//     var posx = document.getElementById("player").getAttribute('position').x;
+//     var posy = document.getElementById("player").getAttribute('position').y + 1.5;
+//     var posz = document.getElementById("player").getAttribute('position').z;
+//     var pos = posx.toString() + " " + posy.toString() + " " + posz.toString();
+//     document.getElementById("player").setAttribute('position',pos);
+// });
 
 // Fade in and out a black 360 picture to transition
 function transition(){
