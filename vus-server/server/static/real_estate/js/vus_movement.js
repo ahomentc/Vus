@@ -443,7 +443,9 @@ AFRAME.registerComponent('beacons', {
             sphere.setAttribute('id', i.toString());
             sphere.setAttribute('position', posx + ' 1.5 ' + posz);
             sphere.setAttribute('material', 'color: lightblue; transparent: true; opacity: 0.6');
-            sphere.setAttribute('radius', '.15');
+            if(!isHeadset){
+                sphere.setAttribute('radius', '.15');
+            }
             sphere.setAttribute('bcn_teleport','');
 
             var parent = document.getElementById("vrbeacons")
