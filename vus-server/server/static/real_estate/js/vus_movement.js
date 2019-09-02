@@ -543,10 +543,10 @@ document.body.addEventListener('abuttondown', function (evt) {
         var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
         var closestImage = getClosestImage(posx,posz,photosHeadset)
 
-        // // don't enter the image if it's not loaded yet
-        // if(!document.getElementById(closestImage).complete){
-        //     return;
-        // }
+        // don't enter the image if it's not loaded yet
+        if(!document.getElementById(closestImage).complete){
+            return;
+        }
 
         transition();
         pos.x = posx;
@@ -572,10 +572,11 @@ document.body.addEventListener('abuttondown', function (evt) {
             pos.x = coords_pics[0]
             pos.z = coords_pics[1]
             document.querySelector("player").setAttribute('position',pos);
+            alert("end")
 
         },600);
-      pano_enabled = true;
-  }
+        pano_enabled = true;
+    }
 });
 
 
