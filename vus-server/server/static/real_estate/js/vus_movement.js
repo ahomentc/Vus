@@ -294,10 +294,11 @@ AFRAME.registerComponent('bcn_teleport', {
                 if(isHeadset){
                     var pos = document.getElementById("player").getAttribute('position');
 
-                    var pos_cam = document.querySelector("a-camera").getAttribute('position');
-                    pos_cam.x = 0;
-                    pos_cam.z = 0;
-                    document.querySelector("a-camera").setAttribute('position', pos_cam);
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // var pos_cam = document.querySelector("a-camera").getAttribute('position');
+                    // pos_cam.x = 0;
+                    // pos_cam.z = 0;
+                    // document.querySelector("a-camera").setAttribute('position', pos_cam);
 
                     pos.x = evt.detail.intersection.point.x
                     pos.z = evt.detail.intersection.point.z
@@ -547,11 +548,14 @@ document.body.addEventListener('abuttondown', function (evt) {
             document.getElementById("apt_sky").setAttribute('visible', true);
             document.getElementById("apt_sky").setAttribute('position', pos);
 
+            
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // var pos_cam = document.querySelector("a-camera").getAttribute('position');
+            // pos_cam.x = 0;
+            // pos_cam.z = 0;
+            // document.querySelector("a-camera").setAttribute('position', pos_cam);
+
             // move the user to the pano location
-            var pos_cam = document.querySelector("a-camera").getAttribute('position');
-            pos_cam.x = 0;
-            pos_cam.z = 0;
-            document.querySelector("a-camera").setAttribute('position', pos_cam);
             coords_pics = getClosestImageCoords(posx,posz,photosHeadset);
             pos.x = coords_pics[0]
             pos.z = coords_pics[1]
