@@ -88,21 +88,22 @@
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity> -->
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity> -->
         <a-entity id="left_hand"
+                  obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"
                   if-no-vr-headset="visible: false" 
                   rotation="-7.105 74.714 0" 
                   position="0 1.4 0" 
                   hand-controls="left" 
-                  obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"
-                  networked="template:#hand-template;" ></a-entity>
+                  networked="template:#hand-template;"></a-entity>
 
         <a-entity id="right_hand"
+                  obj-model="obj: #right-controller-obj; mtl: #right-controller-mtl"
                   if-no-vr-headset="visible: false" 
                   rotation="-7.105 74.714 0" 
                   position="0 1.4 0" 
                   hand-controls="right" 
                   laser-controls="hand: right" 
-                  obj-model="obj: #right-controller-obj; mtl: #right-controller-mtl"
-                  networked="template:#hand-template;"></a-entity>
+                  networked="template:#hand-template;"
+                  raycaster="far: 10"></a-entity>
       </a-entity>
 
       <!-- Use the right controller to raise up and down in altitude -->
@@ -146,7 +147,7 @@
       }
 
       // add all images
-      for(var i=1; i<77; i++){
+      for(var i=1; i<79; i++){
           var image360 = document.createElement('img');
           image360.setAttribute('id', i.toString());
           image360.setAttribute('src', 'assets/360_pics/' + i.toString() + ".JPG");

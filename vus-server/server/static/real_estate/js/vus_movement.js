@@ -1,24 +1,4 @@
 var photosHeadset = {
-    'master': [3, .5],
-    'living2': [10, 6],
-    'dining': [16.478, -0.984],
-    'room1': [1.3, -7],
-    'room2': [7.5, -7],
-    'guest': [11.6, -6.143],
-    'bath_guest': [15.7, -8.644],
-    'bath_guest2': [15.7, -7.532],
-    'dining2': [13.8, .76],
-    'hall1': [10.08, -1.9],
-    'hall2': [10.77, .97],
-    'bath_kids': [4.17, -6.7],
-    'bath_master': [3.69, 6.6],
-    'hall3': [21.97, -2.643],
-    'living1': [20.16, -6],
-    'kitchen1': [19.56, .994],
-    'tools': [15.408, -4.790]
-};
-
-var photosHeadset = {
     '1': [10, 4.11],
     '2': [2.527, -8.282],
     '3': [1.691,-8.28],
@@ -95,27 +75,8 @@ var photosHeadset = {
     '74': [4.326,-3.777],
     '75': [4.303,-5.690],
     '76': [4.303,-6.819],
-
-}
-
-var rotations = {
-    'master': -90,
-    'living2': -120,
-    'dining': 100,
-    'room1': -80,
-    'room2': -90,
-    'guest': -220,
-    'bath_guest': 90,
-    'bath_guest2': 90,
-    'dining2': -120,
-    'hall1': 100,
-    'hall2': 90,
-    'bath_kids': 90,
-    'bath_master': -90,
-    'hall3': 0,
-    'living1': 40,
-    'kitchen1': 90,
-    'tools': 90
+    '77': [12.549, -2.604],
+    '78': [14.547, -2.604]
 }
 
 var isMobile = false;
@@ -256,9 +217,9 @@ function transition(){
       },1000);
 }
 
-// -----------
-// Beacons
-// -------
+// ------------------------------------------
+// --------------    Beacons   --------------
+// ------------------------------------------
 
 function disableBeaconsWithRay(){
     var vrbeacons = document.querySelectorAll("a-sphere")
@@ -386,9 +347,11 @@ AFRAME.registerComponent('bcn_teleport', {
         });
         this.el.addEventListener('mouseenter', function(evt){
             this.setAttribute("radius", .2)
+            this.setAttribute('material', 'opacity: 1')
         })
         this.el.addEventListener('mouseleave', function(evt){
             this.setAttribute("radius", .15)
+            this.setAttribute('material', 'opacity: .6')
         })
     }
 });
@@ -429,7 +392,7 @@ AFRAME.registerComponent('collider-check', {
 
 AFRAME.registerComponent('beacons', {
     init: function () {
-        for(var i=1; i<77; i++){
+        for(var i=1; i<79; i++){
             var sphere = document.createElement('a-sphere');
             var posx = photosHeadset[i.toString()][0];
             var posz= photosHeadset[i.toString()][1];
@@ -499,9 +462,18 @@ AFRAME.registerComponent("enter_sphere", {
                 pos.z = posz;
                 document.getElementById("apt_sky").setAttribute('position', pos);
 
+                enableAllBeacons()
+
                 pano_enabled = false;
             }
             else if (distance <= .4 && !pano_enabled){
+                enableAllBeacons()
+
+                // don't enter the image if it's not loaded yet
+                if(!document.getElementById(closestImage).complete){
+                    return;
+                }
+
                 // enter pano mode
                 document.getElementById("apt_sky").setAttribute('src', "#" + closestImage);
                 // document.getElementById("apt_sky").setAttribute('rotation', '0 ' + rotations[closestImage] + ' 0');
@@ -514,6 +486,8 @@ AFRAME.registerComponent("enter_sphere", {
                 document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
 
                 document.getElementById("apt_sky").setAttribute('visible', true);
+
+                disableFarBeacons();
                 pano_enabled = true;
             }
         }
@@ -534,6 +508,7 @@ document.body.addEventListener('abuttondown', function (evt) {
                 document.getElementById("grid").setAttribute('visible', true);
                 document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
                 document.getElementById("apt_sky").setAttribute('visible', false);
+                enableAllBeacons()
                 // document.getElementById("vrbeacons").setAttribute('visible', true);
             },600);
             pano_enabled = false;
@@ -543,19 +518,23 @@ document.body.addEventListener('abuttondown', function (evt) {
         var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
         var closestImage = getClosestImage(posx,posz,photosHeadset)
 
-        // don't enter the image if it's not loaded yet
+        // don't enter the image if it's not loaded yet 
         if(!document.getElementById(closestImage).complete){
             return;
         }
 
+
+        disableFarBeacons();
+
         transition();
+        var pos = document.getElementById("player").getAttribute('position');
         pos.x = posx;
         pos.z = posz;
         document.getElementById("apt_sky").setAttribute('src', "#" + closestImage);  
         document.getElementById("apt_sky").setAttribute('rotation', '0 90 0');
 
-        setTimeout(function(){  
-            enableAllBeacons();
+        setTimeout(function(){
+            
             document.getElementById("real_sky").setAttribute('visible', false);
             document.getElementById("grid").setAttribute('visible', false);
             document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', false);
@@ -563,7 +542,6 @@ document.body.addEventListener('abuttondown', function (evt) {
             document.getElementById("apt_sky").setAttribute('position', pos);
 
             // move the user to the pano location
-            var pos = document.getElementById("player").getAttribute('position');
             var pos_cam = document.querySelector("a-camera").getAttribute('position');
             pos_cam.x = 0;
             pos_cam.z = 0;
@@ -572,7 +550,6 @@ document.body.addEventListener('abuttondown', function (evt) {
             pos.x = coords_pics[0]
             pos.z = coords_pics[1]
             document.querySelector("player").setAttribute('position',pos);
-            alert("end")
 
         },600);
         pano_enabled = true;
@@ -585,7 +562,6 @@ document.body.addEventListener('axismove', function (evt) {
   if(pano_enabled){
         // transition();
 
-
         // var posx = document.getElementById("player").getAttribute('position').x + document.querySelector("a-camera").getAttribute('position').x;
         // var posz = document.getElementById("player").getAttribute('position').z + document.querySelector("a-camera").getAttribute('position').z;
 
@@ -596,11 +572,11 @@ document.body.addEventListener('axismove', function (evt) {
         //     document.getElementById("apt_sky").setAttribute('rotation', '0 90 0');
 
         //     // move the user to the coordinates of the closest image
-        //     var new_xz_coords = getClosestImageInFrontCoords(posx,posz,photosHeadset);
-        //     var pos = document.getElementById("player").getAttribute("position")
-        //     pos.x = new_xz_coords[0];
-        //     pos.z = new_xz_coords[1];
-        //     player.setAttribute("position", pos);  
+            // var new_xz_coords = getClosestImageInFrontCoords(posx,posz,photosHeadset);
+            // var pos = document.getElementById("player").getAttribute("position")
+            // pos.x = new_xz_coords[0];
+            // pos.z = new_xz_coords[1];
+            // player.setAttribute("position", pos);  
 
         //     // set a-camera to 0
         //     var posCam = document.querySelector("a-camera").getAttribute('position');
@@ -617,15 +593,16 @@ document.body.addEventListener('axismove', function (evt) {
 
         // ----------
         // exit 360 mode and enter vr mode
-        // transition();  
-        // setTimeout(function(){        
-        //     // document.getElementById("vrbeacons").setAttribute('visible', true);
-        //     document.getElementById("grid").setAttribute('visible', true);
-        //     document.getElementById("real_sky").setAttribute('visible', true);
-        //     document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
-        //     document.getElementById("apt_sky").setAttribute('visible', false);
-        // },600);
-        // pano_enabled = false;
+        transition();  
+        setTimeout(function(){        
+            // document.getElementById("vrbeacons").setAttribute('visible', true);
+            document.getElementById("grid").setAttribute('visible', true);
+            document.getElementById("real_sky").setAttribute('visible', true);
+            document.getElementsByClassName("io3d-scene")[0].setAttribute('visible', true);
+            document.getElementById("apt_sky").setAttribute('visible', false);
+            enableAllBeacons();
+        },600);
+        pano_enabled = false;
 
   }
 });
