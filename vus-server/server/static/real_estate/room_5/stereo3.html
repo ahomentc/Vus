@@ -11,6 +11,9 @@
 
   <script>
     st_enabled = true;
+    shifted1 = false;
+    shifted2 = false;
+    shifted3 = false;
 
     AFRAME.registerComponent("stereo_extras", {
       init: function() {
@@ -39,26 +42,64 @@
           if (y_angle < 0){
               y_angle = 360 + y_angle;
           }
-          if((y_angle < 72 || y_angle > 333) && st_enabled){
-              document.getElementById("nost").setAttribute('visible', 'false')
-              document.getElementById("stl").setAttribute('visible', 'true')
-              document.getElementById("str").setAttribute('visible', 'true')
-              document.getElementById("stl").setAttribute("src", "#cam3")
-              document.getElementById("str").setAttribute("src", "#cam2") 
-          }
-          else if(y_angle > 72 && y_angle < 200 && st_enabled){
+
+          // Area 1
+          if(y_angle > 0 && y_angle < 120 && st_enabled){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute("src", "#cam1")
-              document.getElementById("str").setAttribute("src", "#cam3") 
+              document.getElementById("str").setAttribute("src", "#cam2") 
+
+              // shifted from area 3 to 1
+              if(!shifted1 && y_angle < 60){
+                shifted2 = false;
+                shifted3 = false;
+
+                pos = document.getElementById("str").getAttribute("position")
+                pos.x -= 2;
+                document.getElementById("str").setAttribute("position",pos)
+
+                pos = document.getElementById("stl").getAttribute("position")
+                pos.x += 1;
+                document.getElementById("stl").setAttribute("position",pos)
+
+                shifted1 = true;
+              }              
           }
-          else if(y_angle > 200 && y_angle < 333 && st_enabled){
+
+          // Area 2
+          else if(y_angle > 120 && y_angle < 240 && st_enabled){
               document.getElementById("nost").setAttribute('visible', 'false')
               document.getElementById("stl").setAttribute('visible', 'true')
               document.getElementById("str").setAttribute('visible', 'true')
               document.getElementById("stl").setAttribute("src", "#cam2")
+              document.getElementById("str").setAttribute("src", "#cam3") 
+          }
+
+          // Area 3
+          else if(y_angle > 240 && y_angle < 360 && st_enabled){
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
+              document.getElementById("stl").setAttribute("src", "#cam3")
               document.getElementById("str").setAttribute("src", "#cam1") 
+
+              // shifted from area 2 to 3
+              if(!shifted3 && y_angle > 300){
+                shifted1 = false;
+                shifted2 = false;
+
+                pos = document.getElementById("str").getAttribute("position")
+                pos.x += 2;
+                document.getElementById("str").setAttribute("position",pos)
+
+                pos = document.getElementById("stl").getAttribute("position")
+                pos.x -= 1;
+                document.getElementById("stl").setAttribute("position",pos)
+
+                shifted3 = true;
+              }
           }
       }
   });
@@ -79,10 +120,10 @@
       <a-entity id="left_hand" hand-controls="left"></a-entity>
       <a-entity id="right_hand" hand-controls="right"></a-entity>
 
-      <a-sky id="stl" src="#cam3" rotation='0 -90 0' stereo="eye:left" visible='false'></a-sky> 
-      <a-sky id="str" src="#cam2" rotation='0 -90 0' stereo="eye:right" visible='false'></a-sky> 
+      <a-sky id="stl" src="#cam3" rotation='0 0 0' radius="30" stereo="eye:left" visible='false'></a-sky> 
+      <a-sky id="str" src="#cam2" rotation='0 0 0' radius="30" stereo="eye:right" visible='false'></a-sky> 
 
-      <a-sky id="nost" src="#cam1" rotation='0 -90 0'></a-sky> 
+      <a-sky id="nost" src="#cam1" radius="30" rotation='0 0 0'></a-sky> 
 
     </a-scene>
 
