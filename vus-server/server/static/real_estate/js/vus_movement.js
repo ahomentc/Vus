@@ -487,6 +487,12 @@ AFRAME.registerComponent("enter_sphere", {
 
                 document.getElementById("apt_sky").setAttribute('visible', true);
 
+                // move the 360 sphere to the user location
+                var pos = document.getElementById("player").getAttribute('position');
+                pos.x = posx;
+                pos.z = posz;
+                document.getElementById("apt_sky").setAttribute('position', pos);
+
                 disableFarBeacons();
                 pano_enabled = true;
             }
