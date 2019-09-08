@@ -1,0 +1,301 @@
+<html style="background-color: black">
+  <head>
+    <meta charset="utf-8">
+    <title>14 Octavus, Irvine, CA</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+    <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+    <script src="../js/movement-controls.js"></script>
+    <script src="../js/touch-controls.js"></script>
+    <script src="../js/trackpad-controls.js"></script>
+    <script src='../js/kinematic-body.js'></script>
+    <script src="//unpkg.com/aframe-animation-component@4.1.2/dist/aframe-animation-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
+    <!-- <script src="https://unpkg.com/aframe-immersive-video-component/dist/aframe-immersive-video-component.min.js"></script> -->
+    <script src="../js/aframe-stereo-component.min.js"></script>
+
+    <script>
+      function transition(){
+          document.getElementById("transition_sphere").setAttribute('visible', true);
+          document.getElementById("transition_sphere").emit("fadein");
+          setTimeout(function(){
+                document.getElementById("transition_sphere").emit("fadeout");
+          },500);
+          setTimeout(function(){
+                document.getElementById("transition_sphere").setAttribute('visible', false);
+          },1000);
+      }
+
+      // fixes the angle of the controller
+      AFRAME.components['laser-controls'].Component.prototype.config['oculus-touch-controls'].raycaster.direction.y = 0;
+          document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("a-scene")
+              .addEventListener("loaded", function fixModelPoses() {
+                Array.from(document.querySelectorAll('[oculus-touch-controls]'))
+                  .filter(el => el.components['oculus-touch-controls'].controllerPresent)
+                  .forEach(el => {
+                    el.addEventListener('model-loaded', () => {
+                      // FIX TWO: align model with raycaster (and reality)
+                      var mesh = el.getObject3D('mesh');
+                      mesh.rotateX(Math.PI / 4);
+                      mesh.translateY(0.06);
+                    });
+                  });
+            });
+      });
+
+      AFRAME.registerComponent('menu_select', {
+          schema: {
+              scene_num: {type: 'number', default: 1},
+          },
+          init: function () {
+              // add another to schema called name. Change the text to name in init.
+              var scene_num = this.data.scene_num;
+              this.laserEnabled = false;
+              this.el.addEventListener('click', function (evt) {
+                  transition();
+                  setTimeout(function(){
+                      currentPic = scene_num
+                      document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
+                      document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
+
+                      var rot = document.querySelector("a-camera").getAttribute("rotation")
+                      rot.y = 0
+                      document.querySelector("a-camera").setAttribute('rotation', rot)
+                  },600)
+              });
+              this.el.addEventListener('mouseenter', function(evt){
+                  this.lastMaterial = this.getAttribute("material")
+                  this.setAttribute("material", "color", "#333")        
+              })
+              this.el.addEventListener('mouseleave', function(evt){
+                  this.setAttribute("material", this.lastMaterial) 
+              })
+          },
+          tick: function(){
+              headRot = document.querySelector("a-camera").getAttribute("rotation").y
+              if(headRot < 0){
+                  headRot = 360 + headRot
+              }
+              if(headRot > 90 && headRot < 270){
+                  this.laserEnabled = true;
+                  document.getElementById("right_hand").setAttribute("line", "opacity", 1)
+              }
+              else{
+                  this.laserEnabled = false;
+                  document.getElementById("right_hand").setAttribute("line", "opacity", 0)
+              }
+          }
+      });
+    </script>
+
+  </head>
+
+  <body>
+    <a-scene antialias="true">
+      <a-assets>
+
+        <img id="black" src="assets/black.jpg" />
+        <img id="frame1L" src="assets/inverrary_left/1.jpg" />
+        <img id="frame1R" src="assets/inverrary_right/1.jpg" />
+
+        <!-- Templates -->
+
+        <!-- Avatar -->
+        <template id="player-template">
+          <a-entity></a-entity>
+        </template>
+
+        <!-- Avatar -->
+        <template id="head-template">
+          <a-entity class="avatar">
+            <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
+
+            <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+
+            <a-asset-item id="left-controller-obj" src="assets/controllers/left.obj"></a-asset-item>
+            <a-asset-item id="left-controller-mtl" src="assets/controllers/left.mtl"></a-asset-item>
+            <a-asset-item id="right-controller-obj" src="assets/controllers/right.obj"></a-asset-item>
+            <a-asset-item id="right-controller-mtl" src="assets/controllers/right.mtl"></a-asset-item>
+
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- Hand -->
+        <template id="hand-template">
+          <a-entity>
+            <a-entity obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"></a-entity>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- /Templates -->
+      </a-assets>
+
+
+      <a-camera id="camera" stereocam="eye:left" look-controls cursor="rayOrigin: mouse">
+          <a-sphere class="head"
+            random-color
+            visible="false"
+          ></a-sphere>
+          <a-sky id='transition_sphere' src="#black" radius=".1"  visible='false' animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 600;"
+       animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 600;"></a-sky>
+      </a-camera>
+
+      <a-entity id="left_hand"
+                obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"
+                if-no-vr-headset="visible: false" 
+                rotation="-7.105 74.714 0" 
+                position="0 1.4 0" 
+                hand-controls="left"></a-entity>
+
+      <a-entity id="right_hand"
+                obj-model="obj: #right-controller-obj; mtl: #right-controller-mtl"
+                if-no-vr-headset="visible: false" 
+                rotation="-7.105 74.714 0" 
+                position="0 1.4 0" 
+                laser-controls="hand: right" 
+                hand-controls="right"
+                raycaster="far: 9"
+                line="color: white; opacity: 1"></a-entity>
+
+      <a-sky id="left_pic" src="#frame1L" rotation='0 180 0' stereo="eye:left"></a-sky> 
+      <a-sky id="right_pic" src="#frame1R" rotation='0 0 0' stereo="eye:right"></a-sky> 
+
+      <a-entity position="3.1 1.5 5.132" rotation="0 180 0" scale="10 10 10" text__menu1="color:#ffffff;anchor:left;value:kitchen"></a-entity>
+      <a-plane position="2.483 1.5 5.2" id="kitchen_outer" menu_select="scene_num: 30; " width="2" height="1" material="color:#ffffff" rotation="0 180 0"></a-plane>
+      <a-plane position="2.483 1.5 5.19" id="kitchen_inner" menu_select="scene_num: 30; " scale=".95 .9 .9" width="2" height="1" material="color:#000" rotation="0 180 0"></a-plane>
+
+      <a-entity position=".7 1.5 5.132" rotation="0 180 0" scale="10 10 10" text__menu1="color:#ffffff;anchor:left;value:master"></a-entity>
+      <a-plane position="0 1.5 5.2" id="master" menu_select="scene_num: 48; " width="2" height="1" material="color:#ffffff" rotation="0 180 0"></a-plane>
+      <a-plane position="0 1.5 5.19" id="kitchen_inner" menu_select="scene_num: 48; " scale=".95 .9 .9" width="2" height="1" material="color:#000" rotation="0 180 0"></a-plane>
+
+      <a-entity position="-1.8 1.5 5.132" rotation="0 180 0" scale="10 10 10" text__menu1="color:#ffffff;anchor:left;value:dining"></a-entity>
+      <a-plane position="-2.483 1.5 5.2" id="dining" menu_select="scene_num: 35; " width="2" height="1" material="color:#ffffff" rotation="0 180 0"></a-plane>
+      <a-plane position="-2.483 1.5 5.19" id="kitchen_inner" menu_select="scene_num: 35; " scale=".95 .9 .9" width="2" height="1" material="color:#000" rotation="0 180 0"></a-plane>
+
+      <a-entity position="3.1 0 5.132" rotation="0 180 0" scale="10 10 10" text__menu1="color:#ffffff;anchor:left;value:living1"></a-entity>
+      <a-plane position="2.48 0 5.2" id="living1" menu_select="scene_num: 21; " width="2" height="1" material="color:#ffffff" rotation="0 180 0"></a-plane>
+      <a-plane position="2.48 0 5.19" id="kitchen_inner" menu_select="scene_num: 21; " scale=".95 .9 .9" width="2" height="1" material="color:#000" rotation="0 180 0"></a-plane>
+
+      <a-entity position=".7 0 5.132" rotation="0 180 0" scale="10 10 10" text__menu1="color:#ffffff;anchor:left;value:living2"></a-entity>
+      <a-plane position="0 0 5.2" id="living2" menu_select="scene_num: 4; " width="2" height="1" material="color:#ffffff" rotation="0 180 0"></a-plane>
+      <a-plane position="0 0 5.19" id="kitchen_inner" menu_select="scene_num: 4; " scale=".95 .9 .9" width="2" height="1" material="color:#000" rotation="0 180 0"></a-plane>
+
+      <a-entity position="-1.8 0 5.132" rotation="0 180 0" scale="10 10 10" text__menu1="color:#ffffff;anchor:left;value:guest"></a-entity>
+      <a-plane position="-2.48 0 5.2" id="guest" menu_select="scene_num: 12; " width="2" height="1" material="color:#ffffff" rotation="0 180 0"></a-plane>
+      <a-plane position="-2.48 0 5.19" id="guest_inner" menu_select="scene_num: 12; " scale=".95 .9 .9" width="2" height="1" material="color:#000" rotation="0 180 0"></a-plane>
+
+
+      <!-- Room -->
+      <a-plane position="10 -4 5.741" id="line" menu_select="scene_num:35" width="2" height="1" material="color:#ffffff" rotation="0 270 0" scale="5.751 1 1" geometry="height:0.04"></a-plane>
+      <a-plane position="-10 -4 5.741" id="line-2" menu_select="scene_num:35" width="2" height="1" material="color:#ffffff" rotation="0 90 0" scale="5.751 1 1" geometry="height:0.040000000000000036"></a-plane>
+      <a-plane position="0 -4 11.503" id="line-3" menu_select="scene_num:35" width="2" height="1" material="color:#ffffff" rotation="0 180 0" geometry="height:0.05;width:20"></a-plane>
+      <a-plane position="10 46 11.503" id="line-4" menu_select="scene_num:35" width="2" height="1" material="color:#ffffff" rotation="0 180 90" geometry="width:100;height:0.05"></a-plane>
+      <a-plane position="-10 46 11.503" id="line-5" menu_select="scene_num:35" width="2" height="1" material="color:#ffffff" rotation="0 180 90" geometry="height:0.05;width:100"></a-plane>
+
+    </a-scene>
+
+  </body>
+
+<script>
+num_images = 64
+
+for(var i=1; i<=num_images; i++){
+    var image360L = document.createElement('img');
+    image360L.setAttribute('id', i.toString() + "L");
+    image360L.setAttribute('src', 'assets/inverrary_left/' + i.toString() + ".jpg");
+
+    var image360R = document.createElement('img');
+    image360R.setAttribute('id', i.toString() + "R");
+    image360R.setAttribute('src', 'assets/inverrary_right/' + i.toString() + ".jpg");
+
+    var parent = document.querySelector("a-assets")
+    parent.appendChild(image360L);
+    parent.appendChild(image360R);
+}
+
+var triggerIsDown = false
+
+function next(){
+    transition();
+    if(currentPic < num_images && document.getElementById(currentPic.toString() + "L").complete && document.getElementById(currentPic.toString() + "R").complete){
+      currentPic += 1
+      setTimeout(function(){
+          document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
+          document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
+      },600)
+    }
+    else if(currentPic == num_images){
+        currentPic = 1;
+        setTimeout(function(){
+          document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
+          document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
+        },600)
+    }
+}
+
+function prev(){
+    transition();
+    if(currentPic > 0 && document.getElementById(currentPic.toString() + "L").complete && document.getElementById(currentPic.toString() + "R").complete){
+      currentPic -= 1
+      setTimeout(function(){
+          document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
+          document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
+      },600)
+    }
+}
+
+document.body.onkeydown = function(e){
+    if(e.keyCode == 32){
+        if(! triggerIsDown){
+            // triggerIsDown = true;
+            next();
+        }
+        else{
+            // triggerIsDown = false;
+            prev();
+        }
+    }
+}
+
+currentPic = 1;
+document.body.addEventListener('triggerdown', function(){
+    triggerIsDown = true;
+    next();
+});
+document.body.addEventListener('triggerup', function(){
+    triggerIsDown = false;
+    prev();
+});
+
+document.getElementById("right_hand").addEventListener('triggerdown', function(){
+    next()
+    // triggerIsDown = false;
+});
+
+// move backwards
+document.getElementById("left_hand").addEventListener('triggerdown', function(){
+    prev()
+    // triggerIsDown = false;
+});
+
+setInterval(function(){
+    if(triggerIsDown){
+      next();
+    }
+},1500)
+
+</script>
+
+
+</html>
+
+
+
+
+
+
+

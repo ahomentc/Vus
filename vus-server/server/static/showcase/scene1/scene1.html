@@ -1,0 +1,107 @@
+<html style="background-color: black">
+  <head>
+    <meta charset="utf-8">
+    <title>14 Octavus, Irvine, CA</title>
+    <meta name="description" content="Dev Example — Networked-Aframe">
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="../js/movement-controls.js"></script>
+    <script src="../js/touch-controls.js"></script>
+    <script src="../js/trackpad-controls.js"></script>
+    <script src='../js/kinematic-body.js'></script>
+<!--     <script src="//unpkg.com/aframe-animation-component@4.1.2/dist/aframe-animation-component.min.js"></script> -->
+    <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-immersive-video-component/dist/aframe-immersive-video-component.min.js"></script>
+
+  </head>
+
+  <body>
+    <a-scene antialias="true">
+      <a-assets>
+      
+        <img id="sky" src="assets/sky.jpg" />
+        <img id="black" src="assets/black.jpg" />
+
+        <!-- Templates -->
+
+        <!-- Avatar -->
+        <template id="player-template">
+          <a-entity></a-entity>
+        </template>
+
+        <!-- Avatar -->
+        <template id="head-template">
+          <a-entity class="avatar">
+            <!-- <a-gltf-model id="head4" src="../assets/head_4/model.gltf"></a-gltf-model> -->
+
+            <a-asset-item id="raccoon-obj" src="assets/Raccoon_Blocks/model.obj"></a-asset-item>
+            <a-asset-item id="raccoon-mtl" src="assets/Raccoon_Blocks/materials.mtl"></a-asset-item>
+
+            <a-asset-item id="left-controller-obj" src="assets/controllers/left.obj"></a-asset-item>
+            <a-asset-item id="left-controller-mtl" src="assets/controllers/left.mtl"></a-asset-item>
+            <a-asset-item id="right-controller-obj" src="assets/controllers/right.obj"></a-asset-item>
+            <a-asset-item id="right-controller-mtl" src="assets/controllers/right.mtl"></a-asset-item>
+
+            <a-entity obj-model="obj: #raccoon-obj; mtl: #raccoon-mtl" scale="5 5 5"></a-entity>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- Hand -->
+        <template id="hand-template">
+          <a-entity>
+            <a-entity obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"></a-entity>
+            </a-entity>
+          </a-entity>
+        </template>
+
+        <!-- /Templates -->
+      </a-assets>
+
+      <a-entity id="player" movement-controls="speed: 0.1" position="0 0 0" rotation="0 0 0">
+        <a-camera id="camera" wasd-controls="speed: 0.1" look-controls cursor="rayOrigin: mouse">
+            <a-sphere class="head"
+              random-color
+              visible="false"
+            ></a-sphere>
+            <a-sky id='transition_sphere' src="#black" radius=".1"  visible='false' animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 500;"
+         animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500;"></a-sky>
+        </a-camera>
+
+      </a-entity>
+
+      <a-entity immersive-video="type: 180_stereo; source:assets/180_vid2.mp4"></a-entity>
+      <!-- <a-entity immersive-video="type: 360_mono; source:assets/360_vid.mp4"></a-entity> -->
+
+    </a-scene>
+
+  </body>
+
+<script>
+
+  
+// document.querySelector("video").pause()
+document.body.onkeydown = function(e){
+    if(e.keyCode == 49){
+        document.querySelector("video").play()
+    }
+}
+
+document.body.addEventListener('triggerdown', function(){
+    document.querySelector("video").play()
+});
+
+document.body.addEventListener('triggerup', function(){
+    document.querySelector("video").pause()
+});
+
+</script>
+
+
+</html>
+
+
+
+
+
+
+
