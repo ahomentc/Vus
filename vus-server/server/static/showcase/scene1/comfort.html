@@ -4,6 +4,7 @@
     <title>14 Octavus, Irvine, CA</title>
     <meta name="description" content="Dev Example — Networked-Aframe">
     <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+    <!-- <script src="../js/aframe.min.js"></script> -->
     <script src="../js/movement-controls.js"></script>
     <script src="../js/touch-controls.js"></script>
     <script src="../js/trackpad-controls.js"></script>
@@ -14,6 +15,38 @@
     <script src="../js/aframe-stereo-component.min.js"></script>
 
     <script>
+      var isHeadset = false;
+
+//  !!!! ------------------ FIX THIS ------------------ !!!!
+
+      // also need to fix that the camera isn't resetting the rotation to 0 0 0 when the interval called.
+      // pos works though
+
+      var rotations = {
+        3  : "left",
+        6  : "right",
+        8  : "right",
+        14 : "right",
+        17 : "right",
+        20 : "left",
+        22 : "left",
+        25 : "right",
+        27 : "right",
+        29 : "left",
+        32 : "right",
+        34 : "left",
+        37 : "right",
+        40 : "left",
+        43 : "left",
+        45 : "left",
+        47 : "left",
+        51 : "right",
+        52 : "left",
+        53 : "left",
+        58 : "left",
+        62 : "right"
+      }
+
       function transition(){
           document.getElementById("transition_sphere").setAttribute('visible', true);
           document.getElementById("transition_sphere").emit("fadein");
@@ -217,17 +250,108 @@ for(var i=1; i<=num_images; i++){
     parent.appendChild(image360R);
 }
 
-var triggerIsDown = false
+var triggerIsDown = false;
+
+function rotateAnim(direction){
+    // Check to see which way camera is facing. If facing towards the point we're rotating to, then just return immedielty.
+    var y_angle = document.querySelector("a-camera").getAttribute("rotation").y;
+    if(y_angle<0){y_angle = 360 - y_angle} // fix angle rotation to not be negative
+    if((direction == "left" && y_angle < 95 && y_angle > 20) || (direction == "right" && y_angle > 265 && y_angle < 340)){
+      return;
+    }
+    else{
+      var enabled = true;
+      var left_pic = document.getElementById('left_pic');
+      var right_pic = document.getElementById('right_pic');
+
+      var speed = .02;
+      if(!isHeadset){
+          speed = .2;
+      }
+
+      setInterval(function(){
+          if(!enabled){return};
+
+          var rot_left = left_pic.getAttribute("rotation");
+          var rot_right = right_pic.getAttribute("rotation");
+          if(direction == "left"){
+              rot_left.y -= speed;
+              rot_right.y -= speed;
+          }
+          else if(direction == "right"){
+              rot_left.y += speed;
+              rot_right.y += speed;
+          }
+          left_pic.setAttribute("rotation", rot_left)
+          right_pic.setAttribute("rotation", rot_right)
+      },5);
+      setTimeout(function(){
+        enabled = false;
+        // return radius to large number
+        document.getElementById('left_pic').setAttribute("rotation","0 180 0")
+        document.getElementById('right_pic').setAttribute("rotation","0 0 0")
+      },500)
+    }
+
+}
+
+function moveForwardsAnim(){
+  var enabled = true;
+  // give the pano a radius so we an see the movement
+  document.getElementById('left_pic').setAttribute("radius",50);
+  document.getElementById('right_pic').setAttribute("radius",50);
+  var camera = document.querySelector('a-camera')
+  camera.setAttribute("position","0 0 0")
+
+  var speed = .01;
+  if(!isHeadset){
+      speed = .07;
+  }
+
+  setInterval(function(){
+      if(!enabled){return;}
+
+      // move camera forwards by a bit
+      var angle = camera.getAttribute("rotation")
+      var x = speed * Math.cos((angle.y) * Math.PI / 180)
+      var y = speed * Math.sin((angle.y) * Math.PI / 180)
+      var pos = camera.getAttribute("position")
+      pos.x -= y;
+      pos.z -= x;
+      camera.setAttribute("position", pos);
+
+  },10)
+
+  setTimeout(function(){
+    enabled = false;
+    // return radius to large number
+    document.getElementById('left_pic').setAttribute("radius",2000);
+    document.getElementById('right_pic').setAttribute("radius",2000);
+    document.querySelector("a-camera").setAttribute("position","0 0 0")
+  },500)
+
+}
 
 function next(){
     transition();
+    if(rotations[currentPic+1]){
+        rotateAnim(rotations[currentPic+1])
+    }
+    else{
+        moveForwardsAnim();
+    }
     if(currentPic < num_images && document.getElementById(currentPic.toString() + "L").complete && document.getElementById(currentPic.toString() + "R").complete){
       currentPic += 1
       setTimeout(function(){
           document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
           document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
+          var rot = document.querySelector("a-camera").getAttribute("rotation")
+          rot.y = 0
+          document.querySelector("a-camera").setAttribute('rotation', rot)
       },600)
     }
+
+    // start from beginning to cycle through
     else if(currentPic == num_images){
         currentPic = 1;
         setTimeout(function(){
@@ -287,6 +411,11 @@ setInterval(function(){
       next();
     }
 },1500)
+
+document.body.addEventListener('enter-vr', function (evt) {
+    isHeadset = true;
+});
+
 
 </script>
 
