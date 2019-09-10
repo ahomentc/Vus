@@ -462,152 +462,152 @@ exports.localGetModels = function(username) {
 // ========================================================================
 // Methods for storing the information about each group:
 
-exports.localCheckGroupExist = function(groupID) {
-  var deferred = Q.defer();
+// exports.localCheckGroupExist = function(groupID) {
+//   var deferred = Q.defer();
 
-  var findGroupQuery = {...prepareStatements.findGroupQuery};
-  findGroupQuery['values'] = [groupID];
-  pool.query(findGroupQuery, (err, result) => {
-    if (err) throw err;
-    if (result.rows.length == 0) {
-      deferred.resolve(false);
-    } else {
-      deferred.resolve(true);
-    }
-  });
-  return deferred.promise;
-}
+//   var findGroupQuery = {...prepareStatements.findGroupQuery};
+//   findGroupQuery['values'] = [groupID];
+//   pool.query(findGroupQuery, (err, result) => {
+//     if (err) throw err;
+//     if (result.rows.length == 0) {
+//       deferred.resolve(false);
+//     } else {
+//       deferred.resolve(true);
+//     }
+//   });
+//   return deferred.promise;
+// }
 
-exports.localCreateGroup = function(groupID, defaultUsers) {
-  var deferred = Q.defer();
-  var findGroupQuery = {...prepareStatements.findGroupQuery};
-  findGroupQuery['values'] = [groupID];
-  pool.query(findGroupQuery, (err, result) => {
-    if (err) throw err;
-    if (result.rows.length == 0) {
-      var insertGroupQuery = {...prepareStatements.insertGroupQuery};
-      insertGroupQuery['values'] = [groupID, 1];
-      pool.query(insertGroupQuery, (err, result) => {
-        if(err) throw err;
+// exports.localCreateGroup = function(groupID, defaultUsers) {
+//   var deferred = Q.defer();
+//   var findGroupQuery = {...prepareStatements.findGroupQuery};
+//   findGroupQuery['values'] = [groupID];
+//   pool.query(findGroupQuery, (err, result) => {
+//     if (err) throw err;
+//     if (result.rows.length == 0) {
+//       var insertGroupQuery = {...prepareStatements.insertGroupQuery};
+//       insertGroupQuery['values'] = [groupID, 1];
+//       pool.query(insertGroupQuery, (err, result) => {
+//         if(err) throw err;
 
-        var groupArr = [];
-        defaultUsers.forEach(() => groupArr.push(groupID));
+//         var groupArr = [];
+//         defaultUsers.forEach(() => groupArr.push(groupID));
 
-        var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
-        insertGroupUserQuery['values'] = [[groupArr],[defaultUsers]];
+//         var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
+//         insertGroupUserQuery['values'] = [[groupArr],[defaultUsers]];
 
-        pool.query(insertGroupUserQuery, (err, res) => {
-          if (err) throw err;
-          deferred.resolve(true);
-        });
+//         pool.query(insertGroupUserQuery, (err, res) => {
+//           if (err) throw err;
+//           deferred.resolve(true);
+//         });
 
-      });
-    } else {
-      deferred.resolve(false);
-    }
-  });
+//       });
+//     } else {
+//       deferred.resolve(false);
+//     }
+//   });
 
-  return deferred.promise;
-}
+//   return deferred.promise;
+// }
 
-exports.localJoinGroup = function(groupID) {
-  var deferred = Q.defer();
+// exports.localJoinGroup = function(groupID) {
+//   var deferred = Q.defer();
 
-  var findGroupQuery = {...prepareStatements.findGroupQuery};
-  findGroupQuery['values'] = [groupID];
-  pool.query(findGroupQuery, (err, result) => {
-    if (err) throw err;
-    if (result.rows.length == 0) {
-      deferred.resolve(false);
-    } else {
-      const groupInfo = result.rows[0];
-      var updateGroupQuery = {...prepareStatements.updateGroupQuery};
-      updateGroupQuery['values'] = [groupInfo.usercount + 1, groupID];
-      pool.query(updateGroupQuery, (err, res) => {
-        if (err) throw err;
+//   var findGroupQuery = {...prepareStatements.findGroupQuery};
+//   findGroupQuery['values'] = [groupID];
+//   pool.query(findGroupQuery, (err, result) => {
+//     if (err) throw err;
+//     if (result.rows.length == 0) {
+//       deferred.resolve(false);
+//     } else {
+//       const groupInfo = result.rows[0];
+//       var updateGroupQuery = {...prepareStatements.updateGroupQuery};
+//       updateGroupQuery['values'] = [groupInfo.usercount + 1, groupID];
+//       pool.query(updateGroupQuery, (err, res) => {
+//         if (err) throw err;
 
-        var findGroupUserQuery = {...prepareStatements.findGroupUserQuery};
-        findGroupUserQuery['values'] = [groupID];
-        pool.query(findGroupUserQuery, (err, res) => {
-          if (err) throw err;
-          deferred.resolve(res.rows);
-        });
+//         var findGroupUserQuery = {...prepareStatements.findGroupUserQuery};
+//         findGroupUserQuery['values'] = [groupID];
+//         pool.query(findGroupUserQuery, (err, res) => {
+//           if (err) throw err;
+//           deferred.resolve(res.rows);
+//         });
 
-      });
-    }
-  });
+//       });
+//     }
+//   });
 
-  return deferred.promise;
-}
+//   return deferred.promise;
+// }
 
-exports.localLeaveGroup = function(groupID) {
-  var deferred = Q.defer();
+// exports.localLeaveGroup = function(groupID) {
+//   var deferred = Q.defer();
 
-  var findGroupQuery = {...prepareStatements.findGroupQuery};
-  findGroupQuery['values'] = [groupID];
-  pool.query(findGroupQuery, (err, result) => {
-    if (err) throw err;
-    if (result.rows.length == 0) {
-      deferred.resolve(false);
-    } else {
-      const groupInfo = result.rows[0];
-      if (groupInfo.usercount > 1) {
-        var updateGroupQuery = {...prepareStatements.updateGroupQuery};
-        updateGroupQuery['values'] = [groupInfo.usercount - 1, groupID];
-        pool.query(updateGroupQuery, (err, res) => {
-          if (err) throw err;
-          deferred.resolve(true);
-        });
-      } else {
-        var deleteGroupQuery = {...prepareStatements.deleteGroupQuery};
-        deleteGroupQuery['values'] = [groupID];
+//   var findGroupQuery = {...prepareStatements.findGroupQuery};
+//   findGroupQuery['values'] = [groupID];
+//   pool.query(findGroupQuery, (err, result) => {
+//     if (err) throw err;
+//     if (result.rows.length == 0) {
+//       deferred.resolve(false);
+//     } else {
+//       const groupInfo = result.rows[0];
+//       if (groupInfo.usercount > 1) {
+//         var updateGroupQuery = {...prepareStatements.updateGroupQuery};
+//         updateGroupQuery['values'] = [groupInfo.usercount - 1, groupID];
+//         pool.query(updateGroupQuery, (err, res) => {
+//           if (err) throw err;
+//           deferred.resolve(true);
+//         });
+//       } else {
+//         var deleteGroupQuery = {...prepareStatements.deleteGroupQuery};
+//         deleteGroupQuery['values'] = [groupID];
 
-        pool.query(deleteGroupQuery, (err, res) => {
-          if (err) throw err;
-          var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
-          deleteGroupUserQuery['values'] = [groupID];
+//         pool.query(deleteGroupQuery, (err, res) => {
+//           if (err) throw err;
+//           var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
+//           deleteGroupUserQuery['values'] = [groupID];
 
-          pool.query(deleteGroupUserQuery, (err, res) => {
-            if (err) throw err;
-            deferred.resolve(true);
-          });
-        })
-      }
-    }
-  });
+//           pool.query(deleteGroupUserQuery, (err, res) => {
+//             if (err) throw err;
+//             deferred.resolve(true);
+//           });
+//         })
+//       }
+//     }
+//   });
 
 
-  return deferred.promise;
-}
+//   return deferred.promise;
+// }
 
-exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
-  var deferred = Q.defer();
-  var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
-  deleteGroupUserQuery['values'] = [groupID];
-  pool.query(deleteGroupUserQuery, (err, res) => {
-    if (err) throw err;
+// exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
+//   var deferred = Q.defer();
+//   var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
+//   deleteGroupUserQuery['values'] = [groupID];
+//   pool.query(deleteGroupUserQuery, (err, res) => {
+//     if (err) throw err;
 
-    console.log('newUserEnvironments');
-    console.log(newUserEnvironments);
-    if (newUserEnvironments.length == 0) {
-      deferred.resolve(true);
-      return deferred.promise;
-    }
+//     console.log('newUserEnvironments');
+//     console.log(newUserEnvironments);
+//     if (newUserEnvironments.length == 0) {
+//       deferred.resolve(true);
+//       return deferred.promise;
+//     }
 
-    var groupArr = [];
-    newUserEnvironments.forEach(() => groupArr.push(groupID));
+//     var groupArr = [];
+//     newUserEnvironments.forEach(() => groupArr.push(groupID));
 
-    var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
-    insertGroupUserQuery['values'] = [[groupArr],[newUserEnvironments]];
+//     var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
+//     insertGroupUserQuery['values'] = [[groupArr],[newUserEnvironments]];
 
-    pool.query(insertGroupUserQuery, (err, res) => {
-      if (err) throw err;
-      deferred.resolve(true);
-    })
-  });
+//     pool.query(insertGroupUserQuery, (err, res) => {
+//       if (err) throw err;
+//       deferred.resolve(true);
+//     })
+//   });
 
-  return deferred.promise;
-}
+//   return deferred.promise;
+// }
 
 
 /**
