@@ -19,7 +19,7 @@ AFRAME.registerComponent("move_mobile", {
         var time = 0;
         var interval = setInterval(function(){
             time += 1
-            if(time > 200){
+            if(time > 30){
                 next();
                 clearInterval(interval);
             }
