@@ -1,6 +1,7 @@
 var isMobile = false;
 var isHeadset = false;
 var currentPic = 1;
+var num_images = 1
 var triggerIsDown = false;
  
 
@@ -49,23 +50,6 @@ AFRAME.registerComponent("move_mobile", {
 
       // also need to fix that the camera isn't resetting the rotation to 0 0 0 when the interval called.
       // pos works though
-
-var rotations = {
-  3  : "left",
-  3  : "left",
-  6  : "left",
-  8  : "left",
-  11 : "left",
-  13 : "left",
-  14 : "left",
-  16 : "left",
-  20 : "left",
-  22 : "right",
-  23 : "right",
-  25 : "right",
-  27 : "right",
-  29 : "left",
-}
 
 function transition(){
     document.getElementById("transition_sphere").setAttribute('visible', true);
@@ -140,11 +124,12 @@ function transition(){
       });
 
 
-
-num_images = 31
-
 AFRAME.registerComponent("load_pictures", {
+  schema:{
+    num_images: {type: 'number', default: 1},
+  },
   init: function() {
+    var num_images = this.data.num_images;
     for(var i=1; i<=num_images; i++){
         var image360L = document.createElement('img');
         image360L.setAttribute('id', i.toString() + "L");
@@ -296,6 +281,7 @@ function next(){
     else{
         moveForwardsAnim();
     }
+    var num_images = document.querySelector("a-scene").getAttribute("load_pictures").num_images;
     if(currentPic < num_images && document.getElementById(currentPic.toString() + "L").complete && document.getElementById(currentPic.toString() + "R").complete){
       currentPic += 1
       setTimeout(function(){
