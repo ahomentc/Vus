@@ -9,7 +9,7 @@ const rimraf = require("rimraf");
 
 const AWSAccessKeyId = keys.aws.AWSAccessKeyId;
 const AWSSecretKey = keys.aws.AWSSecretKey;
-const bucketName = "vusbutterworth";
+const bucketName = "vusbucket";
 const VREnvironmentsDir = "tempEnvs";
 
 AWS.config.update({
@@ -646,42 +646,42 @@ exports.localGetModels = function(username) {
  */
 
 // set the room for the user on the database
-exports.setUserRoom = function(username,room_id){
-  var deferred = Q.defer();
+// exports.setUserRoom = function(username,room_id){
+//   var deferred = Q.defer();
 
-  var findUserQuery = {...prepareStatements.findUserQuery};
-  findUserQuery['values'] = [username]; 
-  pool.query(findUserQuery, (err, result) => {
-    if (err) throw err;
-    if (result.rows.length == 0) {
-      deferred.resolve(false); // username does not exists
-    } else {
-      var updateUserRoomQuery = {...prepareStatements.updateUserRoomQuery};
-      updateUserRoomQuery['values'] = [room_id, username];
-      pool.query(updateUserRoomQuery, (err, res) => {
-        if (err) throw err;
-        deferred.resolve(true);
-      })
-    }
-  });
+//   var findUserQuery = {...prepareStatements.findUserQuery};
+//   findUserQuery['values'] = [username]; 
+//   pool.query(findUserQuery, (err, result) => {
+//     if (err) throw err;
+//     if (result.rows.length == 0) {
+//       deferred.resolve(false); // username does not exists
+//     } else {
+//       var updateUserRoomQuery = {...prepareStatements.updateUserRoomQuery};
+//       updateUserRoomQuery['values'] = [room_id, username];
+//       pool.query(updateUserRoomQuery, (err, res) => {
+//         if (err) throw err;
+//         deferred.resolve(true);
+//       })
+//     }
+//   });
 
-}
+// }
 
-// get the room that the user has
-exports.getUserRoom = function(username,vus_group_session_auth){
-  var deferred = Q.defer();
+// // get the room that the user has
+// exports.getUserRoom = function(username,vus_group_session_auth){
+//   var deferred = Q.defer();
 
-  var findUserQuery = {...prepareStatements.findUserQuery};
-  findUserQuery['values'] = [username]; 
-  pool.query(findUserQuery, (err, result) => {
-    if (err) throw err;
-    if (result.rows.length == 0) {
-      deferred.resolve(false); // username does not exists
-    } else {
-      const user = result.rows[0];
-      deferred.resolve(user.room);
-    }
-  });
-  return deferred.promise;
-};
+//   var findUserQuery = {...prepareStatements.findUserQuery};
+//   findUserQuery['values'] = [username]; 
+//   pool.query(findUserQuery, (err, result) => {
+//     if (err) throw err;
+//     if (result.rows.length == 0) {
+//       deferred.resolve(false); // username does not exists
+//     } else {
+//       const user = result.rows[0];
+//       deferred.resolve(user.room);
+//     }
+//   });
+//   return deferred.promise;
+// };
 

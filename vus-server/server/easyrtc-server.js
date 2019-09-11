@@ -156,49 +156,49 @@ app.get('/requestvr', (req, res) => {
 });
 
 // display lobby
-app.get('/lobby', function(req, res){
-  const room = req.cookies['group_session_room'];
-  console.log("Room = " + room);
-  // room types are username (default: 'zillow', 'theater')
-  const room_types = req.cookies['group_room_types'];
-  console.log(room_types);
+// app.get('/lobby', function(req, res){
+//   const room = req.cookies['group_session_room'];
+//   console.log("Room = " + room);
+//   // room types are username (default: 'zillow', 'theater')
+//   const room_types = req.cookies['group_room_types'];
+//   console.log(room_types);
 
-  funct.localCheckGroupExist(room).then(
-    value => {
-      if (value && room_types && room_types !== []) {
-        const resultMap = {};
-        funct.findEnvs(room_types).then(resultList => {
-          resultList.forEach(environment => {
-            if(resultMap[environment.username]) {
-              resultMap[environment.username].push(environment);
-            } else {
-              resultMap[environment.username] = [environment];
-            }
-          });
+//   funct.localCheckGroupExist(room).then(
+//     value => {
+//       if (value && room_types && room_types !== []) {
+//         const resultMap = {};
+//         funct.findEnvs(room_types).then(resultList => {
+//           resultList.forEach(environment => {
+//             if(resultMap[environment.username]) {
+//               resultMap[environment.username].push(environment);
+//             } else {
+//               resultMap[environment.username] = [environment];
+//             }
+//           });
 
-          req.session.env_list = resultList;
-          req.session.group_map = resultMap;
-          res.cookie("env_list",JSON.stringify(resultList));
+//           req.session.env_list = resultList;
+//           req.session.group_map = resultMap;
+//           res.cookie("env_list",JSON.stringify(resultList));
           
-          const hasEnvs = resultList.length > 0;
+//           const hasEnvs = resultList.length > 0;
 
-          // resultMap will be passed to lobby to give each environment better explainations
-          if (req.session.user) {
-            res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
-              user: req.session.user, group_map: resultMap});
-          } else {
-            res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
-              group_map: resultMap});
-          }
-        })
-      } else {
-        res.redirect('createRoom');
-      }
-    }
-  )
+//           // resultMap will be passed to lobby to give each environment better explainations
+//           if (req.session.user) {
+//             res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
+//               user: req.session.user, group_map: resultMap});
+//           } else {
+//             res.render('lobby', {error: req.session.error, group_session_room:room,hasEnvs: hasEnvs, 
+//               group_map: resultMap});
+//           }
+//         })
+//       } else {
+//         res.redirect('createRoom');
+//       }
+//     }
+//   )
 
-  delete req.session.success;
-});
+//   delete req.session.success;
+// });
 
 app.use(express.static(path.join(__dirname, '/react_vus/build')));
 app.get('/real_estate',function(req, res){
@@ -230,7 +230,7 @@ app.post('/local-reg', (req, res, next) => {
     if (err) { return res.render('signup', {error: 'Sign up exception'}) }
     if (!user) { return res.render('signup', {error: 'Username already exist'})}
     req.session.user = user;
-    return res.redirect('lobby');
+    return res.redirect('/');
   })(req, res, next);
 });
 
