@@ -27,7 +27,7 @@
   "repository": "networked-aframe/networked-aframe",
   "dependencies": {
     "aframe-joysticks-movement-component": "^0.1.2",
-    "aws-sdk": "^2.450.0",
+    "aws-sdk": "^2.526.0",
     "bcryptjs": "^0.7.12",
     "bootstrap": "^4.3.1",
     "buffered-interpolation": "^0.2.4",

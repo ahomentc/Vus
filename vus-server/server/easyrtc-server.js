@@ -272,6 +272,14 @@ app.get('/vrmanager', (req, res) => {
   }
 });
 
+app.get('/uploadImages', (req, res) => {
+  if(!req.session.user) {
+    res.redirect('signin');
+  } else {
+    res.render('upload_images', {user: req.session.user})
+  }
+});
+
 
 app.get('/userconsole', (req, res) => {
   if (!req.session.user){
@@ -285,59 +293,71 @@ app.get('/userconsole', (req, res) => {
   }
 });
 
-// http://localhost:8090/grouplink?groupid=6bea02&reroute=/room/dino/index.html
-app.get('/grouplink', (req, res) => {
-    var newRoomID = req.query.groupid;
-    var reroute = req.query.reroute;
 
-    const previousID =  req.cookies['group_session_room'];
-    funct.localJoinGroup(newRoomID).then(
-      result => {
-        if (!result) {
-          const error = "group ID does not exist";
-          req.session.error = error;
-          res.redirect('lobby');
-        } else {
-          funct.localLeaveGroup(previousID).then(
-            value => {
-              const vus_username = req.cookies['vus_username'];
-              funct.setUserRoom(vus_username,newRoomID);
-
-              res.cookie('group_session_room', newRoomID.toString());
-              req.session.group_session_room = newRoomID;
-
-              var directories = [];
-              result.forEach(groupUser => {
-                directories.push(groupUser.username);
-              });
-
-              res.cookie('group_room_types', directories);
-              req.session.group_room_types = directories;
-
-              // create a session id to be stored in cookie for user authentication
-              var sessionID = SHA256(Math.random().toString())
-
-              // store username and auth code in cookie
-              res.cookie('vus_group_session_auth', sessionID.toString());
-
-              if (req.session.user) {
-                res.cookie('vus_username', req.session.user.username);
-              }
-
-              // store the room in cookie... remove this later
-              res.cookie('group_session_room', newRoomID.toString());
-              req.session.group_session_room = newRoomID;
-
-              delete req.session.error;
-              res.redirect(reroute);
-            }
-          )
-        }
+// /tour?username=andrei&name=inverrary
+app.get('/tour', (req, res) => {
+    var username = req.query.username;
+    var env_name = req.query.name;
+    funct.getNumImages(username,env_name).then(
+      num_images => {
+          res.render('tour', {username: username, env_name: env_name, num_images: num_images})  
       }
-    ).catch(err => {
-      console.log(err);
-    })
+    );
 });
+
+// http://localhost:8090/grouplink?groupid=6bea02&reroute=/room/dino/index.html
+// app.get('/grouplink', (req, res) => {
+//     var newRoomID = req.query.groupid;
+//     var reroute = req.query.reroute;
+
+//     const previousID =  req.cookies['group_session_room'];
+//     funct.localJoinGroup(newRoomID).then(
+//       result => {
+//         if (!result) {
+//           const error = "group ID does not exist";
+//           req.session.error = error;
+//           res.redirect('lobby');
+//         } else {
+//           funct.localLeaveGroup(previousID).then(
+//             value => {
+//               const vus_username = req.cookies['vus_username'];
+//               funct.setUserRoom(vus_username,newRoomID);
+
+//               res.cookie('group_session_room', newRoomID.toString());
+//               req.session.group_session_room = newRoomID;
+
+//               var directories = [];
+//               result.forEach(groupUser => {
+//                 directories.push(groupUser.username);
+//               });
+
+//               res.cookie('group_room_types', directories);
+//               req.session.group_room_types = directories;
+
+//               // create a session id to be stored in cookie for user authentication
+//               var sessionID = SHA256(Math.random().toString())
+
+//               // store username and auth code in cookie
+//               res.cookie('vus_group_session_auth', sessionID.toString());
+
+//               if (req.session.user) {
+//                 res.cookie('vus_username', req.session.user.username);
+//               }
+
+//               // store the room in cookie... remove this later
+//               res.cookie('group_session_room', newRoomID.toString());
+//               req.session.group_session_room = newRoomID;
+
+//               delete req.session.error;
+//               res.redirect(reroute);
+//             }
+//           )
+//         }
+//       }
+//     ).catch(err => {
+//       console.log(err);
+//     })
+// });
 
 app.post('/removeFile', (req, res) => {
   if (!req.session.user) {
@@ -351,16 +371,32 @@ app.post('/removeFile', (req, res) => {
   }
 });
 
-app.post('/floor_plan_upload', (req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const file = req.file;
-  funct.uploadFloorPlan(name, email, file).then(
+// currently working on this
+app.post('/uploadImages', upload.array('new_images'), (req,res) => {
+    if (req.session.user == null) {
+      res.redirect('signin');
+    }
+
+    const directoryName = req.body.folderName;
+
+    const uploadedFiles = req.files.map(file => {
+        let newPath = file.originalname.split('/')
+        newPath = newPath.reverse()
+        // pop the old folder name
+        newPath.pop();
+        newPath.push(directoryName);
+        newPath = newPath.reverse().join('/');
+        return {'originalname': newPath, 'buffer': file.buffer};  
+    })
+
+    funct.localUploadImage(req.session.user.username, uploadedFiles, directoryName, req.body.description.trim()).then(
       result => {
         if (!result) {
-          req.session.error = "Form didn't submit";
+          req.session.error = "File upload Unsuccessful";
+        } else {
+          delete req.session.error;
         }
-        return res.redirect('');  
+        return res.redirect('/');  
       }
     );
 });
@@ -399,22 +435,6 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
           delete req.session.error;
         }
         return res.redirect('lobby');  
-      }
-    );
-});
-
-app.post('/requestVrForm', (req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const phone = req.body.phone;
-  const category = req.body.category;
-  const description = req.body.description;
-  funct.vusRequest(name, email, phone, category, description).then(
-      result => {
-        if (!result) {
-          req.session.error = "Form didn't submit";
-        }
-        return res.redirect('');  
       }
     );
 });
@@ -537,6 +557,7 @@ app.get('/loadRoom', (req, res) => {
 
 app.use('/VRHome', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
 app.use('/room', serveStatic('server/static'));
+app.use('/js', serveStatic('server/static/js'));
 
 app.use('/envs',serveStatic('tempEnvs'));
 //======== CREATING GROUP SESSION ========

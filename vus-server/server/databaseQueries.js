@@ -1,5 +1,25 @@
 // This file stores all the PSQL prepare statements. 
 
+
+
+const findImagesWithUserAndEnvName = {
+    name: 'find-image-env-with-names',
+    text: 'select * from vusenv where username = $1 and envname = $2;'
+}
+
+const insertNewImageEnvQuery = {
+    name: 'insert-image-env',
+    text: 'insert into vusenv (envname, uploadtime, description, username, numimages) values($1, $2, $3, $4, $5);',
+}
+
+const updateImageEnvQuery = {
+    name: 'update-image-env',
+    text: 'update vusenv set uploadtime = $2, description = $3 where envname = $1 and username = $4;',
+}
+
+
+
+
 const findUserQuery = {
     name: 'find-user',
     text: 'select * from vususer where username = $1'
@@ -7,7 +27,7 @@ const findUserQuery = {
 
 const registerUserQuery = {
     name: 'register-user',
-    text: 'insert into vususer (username, password, avatar, room) values($1, $2, $3, $4)',
+    text: 'insert into vususer (username, password) values($1, $2)',
 }
 
 const findGroupQuery = {
@@ -81,10 +101,6 @@ const updateUserRoomQuery = {
     text: 'update vususer set room = $1 where username = $2;'
 }
 
-const insertVusRequestQuery = {
-    name: 'insert-vus-request',
-    text: 'insert into vusrequest (name, email, phone, category, description) values ($1, $2, $3, $4, $5)'
-}
 
 // exports
 module.exports = {
@@ -104,5 +120,7 @@ module.exports = {
     deleteGroupQuery: deleteGroupQuery,
     updateUserRoomQuery: updateUserRoomQuery,
     findGroupUserQuery: findGroupUserQuery,
-    insertVusRequestQuery: insertVusRequestQuery
+    findImagesWithUserAndEnvName: findImagesWithUserAndEnvName,
+    insertNewImageEnvQuery: insertNewImageEnvQuery,
+    updateImageEnvQuery: updateImageEnvQuery
 }

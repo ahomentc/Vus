@@ -1,0 +1,57 @@
+<div style="margin: 10px;padding:20px;">
+    <div class="enclose">
+        <h5><label>Submit Your VR Environment</label></h5>
+        <form id="uploadImagesForm" action="/uploadImages" enctype="multipart/form-data" method="POST">
+            <div class="form-group custom-file file-upload">
+                <input name="new_images" type="file" webkitdirectory multiple class="custom-file-input" id="customFile" />  
+                <label class="custom-file-label" for="customFile">Choose a Folder</label>
+            </div>
+            <div class="form-group">
+                <label>Name:</label>
+                <input id="folderNameInput" type="text" class="form-control" name="folderName" pattern="[A-Za-z][-A-Za-z0-9_:.]*" placeholder="Enter Name" required/>
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <input id="envDescription" type="text" class="form-control" name="description" 
+                    placeholder="Enter Description" required/>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit for Review</button>
+        </form>
+    </div>
+</div>
+<script>
+    // update input placeholder value
+    $('#customFile').on('change', (event) => {
+        const folderName = event.target.files[0].webkitRelativePath.split("/")[0];
+        // replace the "Choose a file" label
+        $('.custom-file-label').html(folderName);
+
+        // update folder name field
+        document.getElementById("folderNameInput").value = folderName;
+
+    });
+
+    
+
+</script>
+<style>
+    .file-upload{
+        margin-bottom: 15px;
+    }
+
+    body {
+        background-color:#6b6b6b;
+    }
+
+    .enclose{
+        border-radius:10px;
+        display: flex;
+        flex-wrap: wrap;
+        width: 300px;
+        margin:0 auto;
+        margin-top: 40px;
+        border: 1px solid #cbcbcb;
+        padding: 20px;
+        background-color:white;
+    }  
+</style>

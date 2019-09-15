@@ -1,0 +1,109 @@
+<html>
+<head>
+  <title>My A-Frame Scene</title>
+  <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+  <script src="../js/aframe-stereo-component.min.js"></script>
+  <script src='../js/kinematic-body.js'></script>
+  <script src="../js/movement-controls.js"></script>
+  <script src="../js/touch-controls.js"></script>
+  <script src="../js/trackpad-controls.js"></script>
+  <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
+
+  <script>
+    st_enabled = true;
+    shifted1 = false;
+    shifted2 = false;
+    shifted3 = false;
+
+    AFRAME.registerComponent("stereo_extras", {
+      init: function() {
+        document.body.addEventListener('triggerdown', function (evt) {
+            if(!st_enabled){
+                document.getElementById("nost").setAttribute('visible', 'false')
+                document.getElementById("stl").setAttribute('visible', 'true')
+                document.getElementById("str").setAttribute('visible', 'true')
+                st_enabled = true;
+            }
+            else{
+                document.getElementById("nost").setAttribute('visible', 'true')
+                document.getElementById("stl").setAttribute('visible', 'false')
+                document.getElementById("str").setAttribute('visible', 'false')
+                st_enabled = false;
+            }
+        });
+      },
+      tick: function() {
+          var camera = document.querySelector("a-camera")
+          var angle = camera.getAttribute("rotation")
+          // if y angle over 180, then might need to switch the eyes. For now... But later make sides be non-stereo.
+
+          // convert all negative numbers to positive
+          y_angle = angle.y
+          if (y_angle < 0){
+              y_angle = 360 + y_angle;
+          }
+
+          // Area 1
+          if(y_angle > 0 && y_angle < 90 && st_enabled){
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
+              document.getElementById("stl").setAttribute("src", "#cam1")
+              document.getElementById("str").setAttribute("src", "#cam2")          
+          }
+
+          // Area 2
+          else if(y_angle > 90 && y_angle < 180 && st_enabled){
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
+              document.getElementById("stl").setAttribute("src", "#cam2")
+              document.getElementById("str").setAttribute("src", "#cam3") 
+          }
+
+          // Area 3
+          else if(y_angle > 180 && y_angle < 270 && st_enabled){
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
+              document.getElementById("stl").setAttribute("src", "#cam3")
+              document.getElementById("str").setAttribute("src", "#cam4") 
+          }
+
+          // Area 4
+          else if(y_angle > 270 && y_angle < 360 && st_enabled){
+              document.getElementById("nost").setAttribute('visible', 'false')
+              document.getElementById("stl").setAttribute('visible', 'true')
+              document.getElementById("str").setAttribute('visible', 'true')
+              document.getElementById("stl").setAttribute("src", "#cam4")
+              document.getElementById("str").setAttribute("src", "#cam1") 
+          }
+      }
+  });
+  </script>
+</head>
+<body>
+    <a-scene>
+        <a-assets>
+          <img id="cam1" src="assets/1_6.jpg" />
+          <img id="cam2" src="assets/2_6.jpg" />
+          <img id="cam3" src="assets/3_6.jpg" />
+          <img id="cam4" src="assets/4_6.jpg" />
+        </a-assets>
+
+      <!-- we tell here the camera to render (outside VR mode, in monoscopic mode) everything without the 'stereo' component active
+      and it it's active, only render those entities in the 'left' eye -->
+
+      <a-camera stereo_extras position="0 0 0" stereocam="eye:left;"></a-camera>
+      <a-entity id="left_hand" hand-controls="left"></a-entity>
+      <a-entity id="right_hand" hand-controls="right"></a-entity>
+
+      <a-sky id="stl" src="#cam3" rotation='0 0 0' radius="30" stereo="eye:left" visible='false'></a-sky> 
+      <a-sky id="str" src="#cam2" rotation='0 0 0' radius="30" stereo="eye:right" visible='false'></a-sky> 
+
+      <a-sky id="nost" src="#cam1" radius="30" rotation='0 0 0'></a-sky> 
+
+    </a-scene>
+
+ </body>
+ </html>

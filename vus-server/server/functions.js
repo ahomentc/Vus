@@ -15,9 +15,9 @@ const VREnvironmentsDir = "tempEnvs";
 AWS.config.update({
   accessKeyId: AWSAccessKeyId,
   secretAccessKey: AWSSecretKey,
-  region: 'us-west-2',
+  region: 'us-west-1',
   s3BucketEndpoint: true,
-  endpoint:"http://" + bucketName + ".s3.amazonaws.com"
+  endpoint:"http://vusbucket.s3-us-west-1.amazonaws.com/"
 });
 
 var s3 = new AWS.S3();
@@ -96,13 +96,11 @@ exports.localReg = function (username, password) {
       const hash = bcrypt.hashSync(password, 8);
       var registerUserQuery = {...prepareStatements.registerUserQuery};
       
-      registerUserQuery['values'] = [username, hash, "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG", ""]
+      registerUserQuery['values'] = [username, hash]
       pool.query(registerUserQuery, (err, res) => {
         const createdUser = {
           "username": username,
-          "password": hash,
-          "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG",
-          "room": ""
+          "password": hash
         }
         deferred.resolve(createdUser);
       });
@@ -147,7 +145,8 @@ async function uploadToAWS (deferred, username, uploaded_files) {
     const params = {
       Bucket: bucketName,
       Body: file.buffer,
-      Key: username + "/" + file.originalname
+      Key: username + "/" + file.originalname,
+      ACL: 'public-read'
     }
 
     result.push(s3.upload(params, function (err, data) {
@@ -160,52 +159,50 @@ async function uploadToAWS (deferred, username, uploaded_files) {
       }
       console.log("File " + count + " upload success");
     }));
-
-    // await s3.upload(params, function (err, data) {
-    //   // handle error
-    //   ++count;
-    //   if (err) {
-    //     console.log(err);
-    //     deferred.resolve(false);
-    //     return deferred.promise;
-    //   }
-    //   console.log("File " + count + " upload success");
-    // });
   }
 
   await Promise.all(result);
 }
 
-exports.vusRequest = function (name, email, phone, category, description) {
-  var deferred = Q.defer();
-  var insertVusRequestQuery = {...prepareStatements.insertVusRequestQuery};
-  insertVusRequestQuery['values'] = [name, email, phone.toString(), category.toString(), description];
-  pool.query(insertVusRequestQuery, (err, result) => {
-    if(err) throw err;
-    deferred.resolve(true);
-  });
-   
+exports.localUploadImage = async function(username, uploaded_files, folderName, description){
+    var deferred = Q.defer();
+    console.log("uploaded_files length = " + uploaded_files.length);
+    await uploadToAWS(deferred, username, uploaded_files);
+
+    var findImagesWithUserAndEnvName = {...prepareStatements.findImagesWithUserAndEnvName};
+    findImagesWithUserAndEnvName['values'] = [username, folderName];
+
+    var insertNewImageEnvQuery = {...prepareStatements.insertNewImageEnvQuery};
+    insertNewImageEnvQuery['values'] = [folderName, new Date().toDateString(), description, username, uploaded_files.length]
+    pool.query(insertNewImageEnvQuery, (err, result) => {
+      if (err) throw err;
+    });
+
+
+
+    // pool.query(findImagesWithUserAndEnvName, (err, result) => {
+    //   if (result.rows.length == 0) {
+    //     var insertNewImageEnvQuery = {...prepareStatements.insertNewImageEnvQuery};
+    //     insertNewImageEnvQuery['values'] = [foldername, new Date().toDateString(), description, username]
+    //     pool.query(insertNewImageEnvQuery, (err, result) => {
+    //       if (err) throw err;
+    //     });
+    //   } else {
+    //     var updateImageEnvQuery = {...prepareStatements.updateImageEnvQuery};
+    //     updateImageEnvQuery['values'] = [foldername, new Date().toDateString(), description, username]
+    //     pool.query(updateImageEnvQuery, (err, result) => {
+    //       if (err) throw err;
+    //     });
+    //   }
+    // });
+
+  deferred.resolve(true);
   return deferred.promise;
 }
 
 exports.localUploadModel = async function(username, uploaded_files, envHtmlName, folderName, envDescription, envTag) {
 
   var deferred = Q.defer();
-  // uploaded_files.forEach(file => {
-  //   var params = {
-  //     Bucket: bucketName,
-  //     Body: file.buffer,
-  //     Key: username + "/" + file.originalname
-  //   }
-
-  //   s3.upload(params, function (err, data) {
-  //     // handle error
-  //     if (err) {
-  //       deferred.resolve(false);
-  //       return deferred.promise;
-  //     }
-  //   });
-  // });
 
   console.log("uploaded_files length = " + uploaded_files.length);
   await uploadToAWS(deferred, username, uploaded_files);
@@ -299,6 +296,24 @@ exports.findEnvs = function(userNames) {
   return deferred.promise;
 }
 
+exports.getUsersImageEnvs = async function(){
+
+}
+
+exports.getNumImages = async function(username, env_name){
+  var deferred = Q.defer();
+  var findImagesWithUserAndEnvName = {...prepareStatements.findImagesWithUserAndEnvName};
+  findImagesWithUserAndEnvName['values'] = [username, env_name];
+  pool.query(findImagesWithUserAndEnvName, (err, result) => {
+    if (result.rows.length == 0) {
+        deferred.resolve(0);
+    } else {
+        deferred.resolve(result.rows[0].numimages/2);
+    }
+  });
+  return deferred.promise;
+}
+
 /**
  * This method will load VR environment folders from S3 buckets
  *  and load them into a temporary folder. These environments will
@@ -326,7 +341,7 @@ async function fetchVRFiles(environmentList) {
     result.push(recursiveGetVREnvsFromS3(prefix));
   }
 
-  console.log("FInishes Fetch VR files");
+  console.log("Finishes Fetch VR files");
   return await Promise.all(result);
 }
 

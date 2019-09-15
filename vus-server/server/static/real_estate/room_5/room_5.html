@@ -24,6 +24,56 @@
   </head>
 
   <body>
+    <script>
+      AFRAME.registerComponent('collider-check', {
+        schema: {
+            // store the name of the beacon its targeting to in an init variable
+            base_level: {type: 'number', default: 1},
+        },
+        tick: function(){
+            // DO THIS ONCE EVERY 0.5s ONLY
+            var playerPos = document.getElementById("player").getAttribute("position")
+            var cameraPos = document.querySelector("a-camera").getAttribute("position")
+            this.el.object3D.position.x = playerPos.x + cameraPos.x
+            this.el.object3D.position.z = playerPos.z + cameraPos.z
+            this.el.object3D.position.y = playerPos.y + 1
+        },
+        init: function () {
+          var base_level = this.data.base_level;
+          this.current_level = base_level
+          this.last_level_detected = 0
+          this.same = 0
+          setTimeout(function(){
+              document.getElementsByClassName("io3d-level")[0].childNodes[0].className = 'floor'
+              document.getElementsByClassName("io3d-scene")[0].addEventListener('raycaster-intersected', function (evt) {
+                  var floor_level = evt.detail.intersection.point.y;
+
+                  // filter out some noise. This is a temporory solution and won't work
+                  // for two stories houses.
+                  if (floor_level > 1.5){
+                    return;
+                  }
+                  if(floor_level == this.last_level_detected){
+                    this.same += 1
+                  }
+                  else{
+                    this.same = 0
+                  }
+                  if(this.same > 1){
+                      diff = floor_level - base_level
+                      pos = document.getElementById("player").getAttribute("position")
+                      pos.y = floor_level
+                      document.getElementById("player").setAttribute("position", pos)
+                      this.current_level = floor_level
+                  }
+                  this.last_level_detected = floor_level
+              });
+            },10000)
+
+        }
+      });
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
     <a-scene antialias="true" physics="gravity:0;" beacons networked-scene="
@@ -34,7 +84,6 @@
       audio: true;
     ">
       <a-assets>
-        <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
       
         <img id="sky" src="assets/sky.jpg" />
         <img id="black" src="assets/black.jpg" />
@@ -85,6 +134,8 @@
          animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500;"></a-sky>
         </a-camera>
 
+        <!-- Later, set objects to only the floor -->
+
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="left" networked="template:#hand-template;" ></a-entity> -->
         <!-- <a-entity rotation="-7.105 74.714 0" position="0 1 0" hand-controls="right" networked="template:#hand-template;"></a-entity> -->
         <a-entity id="left_hand"
@@ -103,8 +154,12 @@
                   hand-controls="right" 
                   laser-controls="hand: right" 
                   networked="template:#hand-template;"
-                  raycaster="far: 10"></a-entity>
+                  raycaster="far: 10"
+                  line="color: line; opacity: 1"></a-entity>
+                  <!-- raycaster="objects: io3d-data3d; far: 10" -->
       </a-entity>
+
+      <!-- <a-entity raycaster="showLine: true; far: 2; interval: 150;" rotation="-90 0 0" position="0 1.5 0" line="color: red; opacity: 1"></a-entity> -->
 
       <!-- Use the right controller to raise up and down in altitude -->
 
@@ -138,6 +193,9 @@
               scene.appendChild(elem) 
             })
         })
+
+        // give the base model an id
+
     </script>
 
     <script>
