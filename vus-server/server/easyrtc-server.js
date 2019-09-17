@@ -300,6 +300,7 @@ app.get('/tour', (req, res) => {
     var env_name = req.query.name;
     funct.getNumImages(username,env_name).then(
       num_images => {
+          res.setHeader('Access-Control-Allow-Origin', 'https://d3ga0cb3khynzt.cloudfront.net', 'http://localhost:8090', 'https://vusgroup.com');
           res.render('tour', {username: username, env_name: env_name, num_images: num_images})  
       }
     );
@@ -378,6 +379,7 @@ app.post('/uploadImages', upload.array('new_images'), (req,res) => {
     }
 
     const directoryName = req.body.folderName;
+    const image_count = 0;
 
     const uploadedFiles = req.files.map(file => {
         let newPath = file.originalname.split('/')
@@ -386,8 +388,21 @@ app.post('/uploadImages', upload.array('new_images'), (req,res) => {
         newPath.pop();
         newPath.push(directoryName);
         newPath = newPath.reverse().join('/');
+
+        // get the file name with extension
+        // ignore if ._ file, don't add to counter
+        // change name to be numbered from 1 to n
+
+        front = newPath.split('/').reverse()[0];
+        if(front.substring(0,2) != "._"){
+            image_count++;
+            console.log(newPath);
+        }
+
         return {'originalname': newPath, 'buffer': file.buffer};  
     })
+
+    // --------- NOT ACTUALLY UPLOADING IMAGES ---------
 
     funct.localUploadImage(req.session.user.username, uploadedFiles, directoryName, req.body.description.trim()).then(
       result => {

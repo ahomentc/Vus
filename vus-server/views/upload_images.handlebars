@@ -31,7 +31,40 @@
 
     });
 
+    function readURL(input) {
     
+        if (input.files && input.files[0]) {
+              var i=0;
+              let count=0;
+              while(input.files[i]){
+                  i++;
+                  count+=1;
+                  if(input.files[i].name.substring(0,2) != "._"){
+                      var reader = new FileReader();
+                      reader.onload = function (e) {
+                          var test = document.createElement("img");
+                          test.setAttribute("src", e.target.result)
+                          test.setAttribute("width", 400)
+                          test.setAttribute("height", 200)
+                          test.setAttribute("margin", 5)
+                          test.setAttribute("id",count)
+
+                          document.body.appendChild(test);
+
+                          test.addEventListener('click', function (e) {
+                            alert(e.target)
+                          });
+                      }
+                      reader.readAsDataURL(input.files[i]); 
+                  }
+              
+            }
+        }
+    }
+    
+    $("#customFile").change(function(){
+        readURL(this);
+    });    
 
 </script>
 <style>

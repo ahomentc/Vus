@@ -137,11 +137,13 @@ AFRAME.registerComponent("load_tour", {
     for(var i=1; i<=num_images; i++){
         var image360L = document.createElement('img');
         image360L.setAttribute('id', i.toString() + "L");
+        image360L.setAttribute('crossorigin', 'anonymous')
         image360L.setAttribute('src', 'https://d3ga0cb3khynzt.cloudfront.net/' + username + '/' + env_name + '/left/' + i.toString() + ".jpg");
         image360L.setAttribute('crossorigin', 'anonymous')
 
         var image360R = document.createElement('img');
         image360R.setAttribute('id', i.toString() + "R");
+        image360R.setAttribute('crossorigin', 'anonymous')
         image360R.setAttribute('src', 'https://d3ga0cb3khynzt.cloudfront.net/' + username + '/' + env_name + '/right/' + i.toString() + ".jpg");
         image360R.setAttribute('crossorigin', 'anonymous')
 
