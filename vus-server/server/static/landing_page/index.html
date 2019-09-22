@@ -42,7 +42,7 @@
         <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
           <a class="btn btn-primary btn-lg" style='margin:5px;' href="https://vusgroup.com/room/showcase/scene1/comfort.html">Try a demo</a>
           <!-- <button class="btn btn-primary btn-lg" style='margin:5px;' data-toggle="modal" data-target="#floor_plan_upload">Submit a Floor Plan</button> -->
-          <button class="btn btn-primary btn-lg" style='margin:5px;' onclick='upload_floorplan();'>Submit a Floor Plan</button>
+          <button class="btn btn-primary btn-lg" style='margin:5px;' onclick="location.href='/uploadImages'">Create Tour</button>
         </div>
       </div>
     </div>
@@ -99,22 +99,22 @@
       <div class="row no-gutters">
         <div class="col-lg-6 text-white showcase-img" style="background-image: url('img/vr_img.jpg');"></div>
         <div class="col-lg-6 my-auto showcase-text">
-          <h2>Multi-User Viewing</h2>
-          <p class="lead mb-0">Created for online meetings inside the actual properities. See and hear each other... you're present together.</p>
+          <h2>Simplest Tour Navigation</h2>
+          <p class="lead mb-0">Anybody should be able to use virtual tours. Simply press a button to move forwards instead of pointing, aiming, and clicking. We also offer a room menu for quicker navigation.</p>
         </div>
       </div>
       <div class="row no-gutters">
         <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('https://www.popsci.com/resizer/55BdHucAfuU6kj18IlLRhm069cQ=/1008x748/arc-anglerfish-arc2-prod-bonnier.s3.amazonaws.com/public/FRK5MDU3EH6W5YARC27CGEVKHE.jpg');"></div>
         <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-          <h2>Headsets</h2>
+          <h2>Free tour creation and free Headsets</h2>
           <p class="lead mb-0">We offer professional headsets for in person meetings. We ship out cheaper headsets for online-only meetings.</p>
         </div>
       </div>
       <div class="row no-gutters">
         <div class="col-lg-6 text-white showcase-img" style="background-image: url('http://www.cartoblue.com/img/products/demos/large/3dFloor_3.png');"></div>
         <div class="col-lg-6 my-auto showcase-text">
-          <h2>Floorplan to Virtual Homes</h2>
-          <p class="lead mb-0">Only using floor plans, instead of scanning, to create 3D house models allows for privacy, greater customization, and a lower price. We even work with  hand drawn floor plan sketches!</p>
+          <h2>Real 3D Photos</h2>
+          <p class="lead mb-0">We use Stereoscopic images to allow clients to view how large rooms really are. It really does make a big difference.</p>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@
         <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
           <a class="btn btn-primary btn-lg" style='margin:5px;' href="https://vusgroup.com/grouplink?groupid=5e6bf3&reroute=/room/real_estate/room_5/room_5.html">Try a demo</a>
 <!--          <button class="btn btn-primary btn-lg" style='margin:5px;' data-toggle="modal" data-target="#floor_plan_upload">Submit a Floor Plan</button> -->
-          <button class="btn btn-primary btn-lg" style='margin:5px;' onclick='upload_floorplan();'>Submit a Floor Plan</button>
+          <button class="btn btn-primary btn-lg" style='margin:5px;' onclick="location.href='/uploadImages'">Create Tour</button>
         </div>
       </div>
     </div>
@@ -191,7 +191,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Upload a floor plan</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Create Tour</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -226,13 +226,6 @@
 </div>
 
 <script src="https://static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
-<script>
-function upload_floorplan(){
-    alert("Please upload a file or zip with floorplan, name, and email.\n\nWe'll create a simple and free meetup environment.\nThen we'll email you a link along with more information.")
-    var client = filestack.init('AWRw60MITjmIRc3YhT4aQz');
-    client.picker().open();
-}
-</script>
 
   <!-- Footer -->
   <footer class="footer bg-light">

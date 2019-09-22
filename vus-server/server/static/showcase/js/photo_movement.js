@@ -166,12 +166,12 @@ AFRAME.registerComponent("load_pictures", {
 
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
       next()
-      triggerIsDown = true;
+      // triggerIsDown = true;
     });
 
     document.getElementById("right_hand").addEventListener('triggerup', function(){
         prev()
-        triggerIsDown = false;
+        // triggerIsDown = false;
     });
 
     // move backwards

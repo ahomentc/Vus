@@ -164,7 +164,7 @@ async function uploadToAWS (deferred, username, uploaded_files) {
   await Promise.all(result);
 }
 
-exports.localUploadImage = async function(username, uploaded_files, folderName, description){
+exports.localUploadImage = async function(username, uploaded_files, folderName, description, labels){
     var deferred = Q.defer();
     console.log("uploaded_files length = " + uploaded_files.length);
     await uploadToAWS(deferred, username, uploaded_files);
@@ -173,7 +173,7 @@ exports.localUploadImage = async function(username, uploaded_files, folderName, 
     findImagesWithUserAndEnvName['values'] = [username, folderName];
 
     var insertNewImageEnvQuery = {...prepareStatements.insertNewImageEnvQuery};
-    insertNewImageEnvQuery['values'] = [folderName, new Date().toDateString(), description, username, uploaded_files.length]
+    insertNewImageEnvQuery['values'] = [folderName, new Date().toDateString(), description, username, uploaded_files.length, labels]
     pool.query(insertNewImageEnvQuery, (err, result) => {
       if (err) throw err;
     });
@@ -309,6 +309,20 @@ exports.getNumImages = async function(username, env_name){
         deferred.resolve(0);
     } else {
         deferred.resolve(result.rows[0].numimages/2);
+    }
+  });
+  return deferred.promise;
+}
+
+exports.getLabels = async function(username, env_name){
+  var deferred = Q.defer();
+  var findImagesWithUserAndEnvName = {...prepareStatements.findImagesWithUserAndEnvName};
+  findImagesWithUserAndEnvName['values'] = [username, env_name];
+  pool.query(findImagesWithUserAndEnvName, (err, result) => {
+    if (result.rows.length == 0) {
+        deferred.resolve(0);
+    } else {
+        deferred.resolve(result.rows[0].labels);
     }
   });
   return deferred.promise;

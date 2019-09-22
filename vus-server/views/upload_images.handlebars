@@ -1,3 +1,5 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"><{{!}}/script>
+
 <div style="margin: 10px;padding:20px;">
     <div class="enclose">
         <h5><label>Submit Your VR Environment</label></h5>
@@ -15,8 +17,13 @@
                 <input id="envDescription" type="text" class="form-control" name="description" 
                     placeholder="Enter Description" required/>
             </div>
+            <div class="form-group" style="visibility: hidden;">
+                <input id="labels" type="text" class="form-control" name="labels" />
+            </div>
             <button type="submit" class="btn btn-primary">Submit for Review</button>
         </form>
+    </div>
+    <div id="set_menu" class="set_menu" style="visibility: hidden;">
     </div>
 </div>
 <script>
@@ -31,39 +38,81 @@
 
     });
 
-    function readURL(input) {
-    
-        if (input.files && input.files[0]) {
-              var i=0;
-              let count=0;
-              while(input.files[i]){
-                  i++;
-                  count+=1;
-                  if(input.files[i].name.substring(0,2) != "._"){
-                      var reader = new FileReader();
-                      reader.onload = function (e) {
-                          var test = document.createElement("img");
-                          test.setAttribute("src", e.target.result)
-                          test.setAttribute("width", 400)
-                          test.setAttribute("height", 200)
-                          test.setAttribute("margin", 5)
-                          test.setAttribute("id",count)
+    // add to some sort of element in form like this: id:label, id:label etc
+    // then when form is submitted it is sent to server under the form
+    // from there, we read it, create a file in the server (temporarily), and add file to s3
+    // OR, we can just store it in the database as a json file since its super fast to load and cheap to store. Also easier.
 
-                          document.body.appendChild(test);
+    // create an input field, constantly modify the string
 
-                          test.addEventListener('click', function (e) {
-                            alert(e.target)
-                          });
-                      }
-                      reader.readAsDataURL(input.files[i]); 
-                  }
-              
-            }
+    var labels = {};
+
+    function readAndPreview(file) {
+        if(file.name.substring(0,2) == "._"){
+            return;
         }
+
+        var reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            var test = document.createElement("img");
+            test.setAttribute("src", this.result)
+            test.setAttribute("width", 400)
+            test.setAttribute("height", 200)
+            test.setAttribute("margin", 10)
+
+            test.setAttribute("id",file.name)
+
+            document.getElementsByClassName("set_menu")[0].appendChild(test);
+
+            test.addEventListener('click', function (e) {
+                var id = e.target.id.toString();
+                var label = prompt("Please enter the room name for: " + id, "Ex: Kitchen");
+                labels[id] = label
+                new_labels = JSON.stringify(labels);
+                document.getElementById("labels").value = new_labels;
+            });
+        }, false);
+        reader.readAsDataURL(file);
     }
+
+    function swap(A, x, y) {
+        var temp = A[x];
+        A[x] = A[y];
+        A[y] = temp;
+    }
+
+    // use a simple selection sort
+    function sortFiles(files){
+        var len = files.length;
+        for (var i = 0; i < len - 1; i = i + 1) {
+            var j_min = i;
+            for (var j = i + 1; j < len; j = j + 1) {
+                // remove the extension
+                if (files[j].name.split("").reverse().join("").substring(4,).split("").reverse().join("") < files[j_min].name.split("").reverse().join("").substring(4,).split("").reverse().join("")) {
+                    if(files[j].name.substring(0,2) != "._"){
+                        console.log(files[j_min].name.split("").reverse().join("").substring(4,).split("").reverse().join(""))
+                        j_min = j;
+                    } 
+                } else {}
+            }
+            if (j_min !== i) {
+                if(files[j_min].name.substring(0,2) != "._"){
+                    swap(files, i, j_min);
+                }
+            } else {}
+        }
+        return files
+    }
+
     
     $("#customFile").change(function(){
-        readURL(this);
+        var sorted_files = sortFiles(this.files);
+        // [].forEach.call(this.files, readAndPreview);
+        [].forEach.call(sorted_files, readAndPreview);
+
+
+        document.getElementsByClassName("set_menu")[0].setAttribute("style", "visibility", true)
     });    
 
 </script>
@@ -81,6 +130,18 @@
         display: flex;
         flex-wrap: wrap;
         width: 300px;
+        margin:0 auto;
+        margin-top: 40px;
+        border: 1px solid #cbcbcb;
+        padding: 20px;
+        background-color:white;
+    }  
+
+    .set_menu{
+        border-radius:10px;
+        display: flex;
+        flex-wrap: wrap;
+        width: 90%;
         margin:0 auto;
         margin-top: 40px;
         border: 1px solid #cbcbcb;

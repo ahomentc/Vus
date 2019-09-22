@@ -2,7 +2,7 @@
     <meta charset="utf-8">
     <title>14 Octavus, Irvine, CA</title>
     <meta name="description" content="Dev Example — Networked-Aframe">
-    <script src="https://aframe.io/releases/0.7.1/aframe.min.js"><{{!}}/script>
+    <script src="js/aframe.min.js"><{{!}}/script>
 
     {{! https://stackoverflow.com/questions/52484201/how-to-load-local-js-file-into-hbs-via-script-rel-handlebars }}
 
@@ -26,10 +26,12 @@
     var username   = '{{username}}'
     var env_name   = '{{env_name}}'
     var num_images = '{{num_images}}'
+    var labels     = "{{labels}}"
 
   <{{!}}/script>
 
   <body style="background-color: black">
+
     <a-scene antialias="true" load_tour="num_images: {{num_images}}">
       <a-assets>
 
@@ -66,15 +68,17 @@
       </a-assets>
 
 
-      <a-camera id="camera" move_mobile stereocam="eye:left" look-controls cursor="rayOrigin: mouse">
-          <a-cursor></a-cursor>
-          <a-sphere class="head"
-            random-color
-            visible="false"
-          ></a-sphere>
-          <a-sky id='transition_sphere' src="#black" radius=".1"  visible='false' animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 600;"
-       animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 600;"></a-sky>
-      </a-camera>
+      <a-entity id="scene_rotator">
+          <a-camera id="camera" rotation="180 0 0" move_mobile menu stereocam="eye:left" look-controls cursor="rayOrigin: mouse">
+              <a-cursor material="color:#ffffff" visible="false"></a-cursor>
+              <a-sphere class="head"
+                random-color
+                visible="false"
+              ></a-sphere>
+              <a-sky id='transition_sphere' src="#black" radius=".1"  visible='false' animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 600;"
+           animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 600;"></a-sky>
+          </a-camera>
+      </a-entity>
 
       <a-entity id="left_hand"
                 obj-model="obj: #left-controller-obj; mtl: #left-controller-mtl"
@@ -93,8 +97,16 @@
                 raycaster="far: 9"
                 line="color: white; opacity: 1"></a-entity>
 
+      
       <a-sky id="left_pic" src="#frame1L" rotation='0 180 0' stereo="eye:left"></a-sky> 
-      <a-sky id="right_pic" src="#frame1R" rotation='0 0 0' stereo="eye:right"></a-sky> 
+      <a-sky id="right_pic" src="#frame1R" rotation='0 0 0' stereo="eye:right"></a-sky>
+
+      <a-plane position="10 -4 5.741" id="line" width="2" height="1" material="color:#ffffff" rotation="0 270 0" scale="5.751 1 1" geometry="height:0.04"></a-plane>
+      <a-plane position="-10 -4 5.741" id="line-2" width="2" height="1" material="color:#ffffff" rotation="0 90 0" scale="5.751 1 1" geometry="height:0.040000000000000036"></a-plane>
+      <a-plane position="0 -4 11.503" id="line-3" width="2" height="1" material="color:#ffffff" rotation="0 180 0" geometry="height:0.05;width:20"></a-plane>
+      <a-plane position="10 46 11.503" id="line-4" width="2" height="1" material="color:#ffffff" rotation="0 180 90" geometry="width:100;height:0.05"></a-plane>
+      <a-plane position="-10 46 11.503" id="line-5" width="2" height="1" material="color:#ffffff" rotation="0 180 90" geometry="height:0.05;width:100"></a-plane>
+      
 
     </a-scene>
 

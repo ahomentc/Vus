@@ -66,9 +66,11 @@ function transition(){
     },1000);
 }
 
+var time_pressed = 0;
 AFRAME.registerComponent('menu_select', {
     schema: {
         scene_num: {type: 'number', default: 1},
+        time_pressed: {type: 'number', default: 0}
     },
     init: function () {
         // add another to schema called name. Change the text to name in init.
@@ -77,13 +79,22 @@ AFRAME.registerComponent('menu_select', {
         this.el.addEventListener('click', function (evt) {
             transition();
             setTimeout(function(){
+                // disable clicks within 1500 ms of each other. Cursor and mouse interfere and click twice.
+                // can also use ticks for this, and then it might be easier
+                var currentTime = Date.now();
+                if(currentTime - time_pressed < 1500){
+                    return;
+                }
+                time_pressed = currentTime;
+                
+
                 currentPic = scene_num
                 document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
                 document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
 
-                var rot = document.querySelector("a-camera").getAttribute("rotation")
-                rot.y = 0
-                document.querySelector("a-camera").setAttribute('rotation', rot)
+                var rot = document.getElementById("scene_rotator").getAttribute("rotation")
+                rot.y += 180;
+                document.getElementById("scene_rotator").setAttribute('rotation', rot)
             },600)
                   // fixes the angle of the controller
               AFRAME.components['laser-controls'].Component.prototype.config['oculus-touch-controls'].raycaster.direction.y = 0;
@@ -104,29 +115,94 @@ AFRAME.registerComponent('menu_select', {
               });
         });
         this.el.addEventListener('mouseenter', function(evt){
-            this.lastMaterial = this.getAttribute("material")
+            // this.lastMaterial = this.getAttribute("material")
             this.setAttribute("material", "color", "#333")        
         })
         this.el.addEventListener('mouseleave', function(evt){
-            this.setAttribute("material", this.lastMaterial) 
+            this.setAttribute("material", "color", "#000")  
+            // this.setAttribute("material", this.lastMaterial) 
         })
+    }
+});
+
+AFRAME.registerComponent('menu', {
+    init: function () {
+        var labelsJSON = JSON.parse(labels.replace(/&quot;/g,'"'))
+        var label_count = 0;
+        for (var key in labelsJSON) {
+            if (labelsJSON.hasOwnProperty(key)) {
+                // alert(key + " -> " + labelsJSON[key]);
+                // add a new aframe tile.
+                var tile_text = document.createElement('a-entity');
+                var tile_outer = document.createElement('a-plane');
+                var tile_inner = document.createElement('a-plane');
+                
+                tile_text.setAttribute("rotation", "0 180 0");
+                tile_text.setAttribute("scale", "10 10 10");
+                tile_text.setAttribute("text__menu1", "color", "#ffffff");
+                tile_text.setAttribute("text__menu1", "anchor", "left");
+                tile_text.setAttribute("text__menu1", "value", labelsJSON[key]);
+                tile_outer.setAttribute("menu_select", "scene_num", key)
+                
+                tile_outer.setAttribute("rotation", "0 180 0");
+                tile_outer.setAttribute("id", labelsJSON[key] + "_outer");
+                tile_outer.setAttribute("menu_select", "scene_num", key)
+                tile_outer.setAttribute("width", "2")
+                tile_outer.setAttribute("height", "1")
+                tile_outer.setAttribute("material", "color", "#000")
+                
+                tile_inner.setAttribute('scale', '.95 .9 .9');
+                tile_inner.setAttribute("rotation", "0 180 0");
+                tile_inner.setAttribute("id", labelsJSON[key] + "_inner");
+                tile_inner.setAttribute("menu_select", "scene_num", key)
+                tile_inner.setAttribute("width", "2.5")
+                tile_inner.setAttribute("height", "1")
+                tile_inner.setAttribute("material", "color", "#000")
+
+                y_col = Math.floor(label_count/3) * 1.5
+                if(label_count % 3 == 0){ // col 1
+                    tile_text.setAttribute('position', '3.5 ' + y_col.toString() + ' 5.132');
+                    tile_outer.setAttribute('position', '2.5 ' + y_col.toString() + ' 5.2');
+                    tile_inner.setAttribute('position', '2.5 ' + y_col.toString() + ' 5.19');
+                }
+                else if(label_count % 3 == 1){ // col 2
+                    tile_text.setAttribute('position', '.7 ' + y_col.toString() + ' 5.132');
+                    tile_outer.setAttribute('position', '0 ' + y_col.toString() + ' 5.2');
+                    tile_inner.setAttribute('position', '0 ' + y_col.toString() + ' 5.19');
+                }
+                else if(label_count % 3 == 2){ // col 2
+                    tile_text.setAttribute('position', '-1.7 ' + y_col.toString() + ' 5.132');
+                    tile_outer.setAttribute('position', '-2.7 ' + y_col.toString() + ' 5.2');
+                    tile_inner.setAttribute('position', '-2.7 ' + y_col.toString() + ' 5.19');
+                }
+                var parent = document.querySelector("a-scene")
+                parent.appendChild(tile_text);
+                // parent.appendChild(tile_outer);
+                parent.appendChild(tile_inner);
+                label_count+=1;
+            }
+        }
     },
     tick: function(){
-        headRot = document.querySelector("a-camera").getAttribute("rotation").y
+        headRot = document.querySelector("a-camera").getAttribute("rotation").y + document.getElementById("scene_rotator").getAttribute("rotation").y;
         if(headRot < 0){
             headRot = 360 + headRot
         }
+        else if(headRot > 360){
+            headRot = headRot - 360;
+        }
         if(headRot > 90 && headRot < 270){
             this.laserEnabled = true;
+            document.querySelector("a-cursor").setAttribute("visible", true);
             document.getElementById("right_hand").setAttribute("line", "opacity", 1)
         }
         else{
             this.laserEnabled = false;
+            document.querySelector("a-cursor").setAttribute("visible", false);
             document.getElementById("right_hand").setAttribute("line", "opacity", 0)
         }
     }
 });
-
 
 AFRAME.registerComponent("load_tour", {
   schema:{
@@ -174,12 +250,12 @@ AFRAME.registerComponent("load_tour", {
 
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
       next()
-      triggerIsDown = true;
+      // triggerIsDown = true;
     });
 
     document.getElementById("right_hand").addEventListener('triggerup', function(){
         prev()
-        triggerIsDown = false;
+        // triggerIsDown = false;
     });
 
     // move backwards

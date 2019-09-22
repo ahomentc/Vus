@@ -9,7 +9,7 @@ const findImagesWithUserAndEnvName = {
 
 const insertNewImageEnvQuery = {
     name: 'insert-image-env',
-    text: 'insert into vusenv (envname, uploadtime, description, username, numimages) values($1, $2, $3, $4, $5);',
+    text: 'insert into vusenv (envname, uploadtime, description, username, numimages, labels) values($1, $2, $3, $4, $5, $6);',
 }
 
 const updateImageEnvQuery = {
