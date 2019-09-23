@@ -79,7 +79,7 @@ AFRAME.registerComponent('menu_select', {
         this.el.addEventListener('click', function (evt) {
             transition();
 
-            for(var i=currentPic; i<=currentPic+3; i++){
+            for(var i=scene_num; i<=scene_num+2; i++){
                 // check to see if picture in assets
                 if(!document.body.contains(document.getElementById(i.toString() + "L"))){
                     var image360L = document.createElement('img');
@@ -99,7 +99,7 @@ AFRAME.registerComponent('menu_select', {
                     parent.appendChild(image360R);
                 }
             }
-            
+
             setTimeout(function(){
                 // disable clicks within 1500 ms of each other. Cursor and mouse interfere and click twice.
                 // can also use ticks for this, and then it might be easier
