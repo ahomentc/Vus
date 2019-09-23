@@ -78,6 +78,28 @@ AFRAME.registerComponent('menu_select', {
         this.laserEnabled = false;
         this.el.addEventListener('click', function (evt) {
             transition();
+
+            for(var i=currentPic; i<=currentPic+3; i++){
+                // check to see if picture in assets
+                if(!document.body.contains(document.getElementById(i.toString() + "L"))){
+                    var image360L = document.createElement('img');
+                    image360L.setAttribute('id', i.toString() + "L");
+                    image360L.setAttribute('crossorigin', 'anonymous')
+                    image360L.setAttribute('src', 'https://d3ga0cb3khynzt.cloudfront.net/' + username + '/' + env_name + '/left/' + i.toString() + ".jpg");
+                    image360L.setAttribute('crossorigin', 'anonymous')
+
+                    var image360R = document.createElement('img');
+                    image360R.setAttribute('id', i.toString() + "R");
+                    image360R.setAttribute('crossorigin', 'anonymous')
+                    image360R.setAttribute('src', 'https://d3ga0cb3khynzt.cloudfront.net/' + username + '/' + env_name + '/right/' + i.toString() + ".jpg");
+                    image360R.setAttribute('crossorigin', 'anonymous')
+
+                    var parent = document.querySelector("a-assets")
+                    parent.appendChild(image360L);
+                    parent.appendChild(image360R);
+                }
+            }
+            
             setTimeout(function(){
                 // disable clicks within 1500 ms of each other. Cursor and mouse interfere and click twice.
                 // can also use ticks for this, and then it might be easier
@@ -212,6 +234,8 @@ AFRAME.registerComponent("load_tour", {
   },
   init: function() {
     // var num_images = this.data.num_images;
+
+    // loading only the first 3 sets of images first
     var num_images = 3;
     for(var i=1; i<=num_images; i++){
         var image360L = document.createElement('img');
@@ -369,8 +393,33 @@ function next(){
     //     moveForwardsAnim();
     // }
     // var num_images = document.querySelector("a-scene").getAttribute("load_pictures").num_images;
-    if(currentPic < num_images && document.getElementById(currentPic.toString() + "L").complete && document.getElementById(currentPic.toString() + "R").complete){
+
+    // if(currentPic < num_images && document.getElementById(currentPic.toString() + "L").complete && document.getElementById(currentPic.toString() + "R").complete){
+    if(currentPic < num_images){
       currentPic += 1
+
+      for(var i=currentPic; i<=currentPic+3; i++){
+          // check to see if picture in assets
+          if(!document.body.contains(document.getElementById(i.toString() + "L"))){
+              var image360L = document.createElement('img');
+              image360L.setAttribute('id', i.toString() + "L");
+              image360L.setAttribute('crossorigin', 'anonymous')
+              image360L.setAttribute('src', 'https://d3ga0cb3khynzt.cloudfront.net/' + username + '/' + env_name + '/left/' + i.toString() + ".jpg");
+              image360L.setAttribute('crossorigin', 'anonymous')
+
+              var image360R = document.createElement('img');
+              image360R.setAttribute('id', i.toString() + "R");
+              image360R.setAttribute('crossorigin', 'anonymous')
+              image360R.setAttribute('src', 'https://d3ga0cb3khynzt.cloudfront.net/' + username + '/' + env_name + '/right/' + i.toString() + ".jpg");
+              image360R.setAttribute('crossorigin', 'anonymous')
+
+              var parent = document.querySelector("a-assets")
+              parent.appendChild(image360L);
+              parent.appendChild(image360R);
+          }
+      }
+
+
       setTimeout(function(){
           document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
           document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
