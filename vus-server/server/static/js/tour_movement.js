@@ -207,9 +207,12 @@ AFRAME.registerComponent('menu', {
 AFRAME.registerComponent("load_tour", {
   schema:{
     num_images: {type: 'number', default: 1},
+    images_width: {type: 'number', default: 0},
+    images_height: {type: 'number', default: 0}
   },
   init: function() {
-    var num_images = this.data.num_images;
+    // var num_images = this.data.num_images;
+    var num_images = 3;
     for(var i=1; i<=num_images; i++){
         var image360L = document.createElement('img');
         image360L.setAttribute('id', i.toString() + "L");
