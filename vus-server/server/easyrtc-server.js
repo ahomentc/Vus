@@ -26,6 +26,7 @@ var SHA256 = require("crypto-js/sha256");
 
 var config = require('./config.js'); //config file contains all tokens and other private info
 var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
+var cors = require('cors');
 
 // Set process name
 process.title = "node-easyrtc";
@@ -43,15 +44,9 @@ const host = '127.0.0.1'
 // host = '192.168.0.104'
 // host = '192.168.50.97'
 
-var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-}
 
 var app = express(host);
-app.use(allowCrossDomain);
+app.use(cors());
 
 
 //===============PASSPORT===============
