@@ -379,7 +379,7 @@ function moveForwardsAnim(){
     // return radius to large number
     document.getElementById('left_pic').setAttribute("radius",2000);
     document.getElementById('right_pic').setAttribute("radius",2000);
-    document.querySelector("a-camera").setAttribute("position","0 0 0")
+    document.querySelector("a-camera").setAttribute("position","0 0 0");
   },500)
 
 }
@@ -421,6 +421,7 @@ function next(){
 
 
       setTimeout(function(){
+          document.getElementById("instructions").setAttribute("visible", false);
           document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
           document.getElementById("right_pic").setAttribute("src", "#" + currentPic.toString() + "R")
           var rot = document.querySelector("a-camera").getAttribute("rotation")

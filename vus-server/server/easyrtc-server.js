@@ -215,7 +215,7 @@ app.get('/signin', function(req, res){
   console.log("Room = " + room);
   if (req.session.user && room) {
     // if already signin, redirect to lobby page
-    res.render('lobby', {group_session_room:room, user: req.session.user});
+    res.render('/', {group_session_room:room, user: req.session.user});
     // res.redirect(req.session.returnTo || '/');
     // delete req.session.returnTo;
   } else {
@@ -250,7 +250,7 @@ app.post('/login', (req, res, next) => {
     // send a cookie
     res.cookie('group_session_room', room_name.toString());
     
-    return res.redirect('lobby');
+    return res.redirect('/');
   })(req, res, next);
 });
 
@@ -443,7 +443,7 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
 
   if (!htmlFileFound) {
     req.session.error = "HTML file specified is not in the directory uploaded";
-    return res.redirect('lobby');
+    return res.redirect('/');
   }
 
   funct.localUploadModel(req.session.user.username, uploadedFiles, htmlFileName, directoryName,
@@ -454,7 +454,7 @@ app.post('/uploadModel', upload.array('new_models'), (req, res) => {
         } else {
           delete req.session.error;
         }
-        return res.redirect('lobby');  
+        return res.redirect('/');  
       }
     );
 });
@@ -501,7 +501,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
   else {
     req.session.user = req.user;
     delete req.session.error;
-    res.redirect('lobby');
+    res.redirect('/');
   }
 })
 
@@ -541,7 +541,7 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook'), (req, res)
   else {
     req.session.user = req.user;
     delete req.session.error;
-    res.redirect('lobby');
+    res.redirect('/');
   }
 })
 
@@ -638,7 +638,7 @@ app.get('/createRoom', function(req, res){
       funct.localCreateGroup(room_id.toString(), defaultRooms).then(
         result => {
           delete req.session.error;
-          res.redirect('lobby');
+          res.redirect('/');
         }
       ).catch(err => {
         console.log(err);
@@ -666,7 +666,7 @@ app.get('/getUserRoom',(req,res) => {
 app.post('/joinRoom', function(req, res){
     var roomInfo = req.body;
     if(!roomInfo.room_id){
-        res.render('lobby', {});
+        res.render('/', {});
     } else {
       let newRoomID = roomInfo.room_id;
       const previousID =  req.cookies['group_session_room'];
@@ -675,7 +675,7 @@ app.post('/joinRoom', function(req, res){
           if (!result) {
             const error = "group ID does not exist";
             req.session.error = error;
-            res.redirect('lobby');
+            res.redirect('/');
           } else {
             funct.localLeaveGroup(previousID).then(
               value => {
@@ -712,7 +712,7 @@ app.post('/joinRoom', function(req, res){
                 req.session.group_session_room = newRoomID;
 
                 delete req.session.error;
-                res.redirect('lobby');
+                res.redirect('/');
               }
             )
           }
