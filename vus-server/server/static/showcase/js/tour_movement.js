@@ -5,7 +5,7 @@ var num_images = 1
 var triggerIsDown = false;
  
 
-// Need to somehow pass in: usernmae, room_name, number of pictures
+// Need to somehow pass in: username, room_name, number of pictures
 
       
 var scrolling = true
@@ -165,15 +165,8 @@ AFRAME.registerComponent("load_tour", {
         }
     }
 
-
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
-      next()
-      triggerIsDown = true;
-    });
-
-    document.getElementById("right_hand").addEventListener('triggerup', function(){
-        prev()
-        triggerIsDown = false;
+    	next()
     });
 
     // move backwards
