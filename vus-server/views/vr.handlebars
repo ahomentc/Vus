@@ -2,22 +2,27 @@
 
 <div style="margin: 10px;padding:20px;">
     <div class="enclose">
-        <h5><label>Enter Device Code</label></h5>
-        <form>
-            <div class="form-group">
-                <input id="codeInput" type="text" class="form-control" name="code" placeholder="Enter Code" required/>
-            </div>
-            <button onclick="setCodeCookie()" class="btn btn-primary">Connect</button>
-        </form>
+        <h5><label>Device Code: </label> <label id="devicecode">hi</label></h5>
     </div>
     <div id="set_menu" class="set_menu" style="visibility: hidden;">
     </div>
 </div>
 <script>
 
-    function setCodeCookie(){
-        var code = document.getElementById("codeInput").value;
-        setCookie("headsetRemoteCode", code);
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
     }
 
     function setCookie(name,value) {
@@ -25,21 +30,20 @@
         document.cookie = name + "=" + (value || "")  + expires + "; path=/";
     }
     
-    if(navigator.getVRDisplays) {
-      navigator.getVRDisplays().then(function(displays) {
-        if(displays.length > 0) {
-          // if vr display, redirect to VR page
-          window.location.href = "vr"
+    document.addEventListener('DOMContentLoaded', function() {
+        if(getCookie('headsetLocalCode')){
+            document.getElementById("devicecode").innerHTML = getCookie('headsetLocalCode');
         }
-      });
-    }
+        else{
+            var code = Math.floor((Math.random() * 1000000000) + 1).toString(24);
+            setCookie('headsetLocalCode',code);   
+            document.getElementById("devicecode").innerHTML = code;
+        }
+    }, false);
 
 
 </script>
 <style>
-    .file-upload{
-        margin-bottom: 15px;
-    }
 
     body {
         background-color:#f3f3f3;

@@ -234,6 +234,17 @@
 
 </body>
 
+<script>
+  // if vr display, redirect to VR page
+  if(navigator.getVRDisplays) {
+    navigator.getVRDisplays().then(function(displays) {
+      if(displays.length > 0) {
+        window.location.href = "vr"
+      }
+    });
+  }
+</script>
+
 <!-- Upload, email, "we'll create a simple and free meetup enviornment and email it to you" -->
 
 </html>

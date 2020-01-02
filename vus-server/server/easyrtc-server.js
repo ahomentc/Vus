@@ -296,6 +296,10 @@ app.get('/home', (req, res) => {
   }
 });
 
+app.get('/vr', (req, res) => {
+  res.render('vr')
+});
+
 
 app.get('/userconsole', (req, res) => {
   if (!req.session.user){
