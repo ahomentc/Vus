@@ -144,7 +144,11 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(path.join(__dirname, '/static/landing_page')));
 app.get('/',function(req, res){
-  res.sendfile(path.join(__dirname + '/static/landing_page/index.html'));
+  if(!req.session.user) {
+    res.sendfile(path.join(__dirname + '/static/landing_page/index.html'));
+  } else {
+    res.render('home', {user: req.session.user})
+  }
 });
 
 app.get('/old', function(req, res) {
@@ -281,6 +285,14 @@ app.get('/uploadImages', (req, res) => {
     res.redirect('signin');
   } else {
     res.render('upload_images', {user: req.session.user})
+  }
+});
+
+app.get('/home', (req, res) => {
+  if(!req.session.user) {
+    res.redirect('signin');
+  } else {
+    res.render('home', {user: req.session.user})
   }
 });
 

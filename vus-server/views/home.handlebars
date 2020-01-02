@@ -1,246 +1,71 @@
-<link href="https://fonts.googleapis.com/css?family=DM+Sans&display=swap" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"><{{!}}/script>
 
-<div id="page1">
-  <div id="vus_label">
-    <label>Vus</label>
-  </div>
-  <div id="vus_desc">
-    <label>Social VR Marketplace. <label>
-    <label>For Enterprise and Education</label>
-  </div>
-  <div id='buttons'>
-    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/vrmanager'">Sell Your WebVR Experience</button>
-    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/requestvr'">Request WebVR Experience</button>
-    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/lobby'">Try a Basic Demo</button>
-  </div>
+<div style="margin: 10px;padding:20px;">
+    <div class="enclose">
+        <h5><label>Enter Device Code</label></h5>
+        <form>
+            <div class="form-group">
+                <input id="codeInput" type="text" class="form-control" name="code" placeholder="Enter Code" required/>
+            </div>
+            <button onclick="setCodeCookie()" class="btn btn-primary">Connect</button>
+        </form>
+    </div>
+    <div id="set_menu" class="set_menu" style="visibility: hidden;">
+    </div>
 </div>
+<script>
 
-<div id="page2">
-  <div class='vid_label'>
-    <label style='font-weight:bold'>Education</label><br/>
-    <h5 style='font-weight:bold'>Interact with your students in whole new ways</h5><br/> 
-    <h5 style='font-size: 18px;'>Prevent distractions and engage students better.</h5>
-    <h5 style='font-size: 18px;'>Explain concepts from the real 3D world in a 3D way.</h5>
-  </div>
-  <div class="vid">
-   <iframe id="vid_frame" width="560" height="315" src="https://www.youtube.com/embed/33tsxNLoLDk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  </div>
-</div>
+    function setCodeCookie(){
+        var code = document.getElementById("codeInput").value;
+        setCookie("headsetRemoteCode", code);
+    }
 
-<div id="page3">
-  <br/>
-  <div class='vid_label' style='margin-top:0px;padding: 10px;'>
-    <label style='font-weight:bold'>Real Estate</label><br/>
-    <h5 style='font-weight:bold'>House hunt faster with virtual tours by real agents</h5><br/> 
-    <h5 style='font-size: 18px;'>We mail cardboard headsets to your clients with your logo.</h5> 
-    <h5 style='font-size: 18px;'>We also loan out professional VR headsets.</h5> 
-  </div>
-  <div class="vid">
-    <img id="vid_frame" width="560" src="https://i.imgur.com/0mxPaPJ.gif"/>
-  </div>
-</div>
-
-<div id="page4">
-  <br/>
-  <div class='vid_label' style='padding: 10px;'>
-    <label style='font-weight:bold'>Social VR in the browser. Any device.</label><br/>
-    <h5 style='font-size: 18px;'>Easily experience VR with others.</h5> 
-    <h5 style='font-size: 18px;'>100% web based.</h5> 
-    <h5 style='font-size: 18px;'>Works on any device with a browser.</h5> 
-  </div>
-</div>
-
-<div id="page5">
-  <div class='vid_label' style='padding: 20px;'>
-    <label style='font-weight:bold'>See what's possible with VUS.</label><br/>
-    <h5 style='font-size: 18px;'>Call us at: +1 (925) 238 8717</h5>
-    <button class="btn btn-primary but" style="width:240px;" onclick="window.location.href = '/requestvr'">Contact Us</button>
-  </div>
-</div>
-
-<footer>
-<img style='width:100px; margin:20px; margin-left:2%;' src='https://i.imgur.com/g3RjuFz.png'/>
-<label>© 2019 VUS</label>
-</footer>
+    function setCookie(name,value) {
+        var expires = "";
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+    
+    if(navigator.getVRDisplays) {
+      console.log('WebVR 1.1 supported');
+      navigator.getVRDisplays().then(function(displays) {
+        if(displays.length > 0) {
+          alert("is vr")
+        }
+      });
+    }
 
 
+</script>
 <style>
-  body{
-    background-color: #fafafa;
-  }
-
-  footer{
-    background-color: #343a40;
-    color: white;
-    margin-bottom:0;
-  }
-
-  #vus_label{
-    font-size: 80px;
-    text-align: right;
-    margin-right: 10%;
-    // color: #0d7db9;
-    color: white;
-    padding-top: 80px;
-    font-family: 'Quicksand', sans-serif;
-  }
-
-  #vus_desc{
-    display: none;
-  }
-
-  #page1{
-    height: 93vh;
-    background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2) ), url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
-    background-size: cover;
-  }
-
-  #page2{
-    height: 74vh;
-    background-size: cover;
-    margin-top: 40px;
-    background-color: #fafafa;
-  }
-
-  #page3{
-    height: 78vh;
-    background-size: cover;
-    background-color: #f1f1f1;
-  }
-
-  #page4{
-    height: 24vh;
-    background-size: cover;
-    background-color: #fafafa;
-    margin-top: 0px;
-  }
-
-  #page5{
-    height: 30vh;
-    background-size: cover;
-    margin-top: 20px;
-    background-color: #f1f1f1;
-  }
-
-  .vid{
-    margin: 0 auto; 
-    width: 560px;
-    margin-top: 10px;
-  }
-
-  .vid_label{
-     text-align:center;
-     margin-top: 0px;
-     margin-bottom: 40px;
-  }
-
-  .vid_label label{
-    font-size: 28px;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .vid_label h5{
-    font-size: 22px;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  @media only screen and (max-width: 800px) {
-
-    #vus_label{
-      margin-right: 0px;
-      font-size: 60px;
-      text-align: center;
-      color: white;
-      font-family: 'DM Sans', sans-serif;
+    .file-upload{
+        margin-bottom: 15px;
     }
 
-    #vus_desc{
-      font-size: 25px;
-      text-align: center;
-      color: white;
-      font-family: 'DM Sans', sans-serif;
-      display: block;
+    body {
+        background-color:#6b6b6b;
     }
 
-    #page1{
-      height: 93vh;
-      background: linear-gradient( rgba(0, 0, 0, .6), rgba(0, 0, 0, 0.7) ), url("https://i.imgur.com/gNcdKmB.jpg") no-repeat left top;
-      background-size: cover;
-      padding-top: 10px;
-    }
+    .enclose{
+        border-radius:10px;
+        display: flex;
+        flex-wrap: wrap;
+        width: 300px;
+        margin:0 auto;
+        margin-top: 40px;
+        border: 1px solid #cbcbcb;
+        padding: 20px;
+        background-color:white;
+    }  
 
-    #page2{
-      height: 60%;
-      background-size: cover;
-    }
-
-    #page3{
-      height: 560px;
-      background-size: cover;
-      background-color: #fafafa;
-    }
-
-    #page4{
-      height: 230px;
-      margin-top: 30px;
-      background-size: cover;
-      background-color: #f1f1f1;
-    }
-
-    #page5{
-      height: 200px;
-      margin-top: 20px;
-      background-size: cover;
-      background-color: #fafafa;
-    }
-
-    .vid{
-      margin: 0 auto; 
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    #vid_frame{
-        width: 100%;
-    }
-
-    .vid_label{
-       text-align:center;
-       margin-top: 0px;
-       margin-bottom: 40px;
-    }
-
-    .vid_label label{
-      font-size: 24px;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .vid_label h5{
-      font-size: 18px;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    #buttons{
-        display: inline-block;
-        position: absolute;
-        margin: 0 auto; 
-        left:27%;
-    }
-  }
-
-  .but{
-      margin: 10px;
-      font-size: 100%;
-      display: inline-block;
-      align: center
-  }
-
-  #buttons{
-      display: inline-block;
-      position: absolute;
-      margin: 0 auto; 
-      left:27%;
-      bottom: 4%;
-  }
-
+    .set_menu{
+        border-radius:10px;
+        display: flex;
+        flex-wrap: wrap;
+        width: 90%;
+        margin:0 auto;
+        margin-top: 40px;
+        border: 1px solid #cbcbcb;
+        padding: 20px;
+        background-color:white;
+    }  
 </style>
