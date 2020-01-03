@@ -178,6 +178,8 @@ exports.localUploadImage = async function(username, uploaded_files, folderName, 
       if (err) throw err;
     });
 
+    // now create an entree in the house table with the images
+
 
 
     // pool.query(findImagesWithUserAndEnvName, (err, result) => {
@@ -292,6 +294,19 @@ exports.findEnvs = function(userNames) {
       deferred.resolve(envs);
     });
   }
+
+  return deferred.promise;
+}
+
+// This is just for experiment purposes, don't actually use
+exports.getAllEnvs = function(){
+  var deferred = Q.defer();
+  var findAllImageEnvs = {...prepareStatements.findAllImageEnvs};
+  pool.query(findAllImageEnvs, (err, result) => {
+    if (err) throw err;
+    const envs = result.rows;
+    deferred.resolve(envs);
+  });
 
   return deferred.promise;
 }
@@ -488,229 +503,88 @@ exports.localGetModels = function(username) {
   return deferred.promise;
 }
 
-// ========================================================================
-// Methods for storing the information about each group:
 
-// exports.localCheckGroupExist = function(groupID) {
-//   var deferred = Q.defer();
+// ------ Mailbox ------
 
-//   var findGroupQuery = {...prepareStatements.findGroupQuery};
-//   findGroupQuery['values'] = [groupID];
-//   pool.query(findGroupQuery, (err, result) => {
-//     if (err) throw err;
-//     if (result.rows.length == 0) {
-//       deferred.resolve(false);
-//     } else {
-//       deferred.resolve(true);
-//     }
-//   });
-//   return deferred.promise;
-// }
+exports.localSetMessage = function(code, username, house_name){
+ var deferred = Q.defer();
 
-// exports.localCreateGroup = function(groupID, defaultUsers) {
-//   var deferred = Q.defer();
-//   var findGroupQuery = {...prepareStatements.findGroupQuery};
-//   findGroupQuery['values'] = [groupID];
-//   pool.query(findGroupQuery, (err, result) => {
-//     if (err) throw err;
-//     if (result.rows.length == 0) {
-//       var insertGroupQuery = {...prepareStatements.insertGroupQuery};
-//       insertGroupQuery['values'] = [groupID, 1];
-//       pool.query(insertGroupQuery, (err, result) => {
-//         if(err) throw err;
+  var findMailboxQuery = {...prepareStatements.findMailboxQuery};
+  findMailboxQuery['values'] = [code];
+  pool.query(findMailboxQuery, (err, result) => {
+    if (!result || result.rows.length == 0) {
+      // insert here. Modify below.
+      var insertMailboxMessageQuery = {...prepareStatements.insertMailboxMessageQuery};
+      insertMailboxMessageQuery['values'] = [code, username, house_name, null, null];
+      pool.query(insertMailboxMessageQuery, (err, result) => {
+        if (err) throw err;
+      });
+    } else {
+      // update here. Modify below
+      var updateMailboxMessageQuery = {...prepareStatements.updateMailboxMessageQuery};
+      updateMailboxMessageQuery['values'] = [code, username, house_name, null, null];
+      pool.query(updateMailboxMessageQuery, (err, result) => {
+        if (err) throw err;
+      });
+    }
+  });
 
-//         var groupArr = [];
-//         defaultUsers.forEach(() => groupArr.push(groupID));
+  deferred.resolve(true);
+  return deferred.promise;
+}
 
-//         var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
-//         insertGroupUserQuery['values'] = [[groupArr],[defaultUsers]];
+exports.localGetMessageHouseName = function(code){
+  var deferred = Q.defer();
+  var findMailboxQuery = {...prepareStatements.findMailboxQuery};
+  findMailboxQuery['values'] = [code];
+  pool.query(findMailboxQuery, (err, result) => {
+    if (!result || result.rows.length == 0) {
+        deferred.resolve(0);
+    } else {
+        deferred.resolve(result.rows[0].house_name);
+    }
+  });
+  return deferred.promise;
+}
 
-//         pool.query(insertGroupUserQuery, (err, res) => {
-//           if (err) throw err;
-//           deferred.resolve(true);
-//         });
+exports.localGetMessageUsername = function(code){
+  var deferred = Q.defer();
+  var findMailboxQuery = {...prepareStatements.findMailboxQuery};
+  findMailboxQuery['values'] = [code];
+  pool.query(findMailboxQuery, (err, result) => {
+    if (!result || result.rows.length == 0) {
+        deferred.resolve(0);
+    } else {
+        deferred.resolve(result.rows[0].username);
+    }
+  });
+  return deferred.promise;
+}
 
-//       });
-//     } else {
-//       deferred.resolve(false);
-//     }
-//   });
+exports.localDeleteMessage = function(code){
+  var deferred = Q.defer();
+  var deleteMessageQuery = {...prepareStatements.deleteMessageQuery};
+  deleteMessageQuery['values'] = [code];
+  pool.query(deleteMessageQuery, (err, result) => {
+    if (err) throw err;
+    deferred.resolve(true);
+  })
+}
 
-//   return deferred.promise;
-// }
-
-// exports.localJoinGroup = function(groupID) {
-//   var deferred = Q.defer();
-
-//   var findGroupQuery = {...prepareStatements.findGroupQuery};
-//   findGroupQuery['values'] = [groupID];
-//   pool.query(findGroupQuery, (err, result) => {
-//     if (err) throw err;
-//     if (result.rows.length == 0) {
-//       deferred.resolve(false);
-//     } else {
-//       const groupInfo = result.rows[0];
-//       var updateGroupQuery = {...prepareStatements.updateGroupQuery};
-//       updateGroupQuery['values'] = [groupInfo.usercount + 1, groupID];
-//       pool.query(updateGroupQuery, (err, res) => {
-//         if (err) throw err;
-
-//         var findGroupUserQuery = {...prepareStatements.findGroupUserQuery};
-//         findGroupUserQuery['values'] = [groupID];
-//         pool.query(findGroupUserQuery, (err, res) => {
-//           if (err) throw err;
-//           deferred.resolve(res.rows);
-//         });
-
-//       });
-//     }
-//   });
-
-//   return deferred.promise;
-// }
-
-// exports.localLeaveGroup = function(groupID) {
-//   var deferred = Q.defer();
-
-//   var findGroupQuery = {...prepareStatements.findGroupQuery};
-//   findGroupQuery['values'] = [groupID];
-//   pool.query(findGroupQuery, (err, result) => {
-//     if (err) throw err;
-//     if (result.rows.length == 0) {
-//       deferred.resolve(false);
-//     } else {
-//       const groupInfo = result.rows[0];
-//       if (groupInfo.usercount > 1) {
-//         var updateGroupQuery = {...prepareStatements.updateGroupQuery};
-//         updateGroupQuery['values'] = [groupInfo.usercount - 1, groupID];
-//         pool.query(updateGroupQuery, (err, res) => {
-//           if (err) throw err;
-//           deferred.resolve(true);
-//         });
-//       } else {
-//         var deleteGroupQuery = {...prepareStatements.deleteGroupQuery};
-//         deleteGroupQuery['values'] = [groupID];
-
-//         pool.query(deleteGroupQuery, (err, res) => {
-//           if (err) throw err;
-//           var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
-//           deleteGroupUserQuery['values'] = [groupID];
-
-//           pool.query(deleteGroupUserQuery, (err, res) => {
-//             if (err) throw err;
-//             deferred.resolve(true);
-//           });
-//         })
-//       }
-//     }
-//   });
+// ---- End Mailbox ----
 
 
-//   return deferred.promise;
-// }
-
-// exports.localUpdateGroupEnvs = function(groupID, newUserEnvironments) {
-//   var deferred = Q.defer();
-//   var deleteGroupUserQuery = {...prepareStatements.deleteGroupUserQuery};
-//   deleteGroupUserQuery['values'] = [groupID];
-//   pool.query(deleteGroupUserQuery, (err, res) => {
-//     if (err) throw err;
-
-//     console.log('newUserEnvironments');
-//     console.log(newUserEnvironments);
-//     if (newUserEnvironments.length == 0) {
-//       deferred.resolve(true);
-//       return deferred.promise;
-//     }
-
-//     var groupArr = [];
-//     newUserEnvironments.forEach(() => groupArr.push(groupID));
-
-//     var insertGroupUserQuery = {...prepareStatements.insertGroupUserQuery};
-//     insertGroupUserQuery['values'] = [[groupArr],[newUserEnvironments]];
-
-//     pool.query(insertGroupUserQuery, (err, res) => {
-//       if (err) throw err;
-//       deferred.resolve(true);
-//     })
-//   });
-
-//   return deferred.promise;
-// }
 
 
-/**
- * Interface Design:
- * 
- * user =>
- *  username: string
- *  password: string (hashed using bcrypt)
- *  avator: image
- *  enviornments: string[] (name of the environment that the user owns)
- * 
- * environment =>
- *  envname: string
- *  htmlname: string
- *  uploadtime: Date
- *  description: string
- *  username: string
- *  tag: string
- * 
- * group =>
- *  directories: string[], // list of tags which will be used to find all environments in that tag
- *  id: string,
- *  userCount: number // number of user in this group (if reaches 0, delete this group in the DB)
- * 
- * ------------------------------------------------------------------------------------------------
- * 
- * Storage Design:
- * 
- * currently make environment name unique for each user (cannot have 2 iphone.txt under a single
- *  user's name, but can have iphone.txt for 2 different users)
- * 
- * AWS s3 buckets =>
- *  each user will have a folder under a s3 bucket,
- *  each item in the s3 bucket will be the actual file with name
- *    consistent with the environment name stored in the database
- */
 
-// set the room for the user on the database
-// exports.setUserRoom = function(username,room_id){
-//   var deferred = Q.defer();
 
-//   var findUserQuery = {...prepareStatements.findUserQuery};
-//   findUserQuery['values'] = [username]; 
-//   pool.query(findUserQuery, (err, result) => {
-//     if (err) throw err;
-//     if (result.rows.length == 0) {
-//       deferred.resolve(false); // username does not exists
-//     } else {
-//       var updateUserRoomQuery = {...prepareStatements.updateUserRoomQuery};
-//       updateUserRoomQuery['values'] = [room_id, username];
-//       pool.query(updateUserRoomQuery, (err, res) => {
-//         if (err) throw err;
-//         deferred.resolve(true);
-//       })
-//     }
-//   });
 
-// }
 
-// // get the room that the user has
-// exports.getUserRoom = function(username,vus_group_session_auth){
-//   var deferred = Q.defer();
 
-//   var findUserQuery = {...prepareStatements.findUserQuery};
-//   findUserQuery['values'] = [username]; 
-//   pool.query(findUserQuery, (err, result) => {
-//     if (err) throw err;
-//     if (result.rows.length == 0) {
-//       deferred.resolve(false); // username does not exists
-//     } else {
-//       const user = result.rows[0];
-//       deferred.resolve(user.room);
-//     }
-//   });
-//   return deferred.promise;
-// };
+
+
+
+
+
+
 

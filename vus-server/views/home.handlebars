@@ -2,18 +2,88 @@
 
 <div style="margin: 10px;padding:20px;">
     <div class="enclose">
-        <h5><label>Enter Device Code</label></h5>
+        <h5><label id="remotecode"></label></h5>
         <form>
             <div class="form-group">
-                <input id="codeInput" type="text" class="form-control" name="code" placeholder="Enter Code" required/>
+                <input id="codeInput" type="text" class="form-control" name="code" placeholder="Enter Device Code" required/>
             </div>
             <button onclick="setCodeCookie()" class="btn btn-primary">Connect</button>
         </form>
+        <div id="homes">
+
+        </div>
     </div>
     <div id="set_menu" class="set_menu" style="visibility: hidden;">
     </div>
 </div>
 <script>
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    function sendMessage(envname,username){
+        var remoteCode = getCookie('headsetRemoteCode')
+        $.post("/sendHeadsetMessage",
+        {
+            code: remoteCode,
+            username: username,
+            house_name: envname
+        },
+        function(data, status){
+            alert("Data: " + data + "\nStatus: " + status);
+        });
+    };
+
+    function clearMessage(envname,username){
+        var remoteCode = getCookie('headsetRemoteCode')
+        $.post("/deleteHeadsetMessage",{code: remoteCode});
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // set text to be the code saved from cookie
+        if(getCookie('headsetRemoteCode')){
+            document.getElementById("remotecode").innerHTML = "Connected to: " + getCookie('headsetRemoteCode');
+        }
+
+        // load all the homes into a list
+        $.get("/getAllImages", function(data, status){
+            var homes = data;
+
+            var btn = document.createElement("BUTTON");
+            btn.innerHTML = "clear";
+            document.body.appendChild(btn);
+            btn.addEventListener("click", function(event) {
+              clearMessage();
+              event.preventDefault();
+            });
+
+            homes.forEach(home => {
+                var envname = home.envname;
+                var username = home.username;
+                var btn = document.createElement("BUTTON");
+                btn.innerHTML = envname;
+                document.body.appendChild(btn);
+                btn.addEventListener("click", function(event) {
+                  sendMessage(envname,username);
+                  event.preventDefault();
+                });
+            });
+        });
+
+    }, false);
 
     function setCodeCookie(){
         var code = document.getElementById("codeInput").value;

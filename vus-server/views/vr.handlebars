@@ -29,6 +29,20 @@
         var expires = "";
         document.cookie = name + "=" + (value || "")  + expires + "; path=/";
     }
+
+    var localCode = getCookie('headsetLocalCode')
+    setInterval(function(){ 
+        if(localCode){
+            $.post("/getHeadsetMessage",
+            {
+                code: localCode,
+            }, function(data, status){
+                if(data != null && data != "/tour?username=0&name=0" && window.location.href.includes(data) == false){
+                    window.location.href = data;
+                }
+            });
+        }
+    }, 5000);
     
     document.addEventListener('DOMContentLoaded', function() {
         if(getCookie('headsetLocalCode')){

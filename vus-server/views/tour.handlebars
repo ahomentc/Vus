@@ -28,6 +28,39 @@
     var num_images = '{{num_images}}'
     var labels     = "{{labels}}"
 
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    var localCode = getCookie('headsetLocalCode')
+    setInterval(function(){ 
+        if(localCode){
+            $.post("/getHeadsetMessage",
+            {
+                code: localCode,
+            }, function(data, status){
+                if(data != null && data != "/tour?username=0&name=0" && window.location.href.includes(data) == false){
+                    window.location.href = data;
+                }
+                else if (data == "/tour?username=0&name=0" || data == null) {
+                    window.location.href = "/vr"
+                }
+            });
+        }
+    }, 5000);
+
   <{{!}}/script>
 
   <body style="background-color: black">

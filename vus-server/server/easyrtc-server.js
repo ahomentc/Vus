@@ -330,59 +330,38 @@ app.get('/tour', (req, res) => {
     );
 });
 
-// http://localhost:8090/grouplink?groupid=6bea02&reroute=/room/dino/index.html
-// app.get('/grouplink', (req, res) => {
-//     var newRoomID = req.query.groupid;
-//     var reroute = req.query.reroute;
+app.post('/sendHeadsetMessage', (req, res) => {
+  // get the code and username and the house_name from req
+  // Make sure to not do req.session.user.username since that's the logged in user not house uploader
+  code = req.body.code;
+  username = req.body.username;
+  house_name = req.body.house_name;
+  funct.localSetMessage(code,username,house_name).then(
+    result => {
+      console.log("sent message")
+    }
+  );
+});
 
-//     const previousID =  req.cookies['group_session_room'];
-//     funct.localJoinGroup(newRoomID).then(
-//       result => {
-//         if (!result) {
-//           const error = "group ID does not exist";
-//           req.session.error = error;
-//           res.redirect('lobby');
-//         } else {
-//           funct.localLeaveGroup(previousID).then(
-//             value => {
-//               const vus_username = req.cookies['vus_username'];
-//               funct.setUserRoom(vus_username,newRoomID);
+app.post('/getHeadsetMessage', (req, res) => {
+  // get the code from req
+  code = req.body.code
+  funct.localGetMessageUsername(code).then(
+    resultUsername => {
+      funct.localGetMessageHouseName(code).then(
+        resultHouse => {
+          url = "/tour?username=" + resultUsername + "&name=" + resultHouse
+          res.send(url);
+        }
+      );
+    }
+  );
+});
 
-//               res.cookie('group_session_room', newRoomID.toString());
-//               req.session.group_session_room = newRoomID;
-
-//               var directories = [];
-//               result.forEach(groupUser => {
-//                 directories.push(groupUser.username);
-//               });
-
-//               res.cookie('group_room_types', directories);
-//               req.session.group_room_types = directories;
-
-//               // create a session id to be stored in cookie for user authentication
-//               var sessionID = SHA256(Math.random().toString())
-
-//               // store username and auth code in cookie
-//               res.cookie('vus_group_session_auth', sessionID.toString());
-
-//               if (req.session.user) {
-//                 res.cookie('vus_username', req.session.user.username);
-//               }
-
-//               // store the room in cookie... remove this later
-//               res.cookie('group_session_room', newRoomID.toString());
-//               req.session.group_session_room = newRoomID;
-
-//               delete req.session.error;
-//               res.redirect(reroute);
-//             }
-//           )
-//         }
-//       }
-//     ).catch(err => {
-//       console.log(err);
-//     })
-// });
+app.post('/deleteHeadsetMessage', (req, res) => {
+  code = req.body.code
+  funct.localDeleteMessage(code)
+})
 
 app.post('/removeFile', (req, res) => {
   if (!req.session.user) {
@@ -437,42 +416,12 @@ app.post('/uploadImages', upload.array('new_images'), (req,res) => {
     );
 });
 
-app.post('/uploadModel', upload.array('new_models'), (req, res) => {
-  if (req.session.user == null) {
-    res.redirect('signin');
-  }
-
-  const directoryName = req.body.folderName;
-
-  const uploadedFiles = req.files.map(file => {
-    let newPath = file.originalname.split('/');
-    newPath = newPath.reverse();
-    // pop the old folder name
-    newPath.pop();
-    newPath.push(directoryName);
-    newPath = newPath.reverse().join('/');
-    return {'originalname': newPath, 'buffer': file.buffer};
-  });
-
-  const htmlFileName = req.body.htmlName + ".html";
-  const htmlFileFound = uploadedFiles.find(file => file.originalname === directoryName + "/" + htmlFileName);
-
-  if (!htmlFileFound) {
-    req.session.error = "HTML file specified is not in the directory uploaded";
-    return res.redirect('/');
-  }
-
-  funct.localUploadModel(req.session.user.username, uploadedFiles, htmlFileName, directoryName,
-    req.body.description.trim(), req.body.tag).then(
-      result => {
-        if (!result) {
-          req.session.error = "File upload Unsuccessful";
-        } else {
-          delete req.session.error;
-        }
-        return res.redirect('/');  
-      }
-    );
+// funct.getAllEnvs
+app.get('/getAllImages', (req, res) => {
+  const resultMap = {};
+  funct.getAllEnvs().then(resultList => {
+    res.send(resultList)    
+  })
 });
 
 //===============External Strategies====================
@@ -574,206 +523,11 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/signin');
 }
 
-// app.use(serveStatic('server/static', {'index': ['index.html']}));
-// app.use('/room', ensureAuthenticated);
-app.get('/loadRoom', (req, res) => {
-  funct.localRemoveVRFilesInTemp().then(
-    () => {
-      console.log("Temp folders removed");
-      funct.localGetVRFilesFromS3(req.session.env_list).then(
-        () => {
-          console.log("Temp folders loaded from S3");
-          res.redirect('VRHome');
-        }
-      )
-    }
-  );
-});
-
-
 app.use('/VRHome', serveStatic('server/static/lobby', {'index': ['Lobby.html']}));
 app.use('/room', serveStatic('server/static'));
 app.use('/js', serveStatic('server/static/js'));
 
 app.use('/envs',serveStatic('tempEnvs'));
-//======== CREATING GROUP SESSION ========
-
-// Maybe switch to just session instead of cookies for security reasons
-
-// when create group session:
-// server returns an id for the room
-// save id in a cookie and in a session
-// use the coookie to load the room id in the static html
-
-// Getting friends to join room as well:
-// Have an "invite" button with friends list when creating room
-// Allow friends to enter a code to join the room on the "create room" page
-
-// -- Create room page --
-// [Create new room] -> gives room id to share with friends
-// [Join room: enter room id ___]
-// [Go to room]
-
-app.get('/createRoom', function(req, res){
-  const previousID =  req.cookies['group_session_room'];
-  funct.localLeaveGroup(previousID).then(
-    value => {
-      // generate a random hex roomname
-      let randomInt = Math.floor((Math.random() * 10000000) + 1);
-      let room_id = randomInt.toString(16);
-
-      // TODO: Save room_id in database under logged in user's account
-      // req.session.user.room = room_id;
-      // console.log(req.session.user.room)
-      // req.session.user.room = room_id
-      const vus_username = req.cookies['vus_username'];
-      funct.setUserRoom(vus_username,room_id);
-
-      res.cookie('group_session_room', room_id.toString());
-      req.session.group_session_room = room_id;
-
-      // directory stuff
-      const defaultRooms = ['zillow', 'theater'];
-      res.cookie('group_room_types', defaultRooms);
-      req.session.group_room_types = defaultRooms;
-
-      // create a session id to be stored in cookie for user authentication
-      var sessionID = SHA256(Math.random().toString())
-
-      // store username and auth code in cookie
-      res.cookie('vus_group_session_auth', sessionID.toString());
-
-      if (req.session.user) {
-        res.cookie('vus_username', req.session.user.username);
-      }
-
-      // store the room in cookie... remove this later
-      res.cookie('group_session_room', room_id.toString());
-      req.session.group_session_room = room_id;
-
-      funct.localCreateGroup(room_id.toString(), defaultRooms).then(
-        result => {
-          delete req.session.error;
-          res.redirect('/');
-        }
-      ).catch(err => {
-        console.log(err);
-      });
-
-    });
-  });
-
-app.get('/getUserRoom',(req,res) => {
-    // we'll only get the cookies that vus sets, which is good. no problem here.
-    const vus_group_session_auth = req.cookies['vus_group_session_auth'];
-    const vus_username = req.cookies['vus_username'];
-    funct.getUserRoom(vus_username, vus_group_session_auth)
-    .then(function (room) {
-      if (room) {
-        console.log("ROOM IS: " + room);
-        res.send(room);
-      }
-    })
-    .fail(function (err){
-      console.log(err.body);
-    });
-});
-
-app.post('/joinRoom', function(req, res){
-    var roomInfo = req.body;
-    if(!roomInfo.room_id){
-        res.render('/', {});
-    } else {
-      let newRoomID = roomInfo.room_id;
-      const previousID =  req.cookies['group_session_room'];
-      funct.localJoinGroup(newRoomID).then(
-        result => {
-          if (!result) {
-            const error = "group ID does not exist";
-            req.session.error = error;
-            res.redirect('/');
-          } else {
-            funct.localLeaveGroup(previousID).then(
-              value => {
-                // TODO: Save room_id in database under logged in user's account
-                // req.session.user.room = room_id;
-                // console.log(req.session.user.room)
-                // req.session.user.room = room_id
-                const vus_username = req.cookies['vus_username'];
-                funct.setUserRoom(vus_username,newRoomID);
-
-                res.cookie('group_session_room', newRoomID.toString());
-                req.session.group_session_room = newRoomID;
-
-                var directories = [];
-                result.forEach(groupUser => {
-                  directories.push(groupUser.username);
-                });
-
-                res.cookie('group_room_types', directories);
-                req.session.group_room_types = directories;
-
-                // create a session id to be stored in cookie for user authentication
-                var sessionID = SHA256(Math.random().toString())
-
-                // store username and auth code in cookie
-                res.cookie('vus_group_session_auth', sessionID.toString());
-
-                if (req.session.user) {
-                  res.cookie('vus_username', req.session.user.username);
-                }
-
-                // store the room in cookie... remove this later
-                res.cookie('group_session_room', newRoomID.toString());
-                req.session.group_session_room = newRoomID;
-
-                delete req.session.error;
-                res.redirect('/');
-              }
-            )
-          }
-        }
-      ).catch(err => {
-        console.log(err);
-      })
-
-    }
-});
-
-
-app.post('/addMoreRooms', (req, res) => {
-  // update group cookie
-  let room_types = req.cookies['group_room_types'];
-  room_types.push(req.body.newRoom);
-  res.cookie('group_room_types', room_types);
-
-  // update group in DB
-  const groupID = req.cookies['group_session_room'];
-  funct.localUpdateGroupEnvs(groupID, room_types).then(
-    () => {
-      res.redirect('lobby');
-    }
-  );
-});
-
-app.post('/deleteRooms', (req, res) => {
-  // update group cookie
-  const room_types = req.cookies['group_room_types'];
-
-  // remove the type
-  const updatedRoomTypes = room_types.filter(type => type !== req.body.deletedOwner);
-
-  res.cookie('group_room_types', updatedRoomTypes);
-
-  // update group in DB
-  const groupID = req.cookies['group_session_room'];
-  funct.localUpdateGroupEnvs(groupID, updatedRoomTypes).then(
-    () => {
-      res.redirect('lobby');
-    }
-  );
-
-});
 
 //=====================================
 

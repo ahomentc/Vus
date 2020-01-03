@@ -1,6 +1,9 @@
 // This file stores all the PSQL prepare statements. 
 
-
+const findAllImageEnvs = {
+    name: 'find-all-image-envs',
+    text: 'select * from vusenv'
+}
 
 const findImagesWithUserAndEnvName = {
     name: 'find-image-env-with-names',
@@ -16,9 +19,6 @@ const updateImageEnvQuery = {
     name: 'update-image-env',
     text: 'update vusenv set uploadtime = $2, description = $3 where envname = $1 and username = $4;',
 }
-
-
-
 
 const findUserQuery = {
     name: 'find-user',
@@ -68,7 +68,7 @@ const getEnvForUserQuery = {
 
 const insertGroupQuery = {
     name: 'insert-group',
-    text: 'insert into vusgroup (groupid, usercount) values ($1, $2)'
+    text: 'insert into vusgroup (groupid, usercount) values ($1, $2);'
 }
 
 const updateGroupQuery = {
@@ -101,6 +101,26 @@ const updateUserRoomQuery = {
     text: 'update vususer set room = $1 where username = $2;'
 }
 
+const findMailboxQuery = {
+    name: 'find-mailbox',
+    text: 'select * from headsetmailbox where code=$1'
+}
+
+const insertMailboxMessageQuery = {
+    name: 'insert-mailbox',
+    text: 'insert into headsetmailbox (code, username, house_name, message_slot_one, message_slot_two) values ($1, $2, $3, $4, $5);'
+}
+
+const updateMailboxMessageQuery = {
+    name: 'update-mailbox',
+    text: 'update headsetmailbox set username=$2, house_name=$3, message_slot_one=$4, message_slot_two=$5 where code=$1;'
+}
+
+const deleteMessageQuery = {
+    name: 'delete-message-query',
+    text: 'delete from headsetmailbox where code = $1;'
+}
+
 
 // exports
 module.exports = {
@@ -122,5 +142,10 @@ module.exports = {
     findGroupUserQuery: findGroupUserQuery,
     findImagesWithUserAndEnvName: findImagesWithUserAndEnvName,
     insertNewImageEnvQuery: insertNewImageEnvQuery,
-    updateImageEnvQuery: updateImageEnvQuery
+    updateImageEnvQuery: updateImageEnvQuery,
+    findAllImageEnvs: findAllImageEnvs,
+    findMailboxQuery: findMailboxQuery,
+    insertMailboxMessageQuery: insertMailboxMessageQuery,
+    updateMailboxMessageQuery: updateMailboxMessageQuery,
+    deleteMessageQuery: deleteMessageQuery
 }
