@@ -11,6 +11,11 @@ var triggerIsDown = false;
       
 var scrolling = true
 
+var inVR = false;
+document.querySelector('a-scene').addEventListener('enter-vr', function () {
+   inVR = true;
+});
+
 AFRAME.registerComponent("move_mobile", {
   init: function() {
     const sceneEl = this.el.sceneEl;
@@ -280,11 +285,6 @@ AFRAME.registerComponent("load_tour", {
             }
         }
     }
-
-    var inVR = false;
-    document.querySelector('a-scene').addEventListener('enter-vr', function () {
-       inVR = true;
-    });
 
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
       next()
