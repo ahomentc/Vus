@@ -278,11 +278,13 @@ AFRAME.registerComponent("load_tour", {
     }
 
     var inVR = false;
-    document.querySelector('a-scene').addEventListener('enter-vr', function () {
+    document.body.addEventListener('enter-vr', function (evt) {
+        isHeadset = true;
         inVR = true;
     });
 
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
+      alert("hi");
       if(!inVR){
         document.querySelector('a-scene').enterVR()
       }
@@ -309,10 +311,6 @@ AFRAME.registerComponent("load_tour", {
           next();
         }
     },1500)
-
-    document.body.addEventListener('enter-vr', function (evt) {
-        isHeadset = true;
-    });
 
   },
 })
