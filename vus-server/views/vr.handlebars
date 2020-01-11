@@ -2,7 +2,7 @@
 
 <div style="margin: 10px;padding:20px;">
     <div class="enclose">
-        <h5><label>Device Code: </label> <label id="devicecode">hi</label></h5>
+        <h1><label>Device Code: </label> <label id="devicecode">hi</label></h1>
     </div>
     <div id="set_menu" class="set_menu" style="visibility: hidden;">
     </div>
@@ -49,7 +49,7 @@
             document.getElementById("devicecode").innerHTML = getCookie('headsetLocalCode');
         }
         else{
-            var code = Math.floor((Math.random() * 1000000000) + 1).toString(24);
+            var code = Math.floor((Math.random() * 1000000) + 1).toString(24);
             setCookie('headsetLocalCode',code);   
             document.getElementById("devicecode").innerHTML = code;
         }
@@ -64,17 +64,17 @@
     }
 
     .enclose{
-        border-radius:10px;
         display: flex;
         flex-wrap: wrap;
-        width: 250px;
+        width: 550px;
         margin:0 auto;
         margin-top: 20px;
-        border: 1px solid #cbcbcb;
+        // border: 1px solid #cbcbcb;
+        border-bottom: 1px solid #cbcbcb;
         padding: 20px;
-        background-color:white;
+        padding-left: 50px;
+        background-color: transparent;
     }  
-
     .set_menu{
         border-radius:10px;
         display: flex;
