@@ -20,6 +20,10 @@ AFRAME.registerComponent("move_mobile", {
         isMobile = true;
         isHeadset = false;
 
+        if(!inVR){
+          document.querySelector('a-scene').enterVR();
+        }
+
         // 500 ms of continous
         var time = 0;
         var interval = setInterval(function(){
@@ -278,31 +282,19 @@ AFRAME.registerComponent("load_tour", {
     }
 
     var inVR = false;
-    document.body.addEventListener('enter-vr', function (evt) {
-        isHeadset = true;
-        inVR = true;
+    document.querySelector('a-scene').addEventListener('enter-vr', function () {
+       inVR = true;
     });
 
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
-      alert("hi");
-      if(!inVR){
-        document.querySelector('a-scene').enterVR()
-      }
-      else{
-        next()
-      }
+      next()
       // triggerIsDown = true;
     });
 
 
     // move backwards
     document.getElementById("left_hand").addEventListener('triggerdown', function(){
-        if(!inVR){
-          document.querySelector('a-scene').enterVR()
-        }
-        else{
-          prev()
-        }
+        prev()
         // triggerIsDown = false;
     });
 
@@ -311,6 +303,10 @@ AFRAME.registerComponent("load_tour", {
           next();
         }
     },1500)
+
+    document.body.addEventListener('enter-vr', function (evt) {
+        isHeadset = true;
+    });
 
   },
 })
