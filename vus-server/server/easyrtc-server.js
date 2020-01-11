@@ -338,7 +338,7 @@ app.post('/sendHeadsetMessage', (req, res) => {
   house_name = req.body.house_name;
   funct.localSetMessage(code,username,house_name).then(
     result => {
-      console.log("sent message")
+      // console.log("sent message")
     }
   );
 });

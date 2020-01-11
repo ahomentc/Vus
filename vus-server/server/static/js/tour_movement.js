@@ -149,6 +149,9 @@ AFRAME.registerComponent('menu_select', {
 
 AFRAME.registerComponent('menu', {
     init: function () {
+        if(labels == null || labels.length==0){
+          return;
+        }
         var labelsJSON = JSON.parse(labels.replace(/&quot;/g,'"'))
         var label_count = 0;
         for (var key in labelsJSON) {
