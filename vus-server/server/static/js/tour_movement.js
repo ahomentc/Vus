@@ -277,16 +277,30 @@ AFRAME.registerComponent("load_tour", {
         }
     }
 
+    var inVR = false;
+    document.querySelector('a-scene').addEventListener('enter-vr', function () {
+        inVR = true;
+    });
 
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
-      next()
+      if(!inVR){
+        document.querySelector('a-scene').enterVR()
+      }
+      else{
+        next()
+      }
       // triggerIsDown = true;
     });
 
 
     // move backwards
     document.getElementById("left_hand").addEventListener('triggerdown', function(){
-        prev()
+        if(!inVR){
+          document.querySelector('a-scene').enterVR()
+        }
+        else{
+          prev()
+        }
         // triggerIsDown = false;
     });
 
@@ -418,7 +432,16 @@ function next(){
           }
       }
 
+      // -- check to see if both pictures are loaded. --
+      // - if only 1 is loaded, use that one until the other is loaded,
+      // i.e. add another picture with the src of the other (should be in cache)
+      // and make the non loaded one not visible, then when it loads make it 
+      // visible and placeholder. Can't replace it because then it won't load.
+      // should we put a loading sign?
+      // - if both aren't loaded, show a nice 3D background/animation 
+      // with a loading sign. Could be like a stick figure house being built.
 
+      // switch to the next picture in 6 seconds
       setTimeout(function(){
           document.getElementById("instructions").setAttribute("visible", false);
           document.getElementById("left_pic").setAttribute("src", "#" + currentPic.toString() + "L")
