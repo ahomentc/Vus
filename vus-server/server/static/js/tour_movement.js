@@ -20,7 +20,7 @@ AFRAME.registerComponent("move_mobile", {
         isMobile = true;
         isHeadset = false;
 
-        alert("hi");
+        document.querySelector('a-scene').enterVR();
 
         // 500 ms of continous
         var time = 0;
