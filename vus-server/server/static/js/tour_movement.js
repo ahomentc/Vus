@@ -16,30 +16,25 @@ AFRAME.registerComponent("move_mobile", {
     const sceneEl = this.el.sceneEl;
     const canvasEl = sceneEl.canvas;
 
-    var enteredVR = false;
-
     canvasEl.addEventListener('touchstart', function(){
         isMobile = true;
         isHeadset = false;
 
-        if(enteredVR == false){
-          document.querySelector('a-scene').enterVR();
-          enteredVR = true;
-        }
-        else{
-          // 500 ms of continous
-          var time = 0;
-          var interval = setInterval(function(){
-              time += 1
-              if(time > 30){
-                  next();
-                  clearInterval(interval);
-              }
-              if(scrolling){
-                  time = 0;
-              }
-          },1)
-        }
+        document.querySelector('a-scene').enterVR();
+
+        // 500 ms of continous
+        // var time = 0;
+        // var interval = setInterval(function(){
+        //     time += 1
+        //     if(time > 30){
+        //         next();
+        //         clearInterval(interval);
+        //     }
+        //     if(scrolling){
+        //         time = 0;
+        //     }
+        // },1)
+
     });
 
     // for mobile, disable movement while inside sphere unless touch is held in place
