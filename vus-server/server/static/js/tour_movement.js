@@ -26,6 +26,7 @@ AFRAME.registerComponent("move_mobile", {
         isHeadset = false;
 
         if(!inVR){
+          alert("hi");
           document.querySelector('a-scene').enterVR();
         }
 
