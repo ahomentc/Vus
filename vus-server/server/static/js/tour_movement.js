@@ -11,11 +11,6 @@ var triggerIsDown = false;
       
 var scrolling = true
 
-var inVR = false;
-document.querySelector('a-scene').addEventListener('enter-vr', function () {
-   inVR = true;
-});
-
 AFRAME.registerComponent("move_mobile", {
   init: function() {
     const sceneEl = this.el.sceneEl;
@@ -24,11 +19,6 @@ AFRAME.registerComponent("move_mobile", {
     canvasEl.addEventListener('touchstart', function(){
         isMobile = true;
         isHeadset = false;
-
-        if(!inVR){
-          alert("hi");
-          document.querySelector('a-scene').enterVR();
-        }
 
         // 500 ms of continous
         var time = 0;
@@ -287,6 +277,7 @@ AFRAME.registerComponent("load_tour", {
         }
     }
 
+
     document.getElementById("right_hand").addEventListener('triggerdown', function(){
       next()
       // triggerIsDown = true;
@@ -434,7 +425,7 @@ function next(){
       // visible and placeholder. Can't replace it because then it won't load.
       // should we put a loading sign?
       // - if both aren't loaded, show a nice 3D background/animation 
-      // with a loading sign. Could be like a stick figure house being built.
+      // with a loading sign. Could be like a stick figure house being
 
       // switch to the next picture in 6 seconds
       setTimeout(function(){
