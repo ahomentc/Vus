@@ -11,6 +11,8 @@ var triggerIsDown = false;
       
 var scrolling = true
 
+var enteredVR = false;
+
 AFRAME.registerComponent("move_mobile", {
   init: function() {
     const sceneEl = this.el.sceneEl;
@@ -20,21 +22,24 @@ AFRAME.registerComponent("move_mobile", {
         isMobile = true;
         isHeadset = false;
 
-        document.querySelector('a-scene').enterVR();
-
-        // 500 ms of continous
-        var time = 0;
-        var interval = setInterval(function(){
-            time += 1
-            if(time > 30){
-                next();
-                clearInterval(interval);
-            }
-            if(scrolling){
-                time = 0;
-            }
-        },1)
-
+        if(!enteredVR){
+          document.querySelector('a-scene').enterVR();
+          enteredVR = true;
+        }
+        else{
+          // 500 ms of continous
+          var time = 0;
+          var interval = setInterval(function(){
+              time += 1
+              if(time > 30){
+                  next();
+                  clearInterval(interval);
+              }
+              if(scrolling){
+                  time = 0;
+              }
+          },1)
+        }
     });
 
     // for mobile, disable movement while inside sphere unless touch is held in place
@@ -300,6 +305,10 @@ AFRAME.registerComponent("load_tour", {
 
     document.body.addEventListener('enter-vr', function (evt) {
         isHeadset = true;
+    });
+
+    document.body.addEventListener('exit-vr', function (evt) {
+        enteredVR = false;
     });
 
   },
