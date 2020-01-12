@@ -11,12 +11,12 @@ var triggerIsDown = false;
       
 var scrolling = true
 
-var enteredVR = false;
-
 AFRAME.registerComponent("move_mobile", {
   init: function() {
     const sceneEl = this.el.sceneEl;
     const canvasEl = sceneEl.canvas;
+
+    var enteredVR = false;
 
     canvasEl.addEventListener('touchstart', function(){
         isMobile = true;
@@ -305,10 +305,6 @@ AFRAME.registerComponent("load_tour", {
 
     document.body.addEventListener('enter-vr', function (evt) {
         isHeadset = true;
-    });
-
-    document.body.addEventListener('exit-vr', function (evt) {
-        enteredVR = false;
     });
 
   },
