@@ -22,7 +22,7 @@ AFRAME.registerComponent("move_mobile", {
         isMobile = true;
         isHeadset = false;
 
-        if(!enteredVR){
+        if(enteredVR == false){
           document.querySelector('a-scene').enterVR();
           enteredVR = true;
         }
