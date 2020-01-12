@@ -20,6 +20,8 @@ AFRAME.registerComponent("move_mobile", {
         isMobile = true;
         isHeadset = false;
 
+        alert("hi");
+
         // 500 ms of continous
         var time = 0;
         var interval = setInterval(function(){
